@@ -62,9 +62,9 @@
   .brand-sub .accent{ color:var(--floodlight); }
   header p{ margin-top:12px; color:var(--chalk-dim); max-width:520px; margin-left:auto; margin-right:auto; }
 
+  .quote-row{ display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
   #quoteBar{
     max-width:620px;
-    margin-left:auto; margin-right:auto;
     line-height:1.55;
     font-style:italic;
     white-space:normal;
@@ -74,20 +74,33 @@
     color:var(--floodlight);
     white-space:nowrap;
   }
+  .quote-refresh{
+    width:26px; height:26px; padding:0; flex:0 0 26px;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:transparent; color:var(--chalk-dim);
+    border:1px solid var(--line); border-radius:50%; cursor:pointer;
+    transition:transform .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .quote-refresh:hover{ color:var(--floodlight); border-color:var(--floodlight); }
+  .quote-refresh:active{ transform:rotate(180deg); }
+  .quote-refresh svg{ width:13px; height:13px; }
 
   /* ============ TOP TABS ============ */
   .tabs{
     max-width:960px; margin:0 auto 28px; padding:0 20px;
-    display:flex; border-bottom:1px solid var(--line);
+    display:flex; gap:6px; border-bottom:1px solid var(--line);
   }
   .tab{
+    display:flex; align-items:center; gap:8px;
     background:transparent; color:var(--chalk-dim);
-    border:none; border-radius:0;
-    padding:14px 22px; font-size:15px; font-weight:700; letter-spacing:.04em;
-    border-bottom:3px solid transparent; margin-bottom:-1px; cursor:pointer;
+    border:none; border-radius:999px;
+    padding:11px 20px; font-size:15px; font-weight:700; letter-spacing:.04em;
+    margin-bottom:6px; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
   }
-  .tab:hover{ color:var(--chalk); }
-  .tab.on{ color:var(--chalk); border-bottom-color:var(--floodlight); }
+  .tab svg{ width:16px; height:16px; flex:0 0 16px; }
+  .tab:hover{ color:var(--chalk); background:var(--line); }
+  .tab.on{ color:var(--accent-text, #ffffff); background:var(--floodlight); }
 
   /* menu icon, top left corner */
   #menuIcon{
@@ -209,21 +222,48 @@
   #themePanel{
     position:fixed; top:50%; left:50%;
     transform:translate(-50%,-50%);
-    width:min(420px, calc(100vw - 40px));
+    width:min(440px, calc(100vw - 32px));
+    max-height:min(680px, calc(100vh - 48px));
+    flex-direction:column;
     background:var(--pitch-2);
     border:1px solid var(--line);
-    border-radius:8px;
-    padding:26px;
+    border-radius:20px;
+    padding:0;
     display:none; z-index:101;
     box-shadow:0 18px 60px rgba(0,0,0,.35);
   }
-  #themeOverlay.show, #themePanel.show{ display:block; }
+  #themePanel.show{ display:flex; }
+  #themeOverlay.show{ display:block; }
+  .theme-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    padding:22px 22px 16px; flex:0 0 auto;
+    border-bottom:1px solid var(--line);
+  }
+  .theme-title{ font-size:17px; font-weight:900; letter-spacing:0; text-transform:none; }
+  .theme-sub{ font-size:12.5px; color:var(--chalk-dim); margin-top:4px; }
+  .theme-close{
+    width:30px; height:30px; padding:0; flex:0 0 30px;
+    border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--chalk-dim);
+  }
+  .theme-close:hover{ color:var(--chalk); border-color:var(--chalk-dim); }
+  .theme-close svg{ width:14px; height:14px; }
+  .theme-body{ flex:1 1 auto; overflow-y:auto; }
+  .theme-section{
+    padding:18px 22px; border-bottom:1px solid var(--line);
+  }
+  .theme-section:last-child{ border-bottom:none; }
+  .theme-section-head{
+    display:flex; align-items:center; gap:9px;
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:800;
+    color:var(--chalk-dim); margin-bottom:14px;
+  }
+  .theme-section-head svg{ width:15px; height:15px; color:var(--floodlight); flex:0 0 15px; }
   .theme-label{
     display:block;
     font-size:12px; letter-spacing:.15em; text-transform:uppercase;
     color:var(--chalk-dim); margin:16px 0 8px;
   }
-  .preset-row{ display:flex; gap:10px; }
+  .preset-row{ display:flex; gap:10px; flex-wrap:wrap; }
   .theme-swatch{
     width:42px; height:42px; padding:0;
     border-radius:50%;
@@ -231,11 +271,61 @@
     cursor:pointer;
   }
   .theme-swatch:hover{ border-color:var(--chalk); }
-  .theme-colors{ display:flex; gap:16px; flex-wrap:wrap; }
-  .theme-colors label{
-    display:flex; align-items:center; gap:8px;
-    font-size:14px; color:var(--chalk); font-weight:600;
+
+  /* redesigned preset picker: labelled tiles with a checkmark on the active one */
+  .preset-grid2{ display:grid; grid-template-columns:repeat(auto-fill, minmax(82px,1fr)); gap:9px; }
+  .preset-tile{
+    display:flex; flex-direction:column; align-items:center; gap:7px;
+    background:var(--pitch); border:1px solid var(--line); border-radius:12px;
+    padding:11px 6px 9px; cursor:pointer; position:relative;
   }
+  .preset-tile:hover{ border-color:var(--chalk-dim); }
+  .preset-tile.sel{ border-color:var(--floodlight); box-shadow:0 0 0 1.5px var(--floodlight); }
+  .preset-swatch{ width:32px; height:32px; border-radius:50%; border:1px solid var(--line); }
+  .preset-name{ font-size:11.5px; font-weight:700; color:var(--chalk); }
+  .preset-check{
+    position:absolute; top:6px; right:6px; width:16px; height:16px;
+    border-radius:50%; background:var(--floodlight); color:var(--accent-text,#fff);
+    display:none; align-items:center; justify-content:center;
+  }
+  .preset-check svg{ width:10px; height:10px; }
+  .preset-tile.sel .preset-check{ display:flex; }
+
+  /* redesigned custom-colour pickers: big round swatches, no square input chrome */
+  .theme-colors2{ display:flex; gap:12px; }
+  .color-field{ display:flex; flex-direction:column; align-items:center; gap:7px; flex:1; cursor:pointer; }
+  .color-field input[type=color]{
+    width:44px; height:44px; padding:0; cursor:pointer;
+    border:3px solid var(--pitch); border-radius:50%;
+    box-shadow:0 0 0 1.5px var(--line);
+  }
+  .color-field input[type=color]::-webkit-color-swatch-wrapper{ padding:0; border-radius:50%; }
+  .color-field input[type=color]::-webkit-color-swatch{ border:none; border-radius:50%; }
+  .color-field span{ font-size:12px; font-weight:700; color:var(--chalk-dim); }
+
+  /* text-size scale shown as growing "Aa" glyphs instead of plain labels */
+  .zoom-scale{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .zoom-scale button{
+    flex:1; border-radius:0; background:transparent; color:var(--chalk-dim);
+    font-weight:800; padding:10px 0;
+  }
+  .zoom-scale button.on{ background:var(--floodlight); color:var(--accent-text, #ffffff); }
+
+  /* blur toggle presented as a labelled card instead of a bare checkbox */
+  .check-card{
+    display:flex; align-items:flex-start; gap:12px;
+    background:var(--pitch); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; cursor:pointer; margin-bottom:12px;
+  }
+  .check-card input{ width:18px; height:18px; margin-top:2px; accent-color:var(--floodlight); cursor:pointer; flex:0 0 18px; }
+  .check-card-text{ display:flex; flex-direction:column; gap:2px; }
+  .check-card-text strong{ font-size:14px; font-weight:700; color:var(--chalk); }
+  .check-card-text span{ font-size:12px; color:var(--chalk-dim); }
+
+  .theme-actions{
+    display:flex; gap:10px; padding:18px 22px; flex:0 0 auto;
+  }
+  .theme-actions button{ flex:1; }
   #shareOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
     backdrop-filter:blur(calc(var(--blur, 26) * 0.45px)) saturate(1.4);
@@ -320,13 +410,96 @@
   .panel{
     background:var(--pitch-2);
     border:1px solid var(--line);
-    border-radius:4px;
-    padding:26px; margin-bottom:26px;
+    border-radius:16px;
+    padding:26px; margin-bottom:24px;
   }
   .panel h2{
+    display:flex; align-items:center; gap:9px;
     font-size:13px; letter-spacing:.25em; text-transform:uppercase;
     color:var(--floodlight); margin-bottom:16px;
   }
+  .panel h2 svg{ width:16px; height:16px; flex:0 0 16px; }
+  .h2-step{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; flex:0 0 20px;
+    border-radius:50%; background:var(--floodlight); color:var(--accent-text, #fff);
+    font-size:11px; font-weight:900; letter-spacing:0;
+  }
+
+  /* small live-count pill reused on panel headers across every screen */
+  .h2-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:2px 10px; margin-left:auto;
+    border-radius:999px; background:var(--pitch); border:1px solid var(--line);
+    color:var(--chalk-dim); font-size:11px; font-weight:800; letter-spacing:.05em;
+    text-transform:none;
+  }
+
+  /* ============ HOME DASHBOARD ============ */
+  .home-lead{ color:var(--chalk-dim); font-size:15px; margin:-6px 0 22px; }
+
+  .stat-row{ display:flex; gap:14px; margin-bottom:22px; }
+  .stat-tile{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+    background:var(--pitch-2); border:1px solid var(--line); border-radius:16px;
+    padding:20px 12px; text-align:center;
+    box-shadow:0 4px 24px rgba(0,0,0,.06);
+  }
+  .stat-icon{ color:var(--floodlight); }
+  .stat-icon svg{ width:22px; height:22px; }
+  .stat-value{ font-size:28px; font-weight:900; color:var(--chalk); line-height:1; }
+  .stat-label{ font-size:12px; color:var(--chalk-dim); font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+
+  .action-grid{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .action-card{
+    display:flex; align-items:center; gap:14px; width:100%;
+    background:var(--pitch-2); border:1px solid var(--line); border-radius:16px;
+    padding:16px 18px; text-align:left; cursor:pointer;
+    box-shadow:0 4px 24px rgba(0,0,0,.06);
+    transition:border-color .16s ease, transform .14s ease, box-shadow .16s ease;
+  }
+  .action-card:hover{ transform:translateY(-1px); border-color:var(--chalk-dim); box-shadow:0 6px 20px rgba(0,0,0,.09); }
+  .action-icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:42px; height:42px; flex:0 0 42px;
+    border-radius:50%; background:var(--pitch); color:var(--floodlight);
+  }
+  .action-icon svg{ width:20px; height:20px; }
+  .action-text{ display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
+  .action-text strong{ font-size:15px; font-weight:800; color:var(--chalk); }
+  .action-text span{ font-size:12.5px; color:var(--chalk-dim); }
+  .action-chevron{ color:var(--chalk-dim); flex:0 0 auto; }
+  .action-chevron svg{ width:16px; height:16px; }
+
+  .home-section-label{
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:800;
+    color:var(--chalk-dim); margin-bottom:10px;
+  }
+  .home-recent-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--pitch-2); border:1px solid var(--line); border-radius:16px;
+    padding:16px 18px;
+    box-shadow:0 4px 24px rgba(0,0,0,.06);
+  }
+  .home-recent-card.empty{ text-align:left; }
+  .home-recent-card .home-recent-text{ display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
+  .home-recent-card .home-recent-text strong{ font-size:15px; font-weight:800; color:var(--chalk); }
+  .home-recent-card .home-recent-text span{ font-size:12.5px; color:var(--chalk-dim); }
+  @media (max-width:560px){
+    .stat-row{ flex-direction:column; }
+  }
+
+  /* live readiness feedback under the Format panel */
+  .format-status{
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600; color:var(--chalk-dim);
+    margin-top:16px; padding-top:14px; border-top:1px dashed var(--line);
+  }
+  .format-status svg{ width:15px; height:15px; flex:0 0 15px; }
+  .format-status.ready svg{ color:#1a8f4c; }
+  .format-status.ready{ color:var(--chalk); }
+  .format-status.not-ready svg{ color:var(--danger); }
+  button.not-ready{ opacity:.55; }
   /* floating selection-count bubble */
   #countBubble{
     position:fixed;
@@ -354,17 +527,19 @@
     flex:1;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     color:var(--chalk);
     padding:13px 16px; font-size:16px; outline:none;
   }
   input[type=text]:focus{ border-color:var(--floodlight); }
   button{
     font-family:inherit; font-size:15px; font-weight:700;
-    border:none; border-radius:6px; cursor:pointer;
+    border:none; border-radius:10px; cursor:pointer;
     padding:13px 22px;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
     transition:transform .08s ease, background .15s ease;
   }
+  button svg{ width:16px; height:16px; flex:0 0 16px; }
   button:active{ transform:scale(.97); }
   button:focus-visible{ outline:2px solid var(--floodlight); outline-offset:2px; }
   .btn-amber{ background:var(--floodlight); color:var(--accent-text, #ffffff); }
@@ -414,7 +589,8 @@
     background:transparent; color:var(--chalk-dim); font-size:15px;
   }
   .chip button:hover{ color:var(--danger); }
-  .empty-note{ color:var(--chalk-dim); font-size:14px; font-style:italic; }
+  .empty-note{ display:flex; align-items:center; gap:8px; color:var(--chalk-dim); font-size:14px; font-style:italic; }
+  .empty-note svg{ width:16px; height:16px; flex:0 0 16px; font-style:normal; }
 
   /* ============ CUSTOM TEAM PICKER ============ */
   .pick-grid{
@@ -426,7 +602,7 @@
     display:flex; align-items:center; gap:10px;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     padding:8px 12px;
     cursor:pointer; user-select:none;
     font-size:15px; font-weight:600;
@@ -448,7 +624,7 @@
   .lib-select{
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     color:var(--chalk);
     padding:11px 12px; font-size:15px; font-weight:600;
     font-family:inherit; cursor:pointer; outline:none;
@@ -462,7 +638,7 @@
     display:flex; align-items:center; gap:14px;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     padding:9px 14px;
   }
   .slot-row .slot-label{
@@ -474,7 +650,7 @@
     flex:1;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     color:var(--chalk);
     padding:9px 12px; font-size:15px; font-weight:600;
     font-family:inherit; cursor:pointer; outline:none;
@@ -500,7 +676,7 @@
   .saved-card{
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:12px;
     padding:12px 14px;
   }
   .saved-head{ display:flex; align-items:center; gap:12px; }
@@ -541,7 +717,7 @@
   .options{ display:flex; flex-wrap:wrap; gap:26px; align-items:center; }
   .opt-group{ display:flex; flex-direction:column; gap:8px; }
   .opt-group label{ font-size:12px; letter-spacing:.15em; text-transform:uppercase; color:var(--chalk-dim); }
-  .seg{ display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .seg{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; }
   .seg button{ border-radius:0; background:transparent; color:var(--chalk-dim); padding:11px 18px; font-weight:600; }
   .seg button.on{ background:var(--floodlight); color:var(--accent-text, #ffffff); }
   .check{ display:flex; align-items:center; gap:9px; color:var(--chalk); font-size:15px; cursor:pointer; user-select:none; }
@@ -554,7 +730,7 @@
   .tour-card{
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:12px;
     padding:13px 16px;
   }
   .tour-card.viewing{ border-color:var(--floodlight); }
@@ -585,7 +761,7 @@
     align-items:center;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:4px;
+    border-radius:12px;
     padding:12px 18px;
     margin-bottom:9px;
     font-size:16px;
@@ -621,6 +797,25 @@
   input.score::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
   input.score:focus{ border-color:var(--floodlight); }
 
+  /* optional per-match date / time / venue — collapsed summary or an inline editor */
+  .match-meta{ margin:-4px 0 10px; padding:0 6px; display:flex; flex-direction:column; gap:5px; font-size:12px; color:var(--chalk-dim); }
+  .match-meta-summary{ display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
+  .match-meta-summary:hover{ color:var(--chalk); }
+  .match-meta-summary svg{ width:12px; height:12px; flex:0 0 12px; }
+  .match-meta-edit{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; }
+  .meta-input{
+    background:var(--pitch-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--chalk); font-family:inherit; font-size:12px; padding:5px 8px; outline:none;
+  }
+  .meta-input:focus{ border-color:var(--floodlight); }
+  .meta-input[type=text]{ flex:1 1 140px; min-width:100px; }
+  .meta-toggle{
+    width:20px; height:20px; padding:0; flex:0 0 20px; margin-top:2px;
+    border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--chalk-dim);
+  }
+  .meta-toggle svg{ width:11px; height:11px; }
+  .meta-toggle:hover, .meta-toggle.set{ color:var(--floodlight); border-color:var(--floodlight); }
+
   /* ============ STANDINGS (LEADERBOARD) ============ */
   .standings-wrap{ overflow-x:auto; margin-bottom:30px; }
   table.standings{
@@ -653,7 +848,7 @@
   .bracket-wrap{
     overflow-x:auto;
     border:1px solid var(--line);
-    border-radius:4px;
+    border-radius:12px;
     background:var(--pitch);
     padding:10px;
   }
@@ -721,20 +916,26 @@
   }
   @media print{
     body{ background:#fff; color:#000; }
-    header .kick, .toolbar, footer, .tabs, #page-main, #page-saved, #menuIcon, #menuDrawer, #menuOverlay, #backBtn{ display:none !important; }
+    header .quote-row, .toolbar, footer, .tabs, #page-main, #page-saved, #menuIcon, #menuDrawer, #menuOverlay, #backBtn{ display:none !important; }
     #page-fixtures{ display:block !important; }
     .panel{ border:none; background:#fff; padding:0; }
     .panel h2{ display:none; }
     .tour-card{ border:none; padding:0; }
     .tour-card:not(.viewing){ display:none !important; }
     .tour-head .icon-btn, .tour-head .tour-meta{ display:none !important; }
+    .tour-head .tour-name{ font-size:22px; }
     .tour-body{ border-top:none; }
     #standings, #rounds, #bracket{ display:block !important; }
     #rounds .round{ content-visibility:visible; }
+    .round, .match, table.standings tr{ break-inside:avoid; }
     .match{ background:#fff; border-color:#999; color:#000; }
     .round-title h3, .match .vs{ color:#000; }
     input.score{ background:#fff; border-color:#999; color:#000; }
     table.standings, table.standings th, table.standings td{ color:#000; border-color:#999; }
+    /* the on-screen date/time/venue editor never prints — only its read-only summary line does */
+    .meta-toggle{ display:none !important; }
+    .match-meta-edit{ display:none !important; }
+    .match-meta-summary:has(span:not(:empty)){ display:flex !important; color:#555; }
   }
   @media (prefers-reduced-motion: reduce){
     *{ animation:none !important; transition:none !important; }
@@ -854,13 +1055,13 @@
   }
 
   /* soft depth + smoother hovers */
-  .panel{ box-shadow:0 2px 16px rgba(0,0,0,.05); }
+  .panel{ box-shadow:0 4px 24px rgba(0,0,0,.06); }
   .pick-item, .chip, .saved-card, .tour-card, .match{
     transition:border-color .16s ease, transform .14s ease, box-shadow .16s ease;
   }
   .pick-item:hover:not(.disabled), .tour-card:hover, .saved-card:hover{
     transform:translateY(-1px);
-    box-shadow:0 4px 14px rgba(0,0,0,.07);
+    box-shadow:0 6px 20px rgba(0,0,0,.09);
   }
 
   /* ============ FULL FROSTED-GLASS SURFACES ============ */
@@ -933,7 +1134,7 @@
   @media (max-width:760px){
     /* format buttons (League / Knockout / World Cup / Champions League)
        wrap into a neat grid instead of overflowing their box */
-    #typeSeg{ flex-wrap:wrap; width:100%; }
+    #typeSeg{ flex-wrap:wrap; width:100%; border-radius:16px; }
     #typeSeg button{
       flex:1 1 46%;
       padding:11px 6px; font-size:13px;
@@ -978,8 +1179,13 @@
 <body>
 
 <header>
-  <div class="kick" id="quoteBar"></div>
-  <h1>
+  <div class="quote-row">
+    <div class="kick" id="quoteBar"></div>
+    <button class="quote-refresh" title="New quote" aria-label="New quote" onclick="refreshQuote()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11 A8 8 0 1 0 20 15"/><polyline points="20 5 20 11 14 11"/></svg>
+    </button>
+  </div>
+  <h1 onclick="switchTab('home')" style="cursor:pointer" title="Back to home">
     <span class="brand-flow">Fixture Flow</span>
     <span class="brand-sub">The Fixture <span class="accent">Maker</span></span>
   </h1>
@@ -988,9 +1194,18 @@
 
 <!-- ===== TOP TABS ===== -->
 <nav class="tabs">
-  <button id="tab-main" class="tab on" onclick="switchTab('main')">Fixture Maker</button>
-  <button id="tab-fixtures" class="tab" onclick="switchTab('fixtures')">Fixtures</button>
-  <button id="tab-saved" class="tab" onclick="switchTab('saved')">Saved Teams</button>
+  <button id="tab-main" class="tab on" onclick="switchTab('main')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="9"/></svg>
+    Fixture Maker
+  </button>
+  <button id="tab-fixtures" class="tab" onclick="switchTab('fixtures')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 L4 20 L20 20"/><path d="M4 15 L9 10 L13 14 L20 6"/></svg>
+    Fixtures
+  </button>
+  <button id="tab-saved" class="tab" onclick="switchTab('saved')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 L18 3 L18 21 L12 17 L6 21 Z"/></svg>
+    Saved Teams
+  </button>
 </nav>
 
 <!-- menu icon, top left corner -->
@@ -1027,13 +1242,13 @@
       Theme
     </button>
     <button class="menu-item" onclick="exportBackup()">
-      <span class="mi-ic">⬇</span> Export backup
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L12 15"/><polyline points="7 10 12 15 17 10"/><path d="M4 19 L20 19"/></svg></span> Export backup
     </button>
     <button class="menu-item" onclick="document.getElementById('importFile').click()">
-      <span class="mi-ic">⬆</span> Import backup
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15 L12 3"/><polyline points="7 8 12 3 17 8"/><path d="M4 19 L20 19"/></svg></span> Import backup
     </button>
     <button class="menu-item" onclick="toggleMenu(); toggleAbout()">
-      <span class="mi-ic">ℹ</span> About
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></svg></span> About
     </button>
   </nav>
 </aside>
@@ -1041,79 +1256,220 @@
 <!-- ===== THEME CUSTOMIZER ===== -->
 <div id="themeOverlay" onclick="toggleThemePanel()"></div>
 <div id="themePanel">
-  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px">Customize theme</h2>
-
-  <label class="theme-label">Presets</label>
-  <div class="preset-row">
-    <button class="theme-swatch" title="Classic (black &amp; white)" onclick="setPreset('classic')"
-            style="background:linear-gradient(135deg,#ffffff 55%,#111111 55%)"></button>
-    <button class="theme-swatch" title="Dark" onclick="setPreset('dark')"
-            style="background:linear-gradient(135deg,#111214 55%,#f2f2f2 55%)"></button>
-    <button class="theme-swatch" title="Night pitch" onclick="setPreset('pitch')"
-            style="background:linear-gradient(135deg,#0d2018 55%,#ffb627 55%)"></button>
-    <button class="theme-swatch" title="Royal blue" onclick="setPreset('royal')"
-            style="background:linear-gradient(135deg,#0d1b4c 55%,#ffd400 55%)"></button>
-    <button class="theme-swatch" title="Rose (wall-chart)" onclick="setPreset('rose')"
-            style="background:linear-gradient(135deg,#7a1538 55%,#ffffff 55%)"></button>
+  <div class="theme-head">
+    <div>
+      <h2 class="theme-title">Customize theme</h2>
+      <p class="theme-sub">Every change applies instantly.</p>
+    </div>
+    <button class="theme-close" onclick="toggleThemePanel()" title="Close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
   </div>
 
-  <label class="theme-label">Custom colours</label>
-  <div class="theme-colors">
-    <label>Background <input type="color" id="thBg" value="#ffffff" onchange="applyCustom()"></label>
-    <label>Text <input type="color" id="thText" value="#111111" onchange="applyCustom()"></label>
-    <label>Accent <input type="color" id="thAccent" value="#111111" onchange="applyCustom()"></label>
+  <div class="theme-body">
+  <div class="theme-section">
+    <div class="theme-section-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 C7 3 3 6.8 3 11.5 C3 15 5.5 16 7.5 16 C8.6 16 9 15.3 9 14.6 C9 13.9 8.5 13.6 8.5 12.8 C8.5 11.8 9.4 11 10.5 11 L14 11 C17.9 11 21 8.6 21 5.8 C21 4.2 19.5 3 17.5 3 Z"/><circle cx="7.5" cy="8.7" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="6.6" r=".9" fill="currentColor" stroke="none"/><circle cx="16.3" cy="8.2" r=".9" fill="currentColor" stroke="none"/></svg>
+      <span>Appearance</span>
+    </div>
+    <div class="preset-grid2" id="presetGrid2">
+      <button class="preset-tile" data-preset="classic" title="Classic (black &amp; white)" onclick="setPreset('classic')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#ffffff 55%,#111111 55%)"></span>
+        <span class="preset-name">Classic</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="dark" title="Dark" onclick="setPreset('dark')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#111214 55%,#f2f2f2 55%)"></span>
+        <span class="preset-name">Dark</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="slate" title="Slate (cool graphite)" onclick="setPreset('slate')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#1b1e24 55%,#c7d1de 55%)"></span>
+        <span class="preset-name">Slate</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="paper" title="Paper (warm cream)" onclick="setPreset('paper')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#faf6ee 55%,#33291b 55%)"></span>
+        <span class="preset-name">Paper</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="pitch" title="Night pitch" onclick="setPreset('pitch')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#0d2018 55%,#ffb627 55%)"></span>
+        <span class="preset-name">Pitch</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="royal" title="Royal blue" onclick="setPreset('royal')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#0d1b4c 55%,#ffd400 55%)"></span>
+        <span class="preset-name">Royal</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="rose" title="Rose (wall-chart)" onclick="setPreset('rose')">
+        <span class="preset-swatch" style="background:linear-gradient(135deg,#7a1538 55%,#ffffff 55%)"></span>
+        <span class="preset-name">Rose</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+      <button class="preset-tile" data-preset="auto" title="Auto — matches your system light/dark setting" onclick="setAutoTheme()">
+        <span class="preset-swatch" style="background:conic-gradient(#ffffff 0deg 180deg, #111214 180deg 360deg)"></span>
+        <span class="preset-name">Auto</span>
+        <span class="preset-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg></span>
+      </button>
+    </div>
+    <p class="hint" id="autoHint" style="display:none; margin:10px 0 0">Following your system's light/dark setting.</p>
   </div>
 
-  <label class="theme-label">Font</label>
-  <select id="thFont" class="lib-select" style="width:100%" onchange="setFont(this.value)">
-    <option value="system">System (default)</option>
-    <option value="gsans">Google Sans</option>
-    <option value="inter">Inter</option>
-    <option value="poppins">Poppins</option>
-    <option value="grotesk">Space Grotesk</option>
-    <option value="lora">Lora (serif)</option>
-  </select>
-
-  <label class="theme-label">Effects</label>
-  <label class="check" style="margin-bottom:10px">
-    <input type="checkbox" id="thBlur" checked onchange="setBlur(this.checked)">
-    Glassy blur effect
-  </label>
-  <div class="blur-row">
-    <input type="range" id="thBlurAmt" min="6" max="70" step="1" value="26"
-           oninput="setBlurAmount(this.value)">
-    <span id="blurVal" class="hint" style="margin:0; min-width:48px; text-align:right">26 px</span>
+  <div class="theme-section">
+    <div class="theme-section-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 C12 3 6 10.6 6 15 A6 6 0 0 0 18 15 C18 10.6 12 3 12 3 Z"/></svg>
+      <span>Custom colours</span>
+    </div>
+    <div class="theme-colors2">
+      <label class="color-field">
+        <input type="color" id="thBg" value="#ffffff" oninput="applyCustom()">
+        <span>Background</span>
+      </label>
+      <label class="color-field">
+        <input type="color" id="thText" value="#111111" oninput="applyCustom()">
+        <span>Text</span>
+      </label>
+      <label class="color-field">
+        <input type="color" id="thAccent" value="#111111" oninput="applyCustom()">
+        <span>Accent</span>
+      </label>
+    </div>
   </div>
 
-  <label class="theme-label">Font size</label>
-  <div class="seg" id="zoomSeg">
-    <button onclick="setZoom(0.9, this)">Small</button>
-    <button class="on" onclick="setZoom(1, this)">Normal</button>
-    <button onclick="setZoom(1.15, this)">Large</button>
-    <button onclick="setZoom(1.3, this)">Extra</button>
+  <div class="theme-section">
+    <div class="theme-section-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 L10.4 5 L13.6 5 L18 20"/><line x1="7.7" y1="14.3" x2="16.3" y2="14.3"/></svg>
+      <span>Typography</span>
+    </div>
+    <label class="theme-label" style="margin-top:0">Font</label>
+    <select id="thFont" class="lib-select" style="width:100%" onchange="setFont(this.value)">
+      <option value="system" style="font-family:'Segoe UI'">System (default)</option>
+      <option value="gsans" style="font-family:'Google Sans','Product Sans','Outfit'">Google Sans</option>
+      <option value="inter" style="font-family:'Inter'">Inter</option>
+      <option value="poppins" style="font-family:'Poppins'">Poppins</option>
+      <option value="grotesk" style="font-family:'Space Grotesk'">Space Grotesk</option>
+      <option value="lora" style="font-family:'Lora',Georgia">Lora (serif)</option>
+    </select>
+
+    <label class="theme-label">Text size</label>
+    <div class="zoom-scale" id="zoomSeg">
+      <button style="font-size:13px" onclick="setZoom(0.9, this)" title="Small">Aa</button>
+      <button class="on" style="font-size:16px" onclick="setZoom(1, this)" title="Normal">Aa</button>
+      <button style="font-size:19px" onclick="setZoom(1.15, this)" title="Large">Aa</button>
+      <button style="font-size:22px" onclick="setZoom(1.3, this)" title="Extra large">Aa</button>
+    </div>
   </div>
 
-  <div class="generate-bar" style="margin-top:20px">
-    <button class="btn-ghost" onclick="setPreset('classic'); setZoomValue(1)">Reset all</button>
-    <button class="btn-amber" onclick="toggleThemePanel()">Done</button>
+  <div class="theme-section">
+    <div class="theme-section-head">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L13.8 9 L21 12 L13.8 15 L12 22 L10.2 15 L3 12 L10.2 9 Z"/></svg>
+      <span>Effects</span>
+    </div>
+    <label class="check-card">
+      <input type="checkbox" id="thBlur" checked onchange="setBlur(this.checked)">
+      <span class="check-card-text">
+        <strong>Glassy blur</strong>
+        <span>Frosted-glass panels and translucent cards</span>
+      </span>
+    </label>
+    <div class="blur-row">
+      <input type="range" id="thBlurAmt" min="6" max="70" step="1" value="26"
+             oninput="setBlurAmount(this.value)">
+      <span id="blurVal" class="hint" style="margin:0; min-width:48px; text-align:right">26 px</span>
+    </div>
+  </div>
+  </div><!-- /theme-body -->
+
+  <div class="theme-actions">
+    <button class="btn-ghost" onclick="setPreset('classic'); setZoomValue(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11 A8 8 0 1 0 20 15"/><polyline points="20 5 20 11 14 11"/></svg>
+      Reset all
+    </button>
+    <button class="btn-amber" onclick="toggleThemePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg>Done</button>
   </div>
 </div>
 
 <main>
 
 <!-- ================================================== -->
+<!-- ============ HOME DASHBOARD ======================= -->
+<!-- ================================================== -->
+<div id="page-home">
+
+  <p class="home-lead">Your fixture-making hub — jump back in.</p>
+
+  <div class="stat-row">
+    <div class="stat-tile">
+      <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20 C3 16 5.5 14 9 14 C12.5 14 15 16 15 20"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3 C18 14.6 20 16.4 20 20"/></svg></span>
+      <span class="stat-value" id="homeStatTeams">0</span>
+      <span class="stat-label">Saved Teams</span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 L17 4 L17 9 A5 5 0 0 1 7 9 Z"/><path d="M7 5 L4 5 A3 3 0 0 0 7 9.5"/><path d="M17 5 L20 5 A3 3 0 0 1 17 9.5"/><line x1="12" y1="14" x2="12" y2="18"/><path d="M8 20 L16 20 L15 18 L9 18 Z"/></svg></span>
+      <span class="stat-value" id="homeStatTours">0</span>
+      <span class="stat-label">Tournaments</span>
+    </div>
+  </div>
+
+  <div class="action-grid">
+    <button class="action-card" onclick="switchTab('main')">
+      <span class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="9"/></svg></span>
+      <span class="action-text">
+        <strong>New Tournament</strong>
+        <span>Add teams, pick a format, generate fixtures</span>
+      </span>
+      <span class="action-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 L16 12 L9 19"/></svg></span>
+    </button>
+    <button class="action-card" onclick="switchTab('fixtures')">
+      <span class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 L4 20 L20 20"/><path d="M4 15 L9 10 L13 14 L20 6"/></svg></span>
+      <span class="action-text">
+        <strong>View Fixtures</strong>
+        <span>Enter scores and follow standings</span>
+      </span>
+      <span class="action-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 L16 12 L9 19"/></svg></span>
+    </button>
+    <button class="action-card" onclick="switchTab('saved')">
+      <span class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3 L18 3 L18 21 L12 17 L6 21 Z"/></svg></span>
+      <span class="action-text">
+        <strong>Manage Teams</strong>
+        <span>Edit logos, rename, or reuse saved teams</span>
+      </span>
+      <span class="action-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 L16 12 L9 19"/></svg></span>
+    </button>
+  </div>
+
+  <div id="homeRecent"></div>
+
+</div><!-- /page-home -->
+
+<!-- ================================================== -->
 <!-- ============ TAB 1 : FIXTURE MAKER =============== -->
 <!-- ================================================== -->
-<div id="page-main">
+<div id="page-main" style="display:none">
 
   <!-- ===== TEAMS PANEL ===== -->
   <section class="panel">
-    <h2>Teams</h2>
+    <h2>
+      <span class="h2-step">1</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20 C3 16 5.5 14 9 14 C12.5 14 15 16 15 20"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3 C18 14.6 20 16.4 20 20"/></svg>
+      <span>Teams</span>
+    </h2>
     <div class="team-row">
       <input type="text" id="teamInput" placeholder="Type a team name and press Enter…" maxlength="30">
-      <button class="btn-amber" onclick="addTeam()">Add Team</button>
-      <button class="btn-ghost" onclick="togglePicker()">Select from Saved</button>
-      <button class="btn-ghost" onclick="toggleLibrary()">Real Teams</button>
+      <button class="btn-amber" onclick="addTeam()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Team
+      </button>
+      <button class="btn-ghost" onclick="togglePicker()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11 L11 13 L15 8"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+        Select from Saved
+      </button>
+      <button class="btn-ghost" onclick="toggleLibrary()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12 L21 12 M12 3 A14 9 0 0 1 12 21 A14 9 0 0 1 12 3"/></svg>
+        Real Teams
+      </button>
     </div>
 
     <!-- built-in library: national teams and clubs, picked via dropdown -->
@@ -1126,7 +1482,10 @@
         <select id="libSelect" class="lib-select" onchange="renderLibGrid()"></select>
         <input type="text" id="libSearch" placeholder="🔍 Search teams &amp; clubs…"
                oninput="renderLibGrid()" style="flex:1; min-width:170px">
-        <button class="btn-ghost" onclick="toggleLibrary()">Close</button>
+        <button class="btn-ghost" onclick="toggleLibrary()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          Close
+        </button>
       </div>
       <p class="hint">Pick a continent or league from the dropdown, then click a team to add it. Every added team is saved with its flag or badge — you can upload a real logo in Saved Teams → Edit.</p>
       <div id="libGrid"></div>
@@ -1137,43 +1496,86 @@
       <p class="hint" style="margin:16px 0 10px">Tick the teams you want in this competition:</p>
       <div class="pick-grid" id="pickGrid"></div>
       <div class="generate-bar" style="margin-top:14px">
-        <button class="btn-amber" onclick="addSelected()">Add selected teams</button>
-        <button class="btn-ghost" onclick="selectAllPicker()">Select all</button>
-        <button class="btn-ghost" onclick="togglePicker()">Close</button>
+        <button class="btn-amber" onclick="addSelected()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add selected teams
+        </button>
+        <button class="btn-ghost" onclick="selectAllPicker()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11 L11 13 L15 8"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+          Select all
+        </button>
+        <button class="btn-ghost" onclick="togglePicker()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          Close
+        </button>
       </div>
     </div>
 
     <div class="chips" id="teamChips">
-      <span class="empty-note">No teams yet — add at least 2 to get started.</span>
+      <span class="empty-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20 C3 16 5.5 14 9 14 C12.5 14 15 16 15 20"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3 C18 14.6 20 16.4 20 20"/></svg>
+        No teams yet — add at least 2 to get started.
+      </span>
     </div>
   </section>
 
   <!-- ===== OPTIONS PANEL ===== -->
   <section class="panel">
-    <h2>Format</h2>
+    <h2>
+      <span class="h2-step">2</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.3"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2.3"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.3"/></svg>
+      <span>Format</span>
+    </h2>
     <div class="options">
       <div class="opt-group">
         <label>Competition type</label>
         <div class="seg" id="typeSeg">
-          <button class="on" data-type="league" onclick="setType('league', this)">League</button>
-          <button data-type="knockout" onclick="setType('knockout', this)">Knockout</button>
-          <button data-type="worldcup" onclick="setType('worldcup', this)">World Cup</button>
-          <button data-type="champions" onclick="setType('champions', this)">Champions League</button>
+          <button class="on" data-type="league" onclick="setType('league', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            League
+          </button>
+          <button data-type="knockout" onclick="setType('knockout', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 L9 6 L9 10 L4 10 Z"/><path d="M4 14 L9 14 L9 18 L4 18 Z"/><path d="M9 8 L13 8 L13 16 L9 16"/><path d="M13 12 L20 12"/></svg>
+            Knockout
+          </button>
+          <button data-type="worldcup" onclick="setType('worldcup', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12 L21 12 M12 3 A14 9 0 0 1 12 21 A14 9 0 0 1 12 3"/></svg>
+            World Cup
+          </button>
+          <button data-type="champions" onclick="setType('champions', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L14.4 9.2 L21 9.6 L15.8 13.7 L17.6 20 L12 16.3 L6.4 20 L8.2 13.7 L3 9.6 L9.6 9.2 Z"/></svg>
+            Champions League
+          </button>
         </div>
       </div>
       <div class="opt-group" id="legsGroup">
         <label>Legs</label>
         <div class="seg" id="legsSeg">
-          <button class="on" onclick="setLegs(1, this)">Single</button>
-          <button onclick="setLegs(2, this)">Home &amp; away</button>
+          <button class="on" onclick="setLegs(1, this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/></svg>
+            Single
+          </button>
+          <button onclick="setLegs(2, this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5 L4 12 L9 19"/><path d="M15 5 L20 12 L15 19"/></svg>
+            Home &amp; away
+          </button>
         </div>
       </div>
       <div class="opt-group" id="groupSizeGroup" style="display:none">
         <label id="groupSizeLabel">Group size</label>
-        <select id="groupSize" class="lib-select">
+        <select id="groupSize" class="lib-select" onchange="updateFormatStatus()">
           <option>1</option><option>2</option><option>3</option><option selected>4</option>
           <option>5</option><option>6</option><option>7</option><option>8</option>
           <option>9</option><option>10</option>
+        </select>
+      </div>
+      <div class="opt-group" id="qualPerGroupGroup" style="display:none">
+        <label>Qualifiers per group</label>
+        <select id="qualPerGroup" class="lib-select" onchange="updateFormatStatus()">
+          <option value="1">1 (winner only)</option>
+          <option value="2" selected>2 (winner + runner-up)</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
         </select>
       </div>
       <label class="check">
@@ -1181,10 +1583,17 @@
         Shuffle team order (random draw) — untick to set the matchups yourself
       </label>
     </div>
+    <div class="format-status" id="formatStatus"></div>
     <div class="generate-bar" style="align-items:center">
       <input type="text" id="tourName" placeholder="Tournament name — e.g. Friday Night Cup" maxlength="40" style="flex:1; min-width:220px">
-      <button class="btn-amber" onclick="generate()">Generate fixtures</button>
-      <button class="btn-ghost" onclick="twoStep(this, clearAll)">Clear everything</button>
+      <button class="btn-amber" id="generateBtn" onclick="generate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 A8 8 0 1 1 7 18"/><polyline points="4 18 4 12 10 12"/></svg>
+        Generate fixtures
+      </button>
+      <button class="btn-ghost" onclick="twoStep(this, clearAll)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 L20 7"/><path d="M9 7 L9 4 L15 4 L15 7"/><path d="M6 7 L7 20 L17 20 L18 7"/></svg>
+        Clear everything
+      </button>
     </div>
   </section>
 
@@ -1194,8 +1603,14 @@
     <p class="hint" id="manualHint"></p>
     <div class="manual-slots" id="manualSlots"></div>
     <div class="generate-bar">
-      <button class="btn-amber" onclick="confirmManual()">Confirm draw</button>
-      <button class="btn-ghost" onclick="cancelManual()">Cancel</button>
+      <button class="btn-amber" onclick="confirmManual()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg>
+        Confirm draw
+      </button>
+      <button class="btn-ghost" onclick="cancelManual()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        Cancel
+      </button>
     </div>
   </section>
 
@@ -1210,8 +1625,14 @@
   <section class="panel">
     <h2>Your tournaments</h2>
     <div class="toolbar" style="margin:14px 0 4px">
-      <button class="btn-ghost" onclick="exportBackup()" title="Download all tournaments, teams &amp; settings as one file">⬇ Export backup</button>
-      <button class="btn-ghost" onclick="document.getElementById('importFile').click()" title="Restore from a backup file">⬆ Import backup</button>
+      <button class="btn-ghost" onclick="exportBackup()" title="Download all tournaments, teams &amp; settings as one file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L12 15"/><polyline points="7 10 12 15 17 10"/><path d="M4 19 L20 19"/></svg>
+        Export backup
+      </button>
+      <button class="btn-ghost" onclick="document.getElementById('importFile').click()" title="Restore from a backup file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15 L12 3"/><polyline points="7 8 12 3 17 8"/><path d="M4 19 L20 19"/></svg>
+        Import backup
+      </button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
     </div>
     <p class="hint" style="margin-top:2px">Results save automatically on this device. Export a backup file to keep your data safe or move it to another phone or computer.</p>
@@ -1236,8 +1657,14 @@
       <span class="empty-note">Nothing saved yet.</span>
     </div>
     <div class="generate-bar" style="margin-top:20px">
-      <button class="btn-amber" onclick="addAllSaved(); switchTab('main')">Add all to list</button>
-      <button class="btn-ghost" onclick="twoStep(this, clearSaved)">Delete all saved</button>
+      <button class="btn-amber" onclick="addAllSaved(); switchTab('main')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add all to list
+      </button>
+      <button class="btn-ghost" onclick="twoStep(this, clearSaved)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 L20 7"/><path d="M9 7 L9 4 L15 4 L15 7"/><path d="M6 7 L7 20 L17 20 L18 7"/></svg>
+        Delete all saved
+      </button>
     </div>
   </section>
 
@@ -1353,9 +1780,9 @@
 
 <!-- Firebase (Google sign-in + cloud sync). These load from Google's CDN;
      if they can't load (offline / not configured) the site works fully offline. -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 /* ============================================================
@@ -1397,6 +1824,28 @@ const PRESETS = {
   target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>',
   wing:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16 C7 16 9 14 10 10 C11 13 14 14 22 8 C20 14 15 19 6 19 C4.5 19 3 18 2 16 Z"/></svg>',
   mount:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 20 L9.5 8 L13 14 L15.5 10 L21 20 Z"/></svg>'
+};
+
+/* ================= REUSABLE UI ICONS (outline style, matches PRESETS convention) ================= */
+const ICON = {
+  check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L9 17 L20 6"/></svg>',
+  edit:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 L4.6 16.6 L15.5 5.7 A2 2 0 0 1 18.3 5.7 L18.3 5.7 A2 2 0 0 1 18.3 8.5 L7.4 19.4 Z"/><line x1="14" y1="7.2" x2="16.8" y2="10"/></svg>',
+  trash:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7 L20 7"/><path d="M9 7 L9 4 L15 4 L15 7"/><path d="M6 7 L7 20 L17 20 L18 7"/></svg>',
+  eye:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 C4.5 7 8 4.5 12 4.5 C16 4.5 19.5 7 22 12 C19.5 17 16 19.5 12 19.5 C8 19.5 4.5 17 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3 L21 21"/><path d="M9.9 5.1 A10.6 10.6 0 0 1 12 4.5 C16 4.5 19.5 7 22 12 C21.2 13.6 20.2 15 19.1 16.1 M6.5 6.6 C4.6 8 3.1 9.8 2 12 C4.5 17 8 19.5 12 19.5 C13.4 19.5 14.7 19.2 15.9 18.6"/><path d="M9.9 9.9 A3 3 0 0 0 14.1 14.1"/></svg>',
+  pdf:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3 L15 3 L19 7 L19 21 L7 21 Z"/><path d="M15 3 L15 7 L19 7"/><line x1="9.5" y1="13" x2="9.5" y2="17.5"/><line x1="9.5" y1="13" x2="11" y2="13" stroke-linecap="round"/><path d="M13 17.5 L13 13 L14.2 13 A2.25 2.25 0 0 1 14.2 17.5 L13 17.5"/></svg>',
+  share:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11 A8 8 0 1 0 20 15"/><polyline points="20 5 20 11 14 11"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>',
+  palette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 C7 3 3 6.8 3 11.5 C3 15 5.5 16 7.5 16 C8.6 16 9 15.3 9 14.6 C9 13.9 8.5 13.6 8.5 12.8 C8.5 11.8 9.4 11 10.5 11 L14 11 C17.9 11 21 8.6 21 5.8 C21 4.2 19.5 3 17.5 3 Z"/><circle cx="7.5" cy="8.7" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="6.6" r=".9" fill="currentColor" stroke="none"/><circle cx="16.3" cy="8.2" r=".9" fill="currentColor" stroke="none"/></svg>',
+  droplet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 C12 3 6 10.6 6 15 A6 6 0 0 0 18 15 C18 10.6 12 3 12 3 Z"/></svg>',
+  type:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 L10.4 5 L13.6 5 L18 20"/><line x1="7.7" y1="14.3" x2="16.3" y2="14.3"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L13.8 9 L21 12 L13.8 15 L12 22 L10.2 15 L3 12 L10.2 9 Z"/></svg>',
+  close:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>',
+  users:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20 C3 16 5.5 14 9 14 C12.5 14 15 16 15 20"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3 C18 14.6 20 16.4 20 20"/></svg>',
+  warn:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7.8" x2="12" y2="13"/><circle cx="12" cy="16.3" r=".9" fill="currentColor" stroke="none"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 L17 4 L17 9 A5 5 0 0 1 7 9 Z"/><path d="M7 5 L4 5 A3 3 0 0 0 7 9.5"/><path d="M17 5 L20 5 A3 3 0 0 1 17 9.5"/><line x1="12" y1="14" x2="12" y2="18"/><path d="M8 20 L16 20 L15 18 L9 18 Z"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 L16 12 L9 19"/></svg>'
 };
 
 /* ================= STORAGE ================= */
@@ -1715,13 +2164,14 @@ function renderChips(){
   const box = document.getElementById("teamChips");
   showCountBubble();
   if (teams.length === 0){
-    box.innerHTML = '<span class="empty-note">No teams yet — add at least 2 to get started.</span>';
+    box.innerHTML = `<span class="empty-note">${ICON.users}No teams yet — add at least 2 to get started.</span>`;
   } else {
     box.innerHTML = teams.map((t, i) =>
       `<span class="chip">${logoHtml(t)} ${escapeHtml(t)}
          <button title="Remove ${escapeHtml(t)}" onclick="removeTeam(${i})">✕</button>
        </span>`).join("");
   }
+  updateFormatStatus();
   renderSaved();
   // keep the custom selection picker in sync if it's open
   const picker = document.getElementById("picker");
@@ -1926,11 +2376,48 @@ function saveWithLogo(name, logo){
 
 /* ================= TABS ================= */
 function switchTab(name){
-  const pages = { main:"page-main", fixtures:"page-fixtures", saved:"page-saved" };
+  const pages = { home:"page-home", main:"page-main", fixtures:"page-fixtures", saved:"page-saved" };
   for (const key in pages){
     document.getElementById(pages[key]).style.display = (name === key) ? "block" : "none";
-    document.getElementById("tab-" + key).classList.toggle("on", name === key);
+    const tabBtn = document.getElementById("tab-" + key);   // Home has no tab button — it isn't a persistent tab
+    if (tabBtn) tabBtn.classList.toggle("on", name === key);
   }
+  document.querySelector(".tabs").style.display = (name === "home") ? "none" : "flex";
+  if (name === "home") renderHome();
+}
+
+/* ================= HOME DASHBOARD ================= */
+function renderHome(){
+  const statTeams = document.getElementById("homeStatTeams");
+  const statTours = document.getElementById("homeStatTours");
+  if (statTeams) statTeams.textContent = savedTeams.length;
+  if (statTours) statTours.textContent = tournaments.length;
+
+  const box = document.getElementById("homeRecent");
+  if (!box) return;
+  if (tournaments.length === 0){
+    box.innerHTML = `
+      <div class="home-recent-card empty">
+        <span class="action-icon">${ICON.trophy}</span>
+        <span class="home-recent-text">
+          <strong>No tournaments yet</strong>
+          <span>Create your first one to see it here.</span>
+        </span>
+        <button class="btn-amber" onclick="switchTab('main')">${ICON.check}New Tournament</button>
+      </div>`;
+    return;
+  }
+  const i = tournaments.length - 1;
+  const t = tournaments[i];
+  box.innerHTML = `
+    <p class="home-section-label">Recent tournament</p>
+    <div class="home-recent-card">
+      <span class="home-recent-text">
+        <strong>${escapeHtml(t.name)}</strong>
+        <span>${TYPE_LABELS[t.type]} · ${t.order.length} teams · ${escapeHtml(t.date)}</span>
+      </span>
+      <button class="btn-ghost" onclick="viewTournament(${i}); switchTab('fixtures')">${ICON.eye}View</button>
+    </div>`;
 }
 
 /* ================= SAVED TEAMS ================= */
@@ -1947,10 +2434,10 @@ function renderSaved(){
         ${logoHtml(t.logo && (t.logo.startsWith("preset:") || t.logo.startsWith("data:")) ? t.logo : t.name, "lg")}
         <span class="name">${escapeHtml(t.name)}</span>
         ${inList ? '<span class="in-list-tag">in your list</span>' : ""}
-        <button class="icon-btn" ${inList ? "disabled" : ""} onclick="useSaved(${i})">Use</button>
-        <button class="icon-btn" onclick="startEdit(${i})">✎ Edit</button>
+        <button class="icon-btn" ${inList ? "disabled" : ""} onclick="useSaved(${i})">${ICON.check}Use</button>
+        <button class="icon-btn" onclick="startEdit(${i})">${ICON.edit}Edit</button>
         <button class="icon-btn danger ${i === pendingDeleteSaved ? "confirming" : ""}"
-                onclick="deleteSaved(${i})">${i === pendingDeleteSaved ? "Delete?" : "✕"}</button>
+                onclick="deleteSaved(${i})">${i === pendingDeleteSaved ? "Delete?" : ICON.trash}</button>
       </div>`;
     const editor = (editingIndex === i) ? editorHtml(t) : "";
     return `<div class="saved-card">${head}${editor}</div>`;
@@ -1983,12 +2470,12 @@ function editorHtml(t){
       <div>
         <label>…or upload your own (replaces any preset)</label>
         <div class="upload-row">
-          <button class="btn-ghost" onclick="document.getElementById('logoFile').click()">Upload image…</button>
+          <button class="btn-ghost" onclick="document.getElementById('logoFile').click()">${ICON.edit}Upload image…</button>
           ${uploadedSel}
         </div>
       </div>
       <div class="editor-actions">
-        <button class="btn-amber" onclick="saveEdit()">Save changes</button>
+        <button class="btn-amber" onclick="saveEdit()">${ICON.check}Save changes</button>
         <button class="btn-ghost" onclick="cancelEdit()">Cancel</button>
       </div>
     </div>`;
@@ -2136,15 +2623,18 @@ function setType(type, btn){
   } else {
     gs.style.display = "none";
   }
+  document.getElementById("qualPerGroupGroup").style.display = (type === "worldcup") ? "flex" : "none";
+  updateFormatStatus();
 }
 function setLegs(n, btn){
   legs = n;
   document.querySelectorAll("#legsSeg button").forEach(b => b.classList.remove("on"));
   btn.classList.add("on");
+  updateFormatStatus();
 }
 
 /* ================= TOURNAMENTS ================= */
-let tournaments = [];   // [{ name, type, legs, order, scores, date }]
+let tournaments = [];   // [{ name, type, legs, gsize, qualPerGroup, order, scores, date }]
 let viewingIndex = -1;
 let viewSection = "fixtures";   // "fixtures" | "table" — which part of an open tournament is shown
 
@@ -2221,8 +2711,8 @@ function renderTourList(){
             ${t.type !== "league" ? `<button class="${viewSection === "bracket" ? "on" : ""}" onclick="setViewSection('bracket')">Bracket</button>` : ""}
           </div>
           ${mdOptions}
-          <button class="btn-ghost" onclick="window.print()">Print / Save PDF</button>
-          <button class="btn-ghost" onclick="openShare()">Share image</button>
+          <button class="btn-ghost" onclick="window.print()">${ICON.pdf}Export PDF</button>
+          <button class="btn-ghost" onclick="openShare()">${ICON.share}Share image</button>
         </div>
         <div id="standings" style="display:${viewSection === "table" ? "block" : "none"}"></div>
         <div id="rounds" style="display:${viewSection === "fixtures" ? "block" : "none"}"></div>
@@ -2233,10 +2723,10 @@ function renderTourList(){
       <div class="tour-head">
         <span class="tour-name">${escapeHtml(t.name)}</span>
         <span class="tour-meta">${TYPE_LABELS[t.type]} · ${t.order.length} teams · ${escapeHtml(t.date)}</span>
-        <button class="icon-btn" onclick="viewTournament(${i})">${open ? "Hide" : "View"}</button>
-        <button class="icon-btn" ${hasResults(t) ? 'disabled title="Locked — results have already been entered"' : `onclick="startTourEdit(${i})" title="Add or remove teams"`}>✎ Edit</button>
+        <button class="icon-btn" onclick="viewTournament(${i})">${open ? ICON.eyeOff + "Hide" : ICON.eye + "View"}</button>
+        <button class="icon-btn" ${hasResults(t) ? 'disabled title="Locked — results have already been entered"' : `onclick="startTourEdit(${i})" title="Add or remove teams"`}>${ICON.edit}Edit</button>
         <button class="icon-btn danger ${i === pendingDeleteTour ? "confirming" : ""}"
-                onclick="deleteTournament(${i})">${i === pendingDeleteTour ? "Delete?" : "✕"}</button>
+                onclick="deleteTournament(${i})">${i === pendingDeleteTour ? "Delete?" : ICON.trash}</button>
       </div>
       ${body}
     </div>`;
@@ -2439,12 +2929,14 @@ function buildFixturesHtml(t){
   compType = t.type; legs = t.legs;
   t.scores = t.scores || {};
   viewScores = t.scores;
+  t.fixtureMeta = t.fixtureMeta || {};
+  viewMeta = t.fixtureMeta;
   viewRealTeams = new Set(t.order.map(n => n.toLowerCase()));
   let html;
   if (t.type === "league")        html = buildRoundRobin([...t.order]);
   else if (t.type === "knockout") html = buildKnockout([...t.order]);
   else if (t.type === "champions") html = buildChampions([...t.order], t.gsize);
-  else                            html = buildWorldCup([...t.order], t.gsize);
+  else                            html = buildWorldCup([...t.order], t.gsize, t.qualPerGroup);
   compType = prevType; legs = prevLegs;
   return html;
 }
@@ -2567,24 +3059,48 @@ function deleteTournament(i){
 }
 
 /* ================= GENERATION ================= */
-function generate(){
-  if (teams.length < 2){
-    alert("Add at least 2 teams first!");
-    return;
-  }
+/* single source of truth for "can we generate fixtures right now, and why/why not" —
+   drives both the live status line under the Format panel and the generate() guard below */
+function computeReadiness(){
+  const n = teams.length;
+  if (n < 2) return { ok:false, msg:"Add at least 2 teams to get started." };
+
   if (compType === "worldcup"){
     const gsize = parseInt(document.getElementById("groupSize").value, 10);
-    if (gsize < 2){
-      alert("Groups need at least 2 teams each — pick a group size of 2 or more.");
-      return;
-    }
-    if (Math.ceil(teams.length / gsize) < 2){
-      alert("That group size gives only 1 group. Add more teams or pick a smaller group size (a plain League does the same as one big group).");
-      return;
-    }
+    const qualCount = parseInt(document.getElementById("qualPerGroup").value, 10);
+    if (gsize < 2) return { ok:false, msg:"Groups need at least 2 teams each — pick a group size of 2 or more." };
+    const numGroups = Math.ceil(n / gsize);
+    if (numGroups < 2) return { ok:false, msg:"That group size gives only 1 group — add more teams or pick a smaller group size." };
+    if (qualCount >= gsize) return { ok:false, msg:"Qualifiers per group must be fewer than the group size." };
+    return { ok:true, msg:`Ready — ${numGroups} groups of ${gsize}, top ${qualCount} advance to a ${numGroups * qualCount}-team knockout stage.` };
   }
-  if (compType === "champions" && teams.length < 12){
-    alert("Champions League format needs at least 12 teams (the real one uses 36). Add more teams, or pick another format.");
+  if (compType === "champions"){
+    if (n < 12) return { ok:false, msg:`Champions League needs at least 12 teams — add ${12 - n} more.` };
+    return { ok:true, msg:`Ready — ${n} teams in the league phase.` };
+  }
+  if (compType === "knockout"){
+    return { ok:true, msg:`Ready — single-elimination bracket with ${n} team${n === 1 ? "" : "s"}.` };
+  }
+  // league
+  const matches = legs === 2 ? n * (n - 1) : Math.floor(n * (n - 1) / 2);
+  return { ok:true, msg:`Ready — ${matches} match${matches === 1 ? "" : "es"} across the season.` };
+}
+
+function updateFormatStatus(){
+  const el = document.getElementById("formatStatus");
+  const btn = document.getElementById("generateBtn");
+  if (!el || !btn) return;
+  const r = computeReadiness();
+  el.innerHTML = (r.ok ? ICON.check : ICON.warn) + `<span>${escapeHtml(r.msg)}</span>`;
+  el.classList.toggle("ready", r.ok);
+  el.classList.toggle("not-ready", !r.ok);
+  btn.classList.toggle("not-ready", !r.ok);
+}
+
+function generate(){
+  const r = computeReadiness();
+  if (!r.ok){
+    alert(r.msg);
     return;
   }
   if (!document.getElementById("tourName").value.trim()){
@@ -2613,6 +3129,8 @@ function runGeneration(list){
     legs,
     gsize: (compType === "worldcup" || compType === "champions")
              ? parseInt(document.getElementById("groupSize").value, 10) : null,
+    qualPerGroup: (compType === "worldcup")
+             ? parseInt(document.getElementById("qualPerGroup").value, 10) : null,
     order: list,
     scores: {},
     date: new Date().toLocaleDateString() + " " +
@@ -2797,8 +3315,28 @@ function buildRoundRobin(list){
 }
 
 /* ---- World Cup: group stage (groups of 4) + knockout stage ---- */
-function worldcupData(list, gsize){
+/* placeholder label for a not-yet-decided group qualifier, e.g. "Winner Group A",
+   "Runner-up Group A", "3rd Group A" for lower qualifier counts */
+function qualLabel(rank, L){
+  if (rank === 0) return `Winner Group ${L}`;
+  if (rank === 1) return `Runner-up Group ${L}`;
+  return `${ordinal(rank + 1)} Group ${L}`;
+}
+
+/* seeds two groups' worth of qualifiers into one bracket segment: each
+   group's top seed is paired against the OTHER group's bottom seed (and so
+   on inward), so group winners land in different halves of that segment
+   instead of meeting immediately — same idea as a real World Cup R16 draw */
+function seedGroupPair(Xranked, Yranked){
+  const Yrev = [...Yranked].reverse();
+  const out = [];
+  for (let r = 0; r < Xranked.length; r++) out.push(Xranked[r], Yrev[r]);
+  return out;
+}
+
+function worldcupData(list, gsize, qualCount){
   gsize = Math.max(2, gsize || 4);
+  qualCount = Math.min(Math.max(1, qualCount || 2), gsize - 1, 4);
   const numGroups = Math.ceil(list.length / gsize);
   const groups = Array.from({ length: numGroups }, () => []);
   list.forEach((team, i) => groups[i % numGroups].push(team));
@@ -2812,22 +3350,23 @@ function worldcupData(list, gsize){
     groupMatches.push({ L, g, matches });
     const keyDefs = matches.map(([h, a]) => ({ t:`Group ${L}`, h, a }));
     const { ranked, complete } = rankTeams(g, keyDefs);
-    if (complete) qual[L] = { winner: ranked[0], runnerUp: ranked[1] };
+    if (complete) qual[L] = ranked.slice(0, qualCount);
   });
 
-  const W = L => qual[L] ? qual[L].winner   : `Winner Group ${L}`;
-  const R = L => qual[L] ? qual[L].runnerUp : `Runner-up Group ${L}`;
+  const Q = (L, rank) => (qual[L] && qual[L][rank]) ? qual[L][rank] : qualLabel(rank, L);
+  const groupQualifiers = L => Array.from({ length: qualCount }, (_, r) => Q(L, r));
+
   const qualifiers = [];
   for (let i = 0; i < numGroups; i += 2){
     const A = letters[i], B = letters[i + 1];
-    if (i + 1 < numGroups) qualifiers.push(W(A), R(B), W(B), R(A));
-    else qualifiers.push(W(A), R(A));
+    if (i + 1 < numGroups) qualifiers.push(...seedGroupPair(groupQualifiers(A), groupQualifiers(B)));
+    else qualifiers.push(...groupQualifiers(A));
   }
   return { groupMatches, qualifiers };
 }
 
-function buildWorldCup(list, gsize){
-  const { groupMatches, qualifiers } = worldcupData(list, gsize);
+function buildWorldCup(list, gsize, qualCount){
+  const { groupMatches, qualifiers } = worldcupData(list, gsize, qualCount);
   let html = "";
   groupMatches.forEach(gm => { html += roundBlock(`Group ${gm.L}`, gm.matches); });
   html += `<div class="round"><div class="round-title"><h3>Knockout Stage</h3></div></div>`;
@@ -2983,7 +3522,7 @@ function bracketData(t){
     entrants = [...t.order, ...Array(size - t.order.length).fill("__BYE__")];
     spreadByes(entrants);
   } else if (t.type === "worldcup"){
-    const q = worldcupData([...t.order], t.gsize).qualifiers;
+    const q = worldcupData([...t.order], t.gsize, t.qualPerGroup).qualifiers;
     const size = 2 ** Math.ceil(Math.log2(q.length));
     entrants = [...q, ...Array(size - q.length).fill("__BYE__")];
     spreadByes(entrants);
@@ -3238,8 +3777,8 @@ function twoLegRound(title, pairs){
     capturedRounds.push({
       title,
       matches: pairs.flatMap(([s, u]) => [
-        { h:u, a:s, key:t1, leg:"Leg 1" },
-        { h:s, a:u, key:t2, leg:"Leg 2" }
+        { h:u, a:s, key:t1, leg:"Leg 1", meta: viewMeta[`${t1}|${u}|${s}`] || null },
+        { h:s, a:u, key:t2, leg:"Leg 2", meta: viewMeta[`${t2}|${s}|${u}`] || null }
       ])
     });
   }
@@ -3266,7 +3805,7 @@ function roundBlockRows(title, matches){
               <div class="home">${teamCell(h)}</div>
               ${matchCenter(title, h, a, opts)}
               <div class="away">${teamCell(a)}</div>
-            </div>`;
+            </div>${matchMetaBlock(title, h, a)}`;
   }).join("");
 }
 
@@ -3353,6 +3892,7 @@ function stageName(n){
 
 /* ---- shared renderer (with logos and score boxes) ---- */
 let viewScores = {};              // the scores object of the tournament being viewed
+let viewMeta = {};                // that tournament's optional per-match date/time/venue
 let viewRealTeams = new Set();    // lowercase names of real teams in that tournament
 
 function teamCell(name){
@@ -3391,7 +3931,58 @@ function matchCenter(title, h, a, opts){
                ${box("ph", s.ph, "pen")}<span>–</span>${box("pa", s.pa, "pen")}
              </div>`;
   }
+  const hasMeta = !!(viewMeta[key] && (viewMeta[key].date || viewMeta[key].time || viewMeta[key].venue));
+  html += `<button type="button" class="meta-toggle ${hasMeta ? "set" : ""}" onclick="toggleMatchMeta(this)"
+             title="${hasMeta ? "Edit date, time &amp; venue" : "Add date, time &amp; venue"}">${ICON.calendar}</button>`;
   return `<div class="score-mid">${html}</div>`;
+}
+
+/* optional date/time/venue for one match — a read-only summary line when
+   collapsed, or three small inputs when the calendar icon is clicked open */
+function matchMetaBlock(title, h, a){
+  const real = viewRealTeams.has(String(h).toLowerCase()) && viewRealTeams.has(String(a).toLowerCase());
+  if (!real) return "";
+  const key = `${title}|${h}|${a}`;
+  const m = viewMeta[key] || {};
+  const summaryText = [m.date, m.time, m.venue].filter(Boolean).join(" · ");
+  return `<div class="match-meta" data-key="${escapeHtml(key)}">
+    <div class="match-meta-summary" style="display:${summaryText ? "flex" : "none"}" onclick="this.closest('.match-meta').previousElementSibling.querySelector('.meta-toggle').click()">
+      ${ICON.calendar}<span>${escapeHtml(summaryText)}</span>
+    </div>
+    <div class="match-meta-edit" style="display:none">
+      <input type="date" class="meta-input" data-key="${escapeHtml(key)}" data-field="date" value="${escapeHtml(m.date || "")}">
+      <input type="time" class="meta-input" data-key="${escapeHtml(key)}" data-field="time" value="${escapeHtml(m.time || "")}">
+      <input type="text" class="meta-input" data-key="${escapeHtml(key)}" data-field="venue" placeholder="Venue" maxlength="40" value="${escapeHtml(m.venue || "")}">
+    </div>
+  </div>`;
+}
+
+function toggleMatchMeta(btn){
+  const row = btn.closest(".match").nextElementSibling;
+  if (!row || !row.classList.contains("match-meta")) return;
+  const edit = row.querySelector(".match-meta-edit");
+  const summary = row.querySelector(".match-meta-summary");
+  const opening = edit.style.display === "none";
+  edit.style.display = opening ? "flex" : "none";
+  summary.style.display = opening ? "none" : (summary.querySelector("span").textContent ? "flex" : "none");
+}
+
+function handleMetaInput(inp){
+  if (viewingIndex < 0) return;
+  const t = tournaments[viewingIndex];
+  t.fixtureMeta = t.fixtureMeta || {};
+  const key = inp.dataset.key;
+  const m = t.fixtureMeta[key] || (t.fixtureMeta[key] = {});
+  m[inp.dataset.field] = inp.value || "";
+  if (!m.date && !m.time && !m.venue) delete t.fixtureMeta[key];
+  persistTournaments();
+  const row = inp.closest(".match-meta");
+  if (row){
+    const summary = row.querySelector(".match-meta-summary");
+    summary.querySelector("span").textContent = [m.date, m.time, m.venue].filter(Boolean).join(" · ");
+    const toggle = row.previousElementSibling && row.previousElementSibling.querySelector(".meta-toggle");
+    if (toggle) toggle.classList.toggle("set", !!(m.date || m.time || m.venue));
+  }
 }
 
 let capturedRounds = null;   // when set, builders record structured match data
@@ -3399,7 +3990,8 @@ let capturedRounds = null;   // when set, builders record structured match data
 function roundBlock(title, matches){
   if (capturedRounds) capturedRounds.push({
     title,
-    matches: matches.filter(m => m[0] !== "__DIV__").map(([h, a, opts]) => ({ h, a, key:title, leg:(opts&&opts.leg)||null }))
+    matches: matches.filter(m => m[0] !== "__DIV__").map(([h, a, opts]) =>
+      ({ h, a, key:title, leg:(opts&&opts.leg)||null, meta: viewMeta[`${title}|${h}|${a}`] || null }))
   });
   const rows = matches.map(([h, a, opts]) => {
     if (h === "__DIV__") return `<div class="slot-divider">•</div>`;
@@ -3415,7 +4007,7 @@ function roundBlock(title, matches){
               <div class="home">${teamCell(h)}</div>
               ${matchCenter(title, h, a, opts)}
               <div class="away">${teamCell(a)}</div>
-            </div>`;
+            </div>${matchMetaBlock(title, h, a)}`;
   }).join("");
   return `<div class="round" data-title="${escapeHtml(title)}">
             <div class="round-title"><h3>${title}</h3></div>
@@ -3730,9 +4322,7 @@ let shareOpts = { content:"fixtures", bg:"theme", customBg:"#7a1538",
                   title:"", sub:"", credit:true, cols:1, scores:true, design:"classic" };
 
 function currentThemeVars(){
-  return themeState.mode === "custom" && themeState.custom
-    ? deriveTheme(themeState.custom.bg, themeState.custom.text, themeState.custom.accent)
-    : PRESET_THEMES[themeState.preset] || PRESET_THEMES.classic;
+  return resolveThemeVars();
 }
 
 function posterPalette(){
@@ -3999,7 +4589,8 @@ function posterSvg(t){
     const rounds = posterRounds(t);
     const colN = shareOpts.cols;
     const colW = (W - PAD * 2 - (colN - 1) * 40) / colN;
-    const lines = r => 2 + r.matches.length;
+    const hasMeta = m => m.meta && (m.meta.date || m.meta.time || m.meta.venue);
+    const lines = r => 2 + r.matches.length + r.matches.filter(hasMeta).length;
     const total = rounds.reduce((s, r) => s + lines(r), 0);
     const perCol = Math.ceil(total / colN);
     let colRounds = [[]], acc = 0;
@@ -4033,6 +4624,11 @@ function posterSvg(t){
                    <text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="${fs - 2}" font-weight="${sc ? 900 : 600}" fill="${sc ? pal.accent : pal.dim}">${esc(mid)}</text>
                    <text x="${cx + 52}" y="${cy}" text-anchor="start" font-family="${FONT}" font-size="${fs}" font-weight="700" fill="${aDim}">${esc(pTrim(m.a, colN === 2 ? 15 : 20))}</text>`;
           if (m.leg) body += `<text x="${x0 + colW}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="11" font-weight="800" fill="${pal.dim}" letter-spacing="1">${m.leg.toUpperCase()}</text>`;
+          if (hasMeta(m)){
+            cy += 16;
+            const metaTxt = [m.meta.date, m.meta.time, m.meta.venue].filter(Boolean).join(" · ");
+            body += `<text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="${pal.dim}">${esc(pTrim(metaTxt, colN === 2 ? 34 : 46))}</text>`;
+          }
         });
         cy += 30;
       });
@@ -4177,9 +4773,16 @@ const PRESET_THEMES = {
             "--pitch-rgb":"13,27,76","--accent-rgb":"255,212,0" },
   rose:   { "--pitch":"#7a1538","--pitch-2":"#8d1f44","--chalk":"#ffffff","--chalk-dim":"#e3b3c2",
             "--floodlight":"#ffffff","--floodlight-2":"#f0d5dd","--line":"rgba(255,255,255,.22)","--accent-text":"#7a1538",
-            "--pitch-rgb":"122,21,56","--accent-rgb":"255,255,255" }
+            "--pitch-rgb":"122,21,56","--accent-rgb":"255,255,255" },
+  slate:  { "--pitch":"#1b1e24","--pitch-2":"#242830","--chalk":"#e9ecf1","--chalk-dim":"#8d95a3",
+            "--floodlight":"#c7d1de","--floodlight-2":"#aab6c6","--line":"rgba(233,236,241,.16)","--accent-text":"#12151a",
+            "--pitch-rgb":"27,30,36","--accent-rgb":"199,209,222" },
+  paper:  { "--pitch":"#faf6ee","--pitch-2":"#f2ecdf","--chalk":"#2b241b","--chalk-dim":"#8a7f6c",
+            "--floodlight":"#33291b","--floodlight-2":"#55462c","--line":"rgba(43,36,27,.14)","--accent-text":"#faf6ee",
+            "--pitch-rgb":"250,246,238","--accent-rgb":"51,41,27" }
 };
 let themeState = { mode:"preset", preset:"classic", custom:null, zoom:1, blur:true, blurAmt:26, font:"system" };
+// "mode" can also be "auto" — follows the OS light/dark setting via prefers-color-scheme
 
 const FONTS = {
   system:  '"Segoe UI"',
@@ -4216,10 +4819,20 @@ function applyThemeVars(vars){
   for (const k in vars) document.documentElement.style.setProperty(k, vars[k]);
 }
 
+function systemPrefersDark(){
+  return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+function resolveThemeVars(){
+  if (themeState.mode === "custom" && themeState.custom)
+    return deriveTheme(themeState.custom.bg, themeState.custom.text, themeState.custom.accent);
+  if (themeState.mode === "auto")
+    return systemPrefersDark() ? PRESET_THEMES.dark : PRESET_THEMES.classic;
+  return PRESET_THEMES[themeState.preset] || PRESET_THEMES.classic;
+}
+
 function applyThemeState(){
-  const vars = themeState.mode === "custom" && themeState.custom
-    ? deriveTheme(themeState.custom.bg, themeState.custom.text, themeState.custom.accent)
-    : PRESET_THEMES[themeState.preset] || PRESET_THEMES.classic;
+  const vars = resolveThemeVars();
   applyThemeVars(vars);
   // iOS-style glass: fairly opaque, with the heavy blur doing the work
   applyThemeVars({ "--glass-a":".72", "--glass-panel-a":".8",
@@ -4231,6 +4844,25 @@ function applyThemeState(){
   if (meta) meta.setAttribute("content", vars["--pitch"]);   // status bar matches theme
   document.body.style.zoom = themeState.zoom;
   try{ localStorage.setItem("fixtureMaker.theme", JSON.stringify(themeState)); }catch(e){}
+  syncPresetSel();
+  const hint = document.getElementById("autoHint");
+  if (hint) hint.style.display = themeState.mode === "auto" ? "block" : "none";
+}
+
+function syncPresetSel(){
+  document.querySelectorAll(".preset-tile[data-preset]").forEach(b => {
+    const p = b.dataset.preset;
+    b.classList.toggle("sel", themeState.mode === "auto" ? p === "auto" : (themeState.mode === "preset" && p === themeState.preset));
+  });
+}
+
+function setAutoTheme(){
+  themeState.mode = "auto";
+  applyThemeState();
+  const vars = resolveThemeVars();
+  document.getElementById("thBg").value = vars["--pitch"];
+  document.getElementById("thText").value = vars["--chalk"];
+  document.getElementById("thAccent").value = vars["--floodlight"];
 }
 
 function setBlur(on){
@@ -4303,17 +4935,27 @@ function loadTheme(){
     document.getElementById("thBg").value = themeState.custom.bg;
     document.getElementById("thText").value = themeState.custom.text;
     document.getElementById("thAccent").value = themeState.custom.accent;
+  }else{
+    const vars = resolveThemeVars();
+    document.getElementById("thBg").value = vars["--pitch"];
+    document.getElementById("thText").value = vars["--chalk"];
+    document.getElementById("thAccent").value = vars["--floodlight"];
   }
   setZoomValue(themeState.zoom || 1);
   document.getElementById("thBlur").checked = themeState.blur !== false;
   document.getElementById("thBlurAmt").value = themeState.blurAmt || 26;
   document.getElementById("blurVal").textContent = (themeState.blurAmt || 26) + " px";
   document.getElementById("thFont").value = themeState.font || "system";
+  if (window.matchMedia){
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (themeState.mode === "auto") applyThemeState();
+    });
+  }
 }
 
 
 /* ================= BACK BUTTON ================= */
-let currentTab = "main";
+let currentTab = "home";
 
 const isShown = id => {
   const el = document.getElementById(id);
@@ -4333,7 +4975,7 @@ function canGoBack(){
       || editingIndex >= 0 || editTourIndex >= 0
       || pickerOpen() || libraryOpen()
       || viewingIndex >= 0
-      || currentTab !== "main";
+      || currentTab !== "home";
 }
 
 /* closes ONE layer per press, top-most first — like a phone's back gesture */
@@ -4348,17 +4990,17 @@ function goBack(){
   else if (pickerOpen())          { togglePicker(); }
   else if (libraryOpen())         { toggleLibrary(); }
   else if (viewingIndex >= 0)     { viewTournament(viewingIndex); }
-  else if (currentTab !== "main") { switchTab("main"); }
+  else if (currentTab !== "home") { switchTab("home"); }
   updateBackBtn();
 }
 
 function updateBackBtn(){
   const b = document.getElementById("backBtn");
   if (b) b.classList.toggle("show", canGoBack());
-  // the menu lives on the main page only
+  // the menu lives on the home page only
   const m = document.getElementById("menuIcon");
-  if (m) m.style.display = currentTab === "main" ? "" : "none";
-  if (b) b.classList.toggle("solo", currentTab !== "main");
+  if (m) m.style.display = currentTab === "home" ? "" : "none";
+  if (b) b.classList.toggle("solo", currentTab !== "home");
   showCountBubble();   // the team-count bubble also only lives on the main page
 }
 
@@ -4413,7 +5055,7 @@ function ptrReset(){
 }
 
 document.addEventListener("touchstart", e => {
-  if (currentTab !== "main" || window.scrollY > 0 || ptrOverlayOpen()) return;
+  if (currentTab !== "home" || window.scrollY > 0 || ptrOverlayOpen()) return;
   ptrStartY = e.touches[0].clientY;
   ptrTracking = true;
   ptrPull = 0;
@@ -4475,27 +5117,51 @@ const FOOTBALL_QUOTES = [
   ["Some people think football is a matter of life and death. I assure you, it's much more serious than that.", "Bill Shankly"]
 ];
 
+let currentQuoteIdx = -1;
+
 function renderQuote(){
   const bar = document.getElementById("quoteBar");
   if (!bar) return;
-  const [q, by] = FOOTBALL_QUOTES[Math.floor(Math.random() * FOOTBALL_QUOTES.length)];
+  currentQuoteIdx = Math.floor(Math.random() * FOOTBALL_QUOTES.length);
+  const [q, by] = FOOTBALL_QUOTES[currentQuoteIdx];
   bar.innerHTML = "\u201c" + escapeHtml(q) + "\u201d <span class=\"q-by\">\u2014 " + escapeHtml(by) + "</span>";
+}
+
+function refreshQuote(){
+  const bar = document.getElementById("quoteBar");
+  if (!bar) return;
+  let idx = Math.floor(Math.random() * FOOTBALL_QUOTES.length);
+  if (idx === currentQuoteIdx && FOOTBALL_QUOTES.length > 1){
+    idx = (idx + 1) % FOOTBALL_QUOTES.length;
+  }
+  currentQuoteIdx = idx;
+  const [q, by] = FOOTBALL_QUOTES[idx];
+  bar.style.animation = "none";
+  void bar.offsetWidth;   // restart the pop animation on every click
+  bar.innerHTML = "\u201c" + escapeHtml(q) + "\u201d <span class=\"q-by\">\u2014 " + escapeHtml(by) + "</span>";
+  bar.style.animation = "fadeIn .3s ease";
 }
 
 /* ================= START UP ================= */
 loadTheme();
 loadAccount();
-cloudInit();
+// Firebase's SDK <script> tags load with `defer` so a slow/unreachable CDN
+// never blocks the app itself from rendering; cloudInit() just needs to run
+// after they've had their chance, which DOMContentLoaded guarantees.
+document.addEventListener("DOMContentLoaded", cloudInit);
 renderQuote();
 updateBackBtn();
 loadSaved();
 loadTournaments();
 renderSaved();
 renderTourList();
+updateFormatStatus();
+switchTab("home");   // establishes correct initial visibility (tabs bar hidden, home shown) and renders the dashboard
 
 /* one listener handles every score box, even ones added later */
 document.getElementById("tourList").addEventListener("input", e => {
   if (e.target.classList.contains("score")) handleScoreInput(e.target);
+  if (e.target.classList.contains("meta-input")) handleMetaInput(e.target);
 });
 
 /* when a score entry is finished (box loses focus), rebuild the fixtures so
