@@ -2048,6 +2048,26 @@
                oninput="shareOpts.title=this.value; renderSharePreview()">
         <input type="text" id="shSub" placeholder="Subtitle (optional)" maxlength="60" style="width:100%"
                oninput="shareOpts.sub=this.value; renderSharePreview()">
+        <label class="theme-label">Font</label>
+        <select id="shFont" class="lib-select" style="width:100%" onchange="setShare('font', this.value)">
+          <option value="classic">Classic — Arial</option>
+          <option value="modern">Modern — Trebuchet</option>
+          <option value="condensed">Condensed — Narrow</option>
+          <option value="impact">Impact — poster bold</option>
+          <option value="elegant">Elegant — Georgia</option>
+          <option value="editorial">Editorial — Palatino</option>
+          <option value="mono">Mono — Courier</option>
+          <option value="rounded">Rounded — Segoe</option>
+        </select>
+
+        <label class="theme-label">Text size</label>
+        <div class="blur-row">
+          <span class="hint" style="margin:0">A</span>
+          <input type="range" id="shFontScale" min="70" max="150" step="5" value="100"
+                 oninput="setShare('fontScale', this.value / 100)">
+          <span class="hint" id="shFontScaleVal" style="margin:0; min-width:42px; text-align:right">100%</span>
+        </div>
+
         <label class="theme-label">Sponsor logo</label>
         <div class="toolbar">
           <button class="btn-ghost" onclick="document.getElementById('shSponsor').click()">Upload logo…</button>
@@ -5143,7 +5163,7 @@ const POSTER_BGS = {
 };
 
 let shareOpts = { content:"fixtures", bg:"theme", customBg:"#7a1538",
-                  title:"", sub:"", credit:true, cols:1, scores:true, design:"classic", format:"auto" };
+                  title:"", sub:"", credit:true, cols:1, scores:true, design:"classic", format:"auto", font:"classic", fontScale:1 };
 
 function currentThemeVars(){
   return resolveThemeVars();
@@ -5343,19 +5363,20 @@ function posterDeco(design, pal, W, H){
 function posterSvg(t){
   const pal = posterPalette();
   const W = 1080, PAD = 64;
-  const FONT = 'Arial, Helvetica, sans-serif';
+  const FONT = (POSTER_FONTS[shareOpts.font] || POSTER_FONTS.classic).stack;
+  const FS = (n) => Math.round(n * (shareOpts.fontScale || 1));   // one dial for every text size
   const esc = escapeHtml;
   let body = "", y = 0;
 
   // ---- header ----
   y = 118;
   const title = shareOpts.title.trim() || t.name;
-  body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="52" font-weight="900" fill="${pal.ink}" letter-spacing="1">${esc(pTrim(title, 34))}</text>`;
+  body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(52)}" font-weight="900" fill="${pal.ink}" letter-spacing="1">${esc(pTrim(title, 34))}</text>`;
   y += 22;
   body += `<rect x="${W/2 - 44}" y="${y}" width="88" height="5" rx="2.5" fill="${pal.accent}"/>`;
   y += 40;
   if (shareOpts.sub.trim()){
-    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="22" font-weight="600" fill="${pal.dim}" letter-spacing="3">${esc(pTrim(shareOpts.sub, 60).toUpperCase())}</text>`;
+    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(22)}" font-weight="600" fill="${pal.dim}" letter-spacing="3">${esc(pTrim(shareOpts.sub, 60).toUpperCase())}</text>`;
     y += 34;
   }
   y += 18;
@@ -5392,19 +5413,19 @@ function posterSvg(t){
   } else if (shareOpts.content === "table"){
     posterTables(t).forEach(tb => {
       body += `<rect x="${PAD}" y="${y - 16}" width="6" height="24" rx="3" fill="${pal.accent}"/>
-               <text x="${PAD + 18}" y="${y + 3}" font-family="${FONT}" font-size="24" font-weight="900" fill="${pal.ink}">${esc(tb.title)}</text>`;
+               <text x="${PAD + 18}" y="${y + 3}" font-family="${FONT}" font-size="${FS(24)}" font-weight="900" fill="${pal.ink}">${esc(tb.title)}</text>`;
       y += 34;
       const cols = [W - PAD - 330, W - PAD - 270, W - PAD - 210, W - PAD - 150, W - PAD - 90, W - PAD - 12];
       const heads = ["P","W","D","L","GD","PTS"];
-      heads.forEach((hd, i) => body += `<text x="${cols[i]}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="15" font-weight="800" fill="${pal.dim}">${hd}</text>`);
+      heads.forEach((hd, i) => body += `<text x="${cols[i]}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="${FS(15)}" font-weight="800" fill="${pal.dim}">${hd}</text>`);
       y += 12;
       tb.rows.forEach((r, i) => {
         y += 34;
         if (i % 2 === 0 && pal.bg2) body += `<rect x="${PAD - 8}" y="${y - 23}" width="${W - PAD * 2 + 16}" height="32" rx="6" fill="${pal.bg2}"/>`;
-        body += `<text x="${PAD + 4}" y="${y}" font-family="${FONT}" font-size="17" font-weight="800" fill="${pal.dim}">${i + 1}</text>
-                 <text x="${PAD + 40}" y="${y}" font-family="${FONT}" font-size="18" font-weight="${i < 2 ? 900 : 600}" fill="${pal.ink}">${esc(pTrim(r.name, 24))}</text>`;
+        body += `<text x="${PAD + 4}" y="${y}" font-family="${FONT}" font-size="${FS(17)}" font-weight="800" fill="${pal.dim}">${i + 1}</text>
+                 <text x="${PAD + 40}" y="${y}" font-family="${FONT}" font-size="${FS(18)}" font-weight="${i < 2 ? 900 : 600}" fill="${pal.ink}">${esc(pTrim(r.name, 24))}</text>`;
         const vals = [r.p, r.w, r.d, r.l, (r.f - r.a > 0 ? "+" : "") + (r.f - r.a), r.pts];
-        vals.forEach((v, ci) => body += `<text x="${cols[ci]}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="17" font-weight="${ci === 5 ? 900 : 600}" fill="${ci === 5 ? pal.accent : pal.ink}">${v}</text>`);
+        vals.forEach((v, ci) => body += `<text x="${cols[ci]}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="${FS(17)}" font-weight="${ci === 5 ? 900 : 600}" fill="${ci === 5 ? pal.accent : pal.ink}">${v}</text>`);
       });
       y += 46;
     });
@@ -5430,17 +5451,17 @@ function posterSvg(t){
       const x0 = PAD + ci * (colW + 40), cx = x0 + colW / 2;
       list.forEach(r => {
         body += `<rect x="${x0}" y="${cy - 15}" width="6" height="22" rx="3" fill="${pal.accent}"/>
-                 <text x="${x0 + 16}" y="${cy + 3}" font-family="${FONT}" font-size="${colN === 2 ? 19 : 22}" font-weight="900" fill="${pal.ink}">${esc(r.title)}</text>`;
+                 <text x="${x0 + 16}" y="${cy + 3}" font-family="${FONT}" font-size="${FS(colN === 2 ? 19 : 22)}" font-weight="900" fill="${pal.ink}">${esc(r.title)}</text>`;
         const rw = formatWhen(viewDates[r.title]);
-        if (rw) body += `<text x="${x0 + colW}" y="${cy + 2}" text-anchor="end" font-family="${FONT}" font-size="13" font-weight="700" fill="${pal.dim}">${esc(rw)}</text>`;
+        if (rw) body += `<text x="${x0 + colW}" y="${cy + 2}" text-anchor="end" font-family="${FONT}" font-size="${FS(13)}" font-weight="700" fill="${pal.dim}">${esc(rw)}</text>`;
         cy += 16;
         r.matches.forEach(m => {
           cy += colN === 2 ? 30 : 34;
           if (m.a === "__BYE__"){
-            body += `<text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="16" fill="${pal.dim}">${esc(pTrim(m.h, 20))} — bye</text>`;
+            body += `<text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="${FS(16)}" fill="${pal.dim}">${esc(pTrim(m.h, 20))} — bye</text>`;
             return;
           }
-          const fs = colN === 2 ? 16 : 18;
+          const fs = FS(colN === 2 ? 16 : 18);
           const sc = shareOpts.scores ? posterScore(m) : null;
           const mid = sc || "vs";
           const hDim = pReal(m.h) ? pal.ink : pal.dim;
@@ -5448,7 +5469,7 @@ function posterSvg(t){
           body += `<text x="${cx - 52}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="${fs}" font-weight="700" fill="${hDim}">${esc(pTrim(m.h, colN === 2 ? 15 : 20))}</text>
                    <text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="${fs - 2}" font-weight="${sc ? 900 : 600}" fill="${sc ? pal.accent : pal.dim}">${esc(mid)}</text>
                    <text x="${cx + 52}" y="${cy}" text-anchor="start" font-family="${FONT}" font-size="${fs}" font-weight="700" fill="${aDim}">${esc(pTrim(m.a, colN === 2 ? 15 : 20))}</text>`;
-          if (m.leg) body += `<text x="${x0 + colW}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="11" font-weight="800" fill="${pal.dim}" letter-spacing="1">${m.leg.toUpperCase()}</text>`;
+          if (m.leg) body += `<text x="${x0 + colW}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="${FS(11)}" font-weight="800" fill="${pal.dim}" letter-spacing="1">${m.leg.toUpperCase()}</text>`;
         });
         cy += 30;
       });
@@ -5459,7 +5480,7 @@ function posterSvg(t){
 
   // ---- sponsor logo (top-right) ----
   if (shareOpts.sponsor){
-    body += `<text x="${W - PAD}" y="46" text-anchor="end" font-family="${FONT}" font-size="10"
+    body += `<text x="${W - PAD}" y="46" text-anchor="end" font-family="${FONT}" font-size="${FS(10)}"
                    font-weight="800" letter-spacing="2" fill="${pal.dim}">PRESENTED BY</text>
              <image href="${shareOpts.sponsor}" x="${W - PAD - 150}" y="54" width="150" height="64"
                     preserveAspectRatio="xMaxYMin meet"/>`;
@@ -5468,7 +5489,7 @@ function posterSvg(t){
   // ---- footer credit ----
   if (shareOpts.credit){
     y += 26;
-    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="14" font-weight="700" fill="${pal.dim}" letter-spacing="2">MADE WITH FIXTURE FLOW · MINHAJ AHAMMED</text>`;
+    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(14)}" font-weight="700" fill="${pal.dim}" letter-spacing="2">MADE WITH FIXTURE FLOW · MINHAJ AHAMMED</text>`;
   }
   const H = y + 50;
 
@@ -5517,6 +5538,7 @@ function posterTables(t){
 }
 
 function openShare(){
+  posterCache = { v:-1, blob:null };
   if (viewingIndex < 0) return;
   const t = tournaments[viewingIndex];
   shareOpts.title = t.name;
@@ -5560,11 +5582,29 @@ function syncShareUi(){
   document.querySelectorAll("[data-sh-cols]").forEach(b => b.classList.toggle("on", +b.dataset.shCols === shareOpts.cols));
   document.querySelectorAll("[data-sh-design]").forEach(b => b.classList.toggle("on", b.dataset.shDesign === shareOpts.design));
   document.querySelectorAll("[data-sh-fmt]").forEach(b => b.classList.toggle("on", b.dataset.shFmt === shareOpts.format));
+  const fsel = document.getElementById("shFont");
+  if (fsel) fsel.value = shareOpts.font;
+  const fsc = document.getElementById("shFontScale");
+  if (fsc) fsc.value = Math.round((shareOpts.fontScale || 1) * 100);
+  const fscv = document.getElementById("shFontScaleVal");
+  if (fscv) fscv.textContent = Math.round((shareOpts.fontScale || 1) * 100) + "%";
   const colsRow = document.getElementById("shColsRow");
   if (colsRow) colsRow.style.display = shareOpts.content === "fixtures" ? "" : "none";
 }
 /* social formats: fit the poster inside a fixed canvas, centred */
 const POSTER_FORMATS = { square:[1080,1080], story:[1080,1920], wide:[1280,720] };
+
+/* poster fonts \u2014 device-safe stacks, so a downloaded PNG looks the same everywhere */
+const POSTER_FONTS = {
+  classic:  { label:"Classic",  stack:"Arial, Helvetica, sans-serif" },
+  modern:   { label:"Modern",   stack:"'Trebuchet MS', 'Segoe UI', Verdana, sans-serif" },
+  condensed:{ label:"Condensed",stack:"'Arial Narrow', 'Haettenschweiler', 'Impact', sans-serif" },
+  impact:   { label:"Impact",   stack:"Impact, 'Anton', 'Arial Black', sans-serif" },
+  elegant:  { label:"Elegant",  stack:"Georgia, 'Times New Roman', serif" },
+  editorial:{ label:"Editorial",stack:"'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif" },
+  mono:     { label:"Mono",     stack:"'Courier New', Consolas, monospace" },
+  rounded:  { label:"Rounded",  stack:"'Segoe UI', 'Verdana', 'Geneva', sans-serif" }
+};
 
 function posterOut(t){
   const svgStr = posterSvg(t);
@@ -5589,11 +5629,28 @@ function shareTab(name){
   document.querySelectorAll(".sh-pane").forEach(p => p.style.display = p.dataset.pane === name ? "" : "none");
 }
 
+/* The share sheet must open in the same beat as the tap. Rendering the PNG
+   takes a moment, so we keep one warm and hand it over instantly. */
+let posterVer = 0, posterCache = { v:-1, blob:null }, posterWarmTimer = null;
+
+function warmPoster(){
+  posterVer++;
+  posterCache = { v:-1, blob:null };
+  if (posterWarmTimer) clearTimeout(posterWarmTimer);
+  const v = posterVer;
+  posterWarmTimer = setTimeout(() => {
+    const t = tournaments[viewingIndex];
+    if (!t) return;
+    posterToPng(t, png => { if (png && v === posterVer) posterCache = { v, blob:png }; });
+  }, 300);
+}
+
 function renderSharePreview(){
   const t = tournaments[viewingIndex];
   if (!t) return;
   document.getElementById("sharePreview").innerHTML =
     posterOut(t).replace(/width="\d+"/, 'width="100%"').replace(/height="\d+"/, "");
+  warmPoster();
 }
 
 /* copy the poster straight to the clipboard \u2014 paste into Canva, WhatsApp, anywhere */
@@ -5640,14 +5697,22 @@ function sendToCanva(){
 /* saving a file reliably: the anchor MUST be in the document (Firefox +
    Android WebViews ignore a detached one), with a viewer fallback if the
    host app blocks downloads entirely. */
+/* Android WebViews report "; wv)" and silently swallow blob downloads,
+   so we hand those users a viewer they can long-press instead. */
+function isAndroidWebView(){
+  try{
+    const ua = navigator.userAgent || "";
+    return /Android/.test(ua) && /\bwv\b/.test(ua);
+  }catch(e){ return false; }
+}
+
 function saveBlob(blob, filename){
-  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  if (!("download" in a)){          // old WebViews: no download support at all
-    URL.revokeObjectURL(url);
+  if (!("download" in a) || isAndroidWebView()){
     showSaveFallback(blob, filename);
     return;
   }
+  const url = URL.createObjectURL(blob);
   a.href = url;
   a.download = filename;
   a.rel = "noopener";
@@ -5662,6 +5727,14 @@ function saveBlob(blob, filename){
 
 /* last resort: show the image so it can be long-pressed and saved by hand */
 function showSaveFallback(blob, filename){
+  // non-image files (the JSON backup) can't be long-pressed \u2014 show the text
+  if (blob && blob.type && blob.type.indexOf("image") === -1){
+    try{
+      if (blob.text) blob.text().then(txt => showCopyFallback(txt));
+      else showCopyFallback("Your backup is ready but this app can't save files. Use a browser instead.");
+    }catch(e){ showCopyFallback("This app can't save files \u2014 open the site in your browser."); }
+    return;
+  }
   const url = URL.createObjectURL(blob);
   let box = document.getElementById("saveFallback");
   if (!box){
@@ -5749,36 +5822,45 @@ function sharePoster(){
   const title = shareOpts.title.trim() || t.name;
   const text = title + " \u2014 made with Fixture Flow";
 
-  posterToPng(t, (png, svgBlob) => {
-    // 1) share the image itself (Android + iOS share sheet)
+  const deliver = (png, svgBlob) => {
+    // 1) share the image itself
     try{
       if (png && typeof File === "function" && navigator.share){
         const file = new File([png], name + ".png", { type:"image/png" });
         if (!navigator.canShare || navigator.canShare({ files:[file] })){
           navigator.share({ files:[file], title, text })
             .then(() => showToast("Shared \u2713"))
-            .catch(() => {});
+            .catch(err => {
+              if (err && err.name === "AbortError") return;        // the user simply cancelled
+              saveBlob(png, name + ".png");
+              showToast("Sharing blocked \u2014 saved instead");
+            });
           return;
         }
       }
     }catch(e){}
-    // 2) no file sharing: share a link to the app instead
+    // 2) no file sharing: offer the app link
     try{
       if (navigator.share){
         navigator.share({ title, text, url: location.href })
           .then(() => showToast("Shared \u2713"))
-          .catch(() => {});
+          .catch(err => { if (!err || err.name !== "AbortError") showToast("Sharing isn't available here"); });
         return;
       }
     }catch(e){}
-    // 3) desktop browsers: save it, then it can be attached anywhere
+    // 3) nothing native: save it (which itself falls back to a long-press viewer)
     if (png){
       saveBlob(png, name + ".png");
-      showToast("Image saved \u2014 attach it anywhere");
-    } else {
+      showToast("Image ready \u2014 save or attach it");
+    } else if (svgBlob){
       saveBlob(svgBlob, name + ".svg");
     }
-  });
+  };
+
+  // warm copy? deliver immediately so the tap still counts as a user gesture
+  if (posterCache.blob && posterCache.v === posterVer){ deliver(posterCache.blob, null); return; }
+  showToast("Preparing image\u2026");
+  posterToPng(t, (png, svgBlob) => deliver(png, svgBlob));
 }
 
 function dataUrlToBlob(dataUrl){
