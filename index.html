@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" id="metaTheme" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -139,7 +139,18 @@
   #menuIcon:hover svg{ color:var(--chalk); }
 
   /* pull-to-refresh */
-  html, body{ overscroll-behavior-y:contain; }   /* our pull gesture replaces the browser's */
+  html, body{
+    overscroll-behavior-y:contain;      /* our pull gesture replaces the browser's */
+    overscroll-behavior-x:none;         /* no sideways rubber-banding / swipe-back */
+    overflow-x:hidden;                  /* nothing can push the page sideways */
+    max-width:100%;
+  }
+  body{ touch-action:pan-y pinch-zoom; }   /* vertical dragging + zoom, never sideways panning */
+  /* the few boxes that legitimately scroll sideways keep their own gestures */
+  .bracket-wrap, .tabs, .standings-wrap, .share-controls, textarea,
+  #themePanel, #sharePanel, #wheelPanel, #hallPanel, #drawPanel, #aboutPanel{
+    touch-action:auto;
+  }
   #ptr{
     position:fixed; top:-64px; left:50%;
     width:46px; height:46px;
@@ -241,8 +252,9 @@
     display:none; z-index:100;
   }
   #themePanel{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    position:fixed; top:50%; left:0; right:0;
+    margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
     width:min(420px, calc(100vw - 40px));
     background:var(--pitch-2);
     border:1px solid var(--line);
@@ -278,8 +290,9 @@
     display:none; z-index:100; animation:fadeIn .2s ease;
   }
   #sharePanel{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    position:fixed; top:50%; left:0; right:0;
+    margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
     width:min(880px, calc(100vw - 32px));
     max-height:calc(100vh - 48px);
     overflow:auto;
@@ -361,8 +374,9 @@
     display:none; z-index:100; animation:fadeIn .2s ease;
   }
   #aboutPanel{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    position:fixed; top:50%; left:0; right:0;
+    margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
     width:min(360px, calc(100vw - 40px));
     background:rgba(var(--pitch-rgb,255,255,255), var(--glass-panel-a,.8));
     backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
@@ -394,7 +408,10 @@
   }
 
   /* ============ LAYOUT ============ */
-  main{ max-width:960px; margin:0 auto; padding:0 20px 90px; }
+  main{
+    max-width:960px; margin:0 auto;
+    padding:0 max(20px, env(safe-area-inset-left)) calc(90px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-right));
+  }
   .panel{
     background:var(--pitch-2);
     border:1px solid var(--line);
@@ -842,7 +859,7 @@
   header::before{
     content:"";
     position:absolute;
-    inset:-24px -100vw 0 -100vw;      /* full-bleed across the screen */
+    inset:-24px 0 0 0;                /* header is already full-width — no overhang */
     z-index:-1;
     background:
       linear-gradient(180deg, rgba(var(--accent-rgb, 255,182,39), .10), transparent 65%),
@@ -1169,8 +1186,9 @@
     display:none; z-index:100; animation:fadeIn .2s ease;
   }
   #wheelPanel{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    position:fixed; top:50%; left:0; right:0;
+    margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
     width:min(400px, calc(100vw - 40px));
     max-height:calc(100vh - 60px); overflow:auto;
     background:rgba(var(--pitch-rgb,255,255,255), var(--glass-panel-a,.8));
@@ -1193,8 +1211,9 @@
     display:none; z-index:100; animation:fadeIn .2s ease;
   }
   #hallPanel, #drawPanel{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
+    position:fixed; top:50%; left:0; right:0;
+    margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
     width:min(430px, calc(100vw - 40px));
     max-height:calc(100vh - 60px); overflow:auto;
     background:rgba(var(--pitch-rgb,255,255,255), var(--glass-panel-a,.8));
@@ -1526,7 +1545,7 @@
     table.standings th, table.standings td{ padding:7px 5px; }
 
     /* smaller floating controls */
-    #menuIcon{ top:12px; left:12px; width:38px; height:38px; }
+    #menuIcon{ top:max(12px, env(safe-area-inset-top)); left:12px; width:38px; height:38px; }
     #backBtn{ top:12px; left:58px; width:38px; height:38px; }
     #backBtn.solo{ left:12px; }
     #countBubble{ font-size:13px; padding:9px 18px; bottom:18px; max-width:calc(100vw - 32px); }
@@ -1912,6 +1931,7 @@
 
 <footer>
   <button class="btn-ghost" onclick="toggleAbout()" style="margin-bottom:14px">About</button>
+  <div>Ver: 4.7</div>
 </footer>
 
 <!-- ===== ABOUT ===== -->
