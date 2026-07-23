@@ -142,10 +142,15 @@
   html, body{
     overscroll-behavior-y:contain;      /* our pull gesture replaces the browser's */
     overscroll-behavior-x:none;         /* no sideways rubber-banding / swipe-back */
-    overflow-x:hidden;                  /* nothing can push the page sideways */
-    max-width:100%;
   }
-  body{ touch-action:pan-y pinch-zoom; }   /* vertical dragging + zoom, never sideways panning */
+  /* `clip` stops sideways movement WITHOUT turning the page into a nested scroll
+     box — `hidden` here breaks the sticky tab bar and normal scrolling. */
+  @supports (overflow: clip){
+    html, body{ overflow-x:clip; }
+  }
+  @supports not (overflow: clip){
+    body{ overflow-x:hidden; }         /* older engines: body only, never html */
+  }
   /* the few boxes that legitimately scroll sideways keep their own gestures */
   .bracket-wrap, .tabs, .standings-wrap, .share-controls, textarea,
   #themePanel, #sharePanel, #wheelPanel, #hallPanel, #drawPanel, #aboutPanel{
