@@ -1126,6 +1126,11 @@
   .wc-btns button{ padding:11px 18px; font-size:15px; }
   body.no-blur .wc-card{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
   body.theme-brutal .wc-card{ border-radius:0; border:2px solid var(--chalk); box-shadow:6px 6px 0 var(--pop); }
+  #saveFallbackImg{
+    -webkit-touch-callout:default;    /* allow the long-press menu */
+    -webkit-user-select:auto; user-select:auto;
+    touch-action:auto; pointer-events:auto;
+  }
   #saveFallback{
     position:fixed; inset:0; z-index:220;
     display:none; align-items:center; justify-content:center;
@@ -1285,6 +1290,23 @@
   }
   .round-when input:focus{ border-color:var(--floodlight); }
   .next-md{ margin:0 0 14px; }
+  .save-btn{ position:relative; }
+  .save-btn.pulse{ animation:saveFlash .5s ease; }
+  @keyframes saveFlash{
+    0%{ box-shadow:0 0 0 0 rgba(var(--accent-rgb,255,182,39), .6); }
+    100%{ box-shadow:0 0 0 14px rgba(var(--accent-rgb,255,182,39), 0); }
+  }
+  .save-status{
+    font-size:12px; color:var(--chalk); opacity:.68;
+    display:inline-flex; align-items:center; gap:5px;
+    align-self:center;
+  }
+  .save-status::before{
+    content:""; width:6px; height:6px; border-radius:50%;
+    background:#2ecc71; flex:0 0 auto;
+    box-shadow:0 0 6px #2ecc71;
+  }
+  @media (prefers-reduced-motion: reduce){ .save-btn.pulse{ animation:none; } }
   .scorer-btn{
     display:block; margin:4px auto 0;
     background:none; border:none; cursor:pointer;
@@ -1299,6 +1321,7 @@
     border-bottom:1px solid var(--line);
   }
   .scorers-editor input{ flex:1 1 240px; font-size:13px; padding:9px 12px; }
+  .scorer-done{ flex:0 0 auto; padding:9px 16px; font-size:13px; }
   .boot-team{ font-size:11px; color:var(--chalk-dim); margin-left:8px; }
   table.boot{ max-width:520px; }
   .stat-grid{
@@ -2854,11 +2877,56 @@ function saveEdit(){
   const idx = teams.findIndex(t => t.toLowerCase() === oldName.toLowerCase());
   if (idx !== -1) teams[idx] = newName;
 
+  const affected = renameTeamEverywhere(oldName, newName);
+
   persistSaved();
+  if (affected) persistTournaments();
   editingIndex = -1;
   tempLogo = null;
   tempName = null;
   renderChips(); // re-renders chips + saved list with new name/logo
+  showToast(affected
+    ? "Renamed \u2013 updated in " + affected + " tournament" + (affected === 1 ? "" : "s") + " \u2713"
+    : "Team renamed \u2713");
+}
+
+/* propagates a saved-team rename into every tournament that used the old name:
+   the team order, and every scores/scorers entry keyed by "title|home|away". */
+function renameTeamEverywhere(oldName, newName){
+  const oldLower = oldName.toLowerCase();
+  let count = 0;
+  tournaments.forEach(t => {
+    let touched = false;
+    if (Array.isArray(t.order)){
+      t.order = t.order.map(n => {
+        if (n.toLowerCase() === oldLower){ touched = true; return newName; }
+        return n;
+      });
+    }
+    ["scores", "scorers"].forEach(field => {
+      if (!t[field]) return;
+      const next = {};
+      Object.keys(t[field]).forEach(key => {
+        const parts = key.split("|");
+        let changed = false;
+        if (parts.length === 3){
+          for (let i = 1; i <= 2; i++){
+            if (parts[i].toLowerCase() === oldLower){ parts[i] = newName; changed = true; }
+          }
+        }
+        const val = t[field][key];
+        if (field === "scores" && changed && val){
+          if (val.h && val.h.toLowerCase() === oldLower) val.h = newName;
+          if (val.a && val.a.toLowerCase() === oldLower) val.a = newName;
+        }
+        next[changed ? parts.join("|") : key] = val;
+        if (changed) touched = true;
+      });
+      t[field] = next;
+    });
+    if (touched) count++;
+  });
+  return count;
 }
 
 function useSaved(i){
@@ -3052,6 +3120,8 @@ function renderTourList(){
           ${mdOptions}
           <button class="btn-ghost" onclick="window.print()">Print / Save PDF</button>
           <button class="btn-ghost" onclick="openShare()">Share image</button>
+          <button class="btn-amber save-btn" id="saveNowBtn" onclick="confirmSaved()">💾 Save</button>
+          <span class="save-status" id="saveStatus">All changes saved</span>
         </div>
         <div id="standings" style="display:${viewSection === "table" ? "block" : "none"}"></div>
         <div id="rounds" style="display:${viewSection === "fixtures" ? "block" : "none"}"></div>
@@ -3676,6 +3746,7 @@ function handleScoreInput(inp){
   else if (inp.dataset.side === "pa") s.pa = val;
   if (s.gh === null && s.ga === null) delete t.scores[key];   // both cleared → match unset
   persistTournaments();
+  markSaved("Saved just now");
   renderStandings(t);   // leaderboard updates live as you type
 }
 
@@ -4779,6 +4850,7 @@ function roundBlock(title, matches){
                placeholder="${escapeHtml(h)} scorers \u2014 comma separated, repeat a name for 2+" value="${escapeHtml(sc.h || "")}">
         <input type="text" class="scorer-inp" data-key="${escapeHtml(mKey)}" data-side="a"
                placeholder="${escapeHtml(a)} scorers" value="${escapeHtml(sc.a || "")}">
+        <button class="btn-amber scorer-done" onclick="scorerDone()">Done</button>
       </div>` : "";
     return `${legTag}<div class="match">
               <div class="home">${teamCell(h)}</div>
@@ -5570,6 +5642,7 @@ function sponsorUpload(input){
     shareOpts.sponsor = r.result;
     syncShareUi();
     renderSharePreview();
+    showToast("Sponsor logo added \u2713");
   };
   r.readAsDataURL(f);
 }
@@ -5672,12 +5745,61 @@ function copyPosterImage(){
   });
 }
 
+/* Hand off to Canva: prefer the installed app, fall back to the website, and never
+   load it inside Fixture Flow itself. */
+/* leave the app shell and continue in the phone's real browser */
+function openInBrowser(){
+  const ua = navigator.userAgent || "";
+  if (/Android/.test(ua)){
+    try{
+      location.href = "intent://" + location.host + location.pathname
+                    + "#Intent;scheme=https;action=android.intent.action.VIEW;end";
+      return;
+    }catch(e){}
+  }
+  try{
+    const a = document.createElement("a");
+    a.href = location.href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try{ document.body.removeChild(a); }catch(e){} }, 2000);
+  }catch(e){}
+}
+
+function openCanva(){
+  const web = "https://www.canva.com/";
+  const ua = (navigator.userAgent || "");
+  // Android: an intent URL launches the Canva app when installed, and carries its own
+  // browser fallback for when it isn't.
+  if (/Android/.test(ua)){
+    try{
+      location.href = "intent://www.canva.com/#Intent;scheme=https;package=com.canva.editor;"
+                    + "S.browser_fallback_url=" + encodeURIComponent(web) + ";end";
+      return;
+    }catch(e){}
+  }
+  // iOS opens the Canva app automatically through universal links; desktop opens a tab.
+  try{
+    const a = document.createElement("a");
+    a.href = web;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try{ document.body.removeChild(a); }catch(e){} }, 2000);
+  }catch(e){
+    try{ window.open(web, "_blank", "noopener"); }catch(e2){}
+  }
+}
+
 /* Canva has no browser-side API (their servers block direct calls), so this is a
    handoff: put the image on the clipboard or on disk, then open Canva to drop it in. */
 function sendToCanva(){
   const t = tournaments[viewingIndex];
   if (!t) return;
-  const open = () => { try{ window.open("https://www.canva.com/", "_blank", "noopener"); }catch(e){} };
+  const open = openCanva;
   posterToPng(t, (png) => {
     if (!png){ open(); return; }
     try{
@@ -5706,9 +5828,31 @@ function isAndroidWebView(){
   }catch(e){ return false; }
 }
 
+/* running inside an installed app / wrapper rather than a browser tab */
+function isAppShell(){
+  try{
+    if (navigator.standalone) return true;
+    if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
+    if (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) return true;
+  }catch(e){}
+  return isAndroidWebView();
+}
+
+/* Android wrappers with no Web Share also have no download manager \u2014 a normal
+   download link there does nothing at all, so we show a saveable image instead. */
+function downloadsUnavailable(){
+  const a = document.createElement("a");
+  if (!("download" in a)) return true;
+  if (isAndroidWebView()) return true;
+  try{
+    if (/Android/.test(navigator.userAgent || "") && isAppShell() && !navigator.share) return true;
+  }catch(e){}
+  return false;
+}
+
 function saveBlob(blob, filename){
   const a = document.createElement("a");
-  if (!("download" in a) || isAndroidWebView()){
+  if (downloadsUnavailable()){
     showSaveFallback(blob, filename);
     return;
   }
@@ -5742,11 +5886,13 @@ function showSaveFallback(blob, filename){
     box.id = "saveFallback";
     box.innerHTML =
       '<div class="cf-card" style="text-align:center">' +
-        '<p class="hint" style="margin-bottom:10px">Long-press the image below and choose \u201cSave image\u201d.</p>' +
+        '<p class="hint" style="margin-bottom:10px"><b>Press and hold</b> the image, then choose \u201cSave image\u201d or \u201cDownload image\u201d to put it in your gallery.</p>' +
         '<img id="saveFallbackImg" alt="poster" style="max-width:100%; border-radius:8px">' +
         '<div class="generate-bar" style="margin-top:12px; justify-content:center">' +
-          '<button class="btn-amber" onclick="document.getElementById(\'saveFallback\').style.display=\'none\'">Close</button>' +
+          '<button class="btn-amber" onclick="document.getElementById(\'saveFallback\').style.display=\'none\'">Done</button>' +
+          '<button class="btn-ghost" onclick="openInBrowser()">Open in browser</button>' +
         '</div>' +
+        '<p class="hint" style="margin:10px 0 0; font-size:12px">Saving not offered? Open the site in your browser \u2014 downloads always work there.</p>' +
       '</div>';
     document.body.appendChild(box);
   }
@@ -6447,10 +6593,15 @@ renderSaved();
 renderTourList();
 
 let scorerOpenKey = null;
+let scoreToastTimer = null;
 
 /* one listener handles every score box, even ones added later */
 document.getElementById("tourList").addEventListener("input", e => {
   if (e.target.classList.contains("score")) handleScoreInput(e.target);
+  if (e.target.classList.contains("score") && e.target.value !== ""){
+    if (scoreToastTimer) clearTimeout(scoreToastTimer);
+    scoreToastTimer = setTimeout(() => showToast("Score saved \u2713"), 550);   // once typing pauses
+  }
   if (e.target.classList.contains("scorer-inp") && viewingIndex >= 0){
     const t = tournaments[viewingIndex];
     t.scorers = t.scorers || {};
@@ -6463,7 +6614,42 @@ document.getElementById("tourList").addEventListener("input", e => {
   }
 });
 
+/* explicit confirmation \u2014 re-saves everything currently open and gives visible proof */
+function confirmSaved(){
+  persistTournaments();
+  markSaved("Saved just now");
+  const btn = document.getElementById("saveNowBtn");
+  if (btn){
+    btn.classList.remove("pulse");
+    if (btn.getBoundingClientRect) btn.getBoundingClientRect();
+    btn.classList.add("pulse");
+  }
+  showToast("All changes saved \u2713");
+}
+
+/* keeps the toolbar status text truthful without needing a tap \u2014
+   any score, date, or scorer edit updates it automatically. */
+function markSaved(label){
+  const s = document.getElementById("saveStatus");
+  if (s) s.textContent = label || "All changes saved";
+}
+
+function scorerDone(){
+  scorerOpenKey = null;
+  if (viewingIndex >= 0){
+    const rounds = document.getElementById("rounds");
+    if (rounds){
+      rounds.innerHTML = buildFixturesHtml(tournaments[viewingIndex]);
+      applyMdFilter();
+    }
+  }
+  markSaved("Saved just now");
+  showToast("Scorers saved \u2713");
+}
+
 document.getElementById("tourList").addEventListener("click", e => {
+  const doneBtn = e.target.closest && e.target.closest(".scorer-done");
+  if (doneBtn){ scorerDone(); return; }
   const btn = e.target.closest && e.target.closest(".scorer-btn");
   if (btn && viewingIndex >= 0){
     scorerOpenKey = scorerOpenKey === btn.dataset.key ? null : btn.dataset.key;
@@ -6488,6 +6674,8 @@ document.getElementById("tourList").addEventListener("change", e => {
     t.dates[r][e.target.classList.contains("rdate") ? "d" : "t"] = e.target.value || "";
     if (!t.dates[r].d && !t.dates[r].t) delete t.dates[r];
     persistTournaments();
+    markSaved("Saved just now");
+    showToast(e.target.classList.contains("rdate") ? "Date saved \u2713" : "Time saved \u2713");
     return;
   }
   if (e.target.classList.contains("score") && viewingIndex >= 0){
