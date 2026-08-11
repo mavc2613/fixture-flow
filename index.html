@@ -1214,6 +1214,30 @@
   body.no-blur #wheelPanel{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
   body.theme-brutal #wheelPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
 
+  #publishOverlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.45);
+    backdrop-filter:blur(calc(var(--blur, 26) * 0.45px)) saturate(1.4);
+    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 0.45px)) saturate(1.4);
+    display:none; z-index:100; animation:fadeIn .2s ease;
+  }
+  #publishPanel{
+    position:fixed; top:50%; left:0; right:0; margin-left:auto; margin-right:auto;
+    transform:translateY(-50%);
+    width:min(440px, calc(100vw - 40px));
+    max-height:calc(100vh - 60px); overflow-y:auto;
+    background:rgba(var(--pitch-rgb,255,255,255), var(--glass-panel-a,.8));
+    backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
+    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:8px; padding:24px;
+    display:none; z-index:101;
+    animation:fadeUp .26s ease;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 24px 70px rgba(0,0,0,.4);
+  }
+  #publishOverlay.show, #publishPanel.show{ display:block; }
+  body.no-blur #publishPanel{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
+  body.theme-brutal #publishPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
+
   #hallOverlay, #drawOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
     backdrop-filter:blur(calc(var(--blur, 26) * 0.45px)) saturate(1.4);
@@ -1641,6 +1665,9 @@
     <button class="menu-item" onclick="document.getElementById('importFile').click()">
       <span class="mi-ic">⬆</span> Import backup
     </button>
+    <button class="menu-item" onclick="toggleMenu(); togglePublish()">
+      <span class="mi-ic">🌐</span> Publish to my site
+    </button>
     <button class="menu-item" onclick="toggleMenu(); toggleWheel()">
       <span class="mi-ic">🎡</span> Spin the Wheel
     </button>
@@ -1660,6 +1687,44 @@
   <div id="drawFeed"></div>
   <div class="generate-bar" style="margin-top:16px">
     <button class="btn-ghost" id="drawSkip">Skip \u2192</button>
+  </div>
+</div>
+
+<!-- ===== PUBLISH (share live data to another site, e.g. eFootball Narikkuni) ===== -->
+<div id="publishOverlay" onclick="togglePublish()"></div>
+<div id="publishPanel">
+  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:6px">🌐 Publish to my site</h2>
+  <p class="hint">Push a snapshot of your tournament to your own GitHub repo as a JSON file — free, no third-party service. Your other site (e.g. eFootball Narikkuni) can then fetch it and show the same fixtures and table.</p>
+
+  <label class="theme-label" style="margin-top:6px">Which tournament</label>
+  <select id="pubTour" class="lib-select" style="width:100%"></select>
+
+  <label class="theme-label">GitHub username</label>
+  <input type="text" id="pubUser" placeholder="e.g. mavc2613" style="width:100%">
+
+  <label class="theme-label">Repository</label>
+  <input type="text" id="pubRepo" placeholder="e.g. fixture-flow" style="width:100%">
+
+  <label class="theme-label">File path</label>
+  <input type="text" id="pubPath" placeholder="data.json" style="width:100%">
+
+  <label class="theme-label">Personal access token</label>
+  <input type="password" id="pubToken" placeholder="ghp_… (needs the 'repo' scope)" style="width:100%">
+  <p class="hint" style="margin-top:6px">Stored only on this device. Make one at
+     <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a> —
+     Generate new token (classic) → tick <b>repo</b> → set an expiry.</p>
+
+  <label class="check" style="margin-top:10px">
+    <input type="checkbox" id="pubAuto" onchange="setAutoPublish(this.checked)">
+    Auto-publish whenever I save a change
+  </label>
+
+  <p class="hint" id="pubStatus" style="min-height:20px"></p>
+
+  <div class="generate-bar" style="margin-top:6px">
+    <button class="btn-amber" id="pubBtn" onclick="publishNow()">Publish now</button>
+    <button class="btn-ghost" id="pubCopyBtn" style="display:none" onclick="copyEmbedCode()">Copy embed code</button>
+    <button class="btn-ghost" onclick="togglePublish()">Close</button>
   </div>
 </div>
 
@@ -3492,6 +3557,146 @@ function wheelClearAll(){
   if (svg) svg.innerHTML = "";
   const res = document.getElementById("wheelResult");
   if (res) res.textContent = "Wheel cleared \u2014 type names or load your teams to refill.";
+}
+
+/* ================= PUBLISH: push a JSON snapshot to your own GitHub repo ================= */
+function loadPublishSettings(){
+  try{ return JSON.parse(localStorage.getItem("fixtureMaker.publish")) || {}; }catch(e){ return {}; }
+}
+function savePublishSettings(s){
+  try{ localStorage.setItem("fixtureMaker.publish", JSON.stringify(s)); }catch(e){}
+}
+
+function togglePublish(){
+  const opening = !isShown("publishPanel");
+  document.getElementById("publishOverlay").classList.toggle("show");
+  document.getElementById("publishPanel").classList.toggle("show");
+  if (opening){
+    const sel = document.getElementById("pubTour");
+    sel.innerHTML = '<option value="__all__">All tournaments</option>' +
+      tournaments.map((t, i) => `<option value="${i}">${escapeHtml(t.name)}</option>`).join("");
+    if (viewingIndex >= 0) sel.value = String(viewingIndex);
+    const s = loadPublishSettings();
+    document.getElementById("pubUser").value = s.user || "";
+    document.getElementById("pubRepo").value = s.repo || "";
+    document.getElementById("pubPath").value = s.path || "narikkuni-data.json";
+    document.getElementById("pubToken").value = s.token || "";
+    document.getElementById("pubStatus").textContent = s.lastPublished
+      ? "Last published " + new Date(s.lastPublished).toLocaleString()
+      : "";
+    document.getElementById("pubCopyBtn").style.display = (s.user && s.repo && s.path) ? "" : "none";
+    document.getElementById("pubAuto").checked = !!s.auto;
+  }
+  updateBackBtn();
+}
+
+function setAutoPublish(on){
+  const s = loadPublishSettings();
+  s.auto = on;
+  savePublishSettings(s);
+  showToast(on ? "Auto-publish turned on \u2713" : "Auto-publish turned off");
+}
+
+/* trims a tournament down to exactly what a display widget needs */
+function publishableTournament(t){
+  return {
+    name: t.name, type: t.type, legs: t.legs || 1, gsize: t.gsize || null,
+    ptsWin: t.ptsWin || 3, tiebreak: t.tiebreak || "gd",
+    order: t.order, scores: t.scores || {}, scorers: t.scorers || {},
+    dates: t.dates || {}, date: t.date
+  };
+}
+
+function buildPublishPayload(){
+  const sel = document.getElementById("pubTour").value;
+  const list = sel === "__all__" ? tournaments : [tournaments[parseInt(sel, 10)]].filter(Boolean);
+  return {
+    source: "Fixture Flow",
+    publishedAt: new Date().toISOString(),
+    exported: new Date().toISOString(),
+    tournaments: list.map(publishableTournament)
+  };
+}
+
+/* UTF-8 safe base64 \u2014 plain btoa() breaks on emoji/accented names */
+function utf8ToBase64(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+function publishNow(silent){
+  const s = loadPublishSettings();
+  const user = (silent ? s.user : document.getElementById("pubUser").value.trim()) || "";
+  const repo = (silent ? s.repo : document.getElementById("pubRepo").value.trim()) || "";
+  const path = (silent ? s.path : document.getElementById("pubPath").value.trim()) || "data.json";
+  const token = (silent ? s.token : document.getElementById("pubToken").value.trim()) || "";
+  const status = document.getElementById("pubStatus");
+
+  if (!user || !repo || !token){
+    if (!silent) status.textContent = "Fill in your username, repository, and token first.";
+    return;
+  }
+  if (!silent) savePublishSettings(Object.assign(loadPublishSettings(), { user, repo, path, token }));
+
+  const btn = document.getElementById("pubBtn");
+  if (!silent){ btn.disabled = true; btn.textContent = "Publishing\u2026"; status.textContent = ""; }
+
+  const api = "https://api.github.com/repos/" + user + "/" + repo + "/contents/" + path;
+  const payload = buildPublishPayload();
+  const content = utf8ToBase64(JSON.stringify(payload, null, 2));
+
+  fetch(api, { headers: { "Authorization": "token " + token, "Accept": "application/vnd.github+json" } })
+    .then(res => (res.status === 200 ? res.json() : null))
+    .then(existing => {
+      const body = { message: "Publish from Fixture Flow", content: content };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(api, {
+        method: "PUT",
+        headers: { "Authorization": "token " + token, "Accept": "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    })
+    .then(res => {
+      if (!silent){ btn.disabled = false; btn.textContent = "Publish now"; }
+      if (!res.ok){
+        return res.json().then(err => {
+          const msg = "Failed: " + (err && err.message ? err.message : res.status);
+          if (!silent) status.textContent = msg; else showToast("Auto-publish failed \u2014 open the Publish panel");
+        }).catch(() => { if (!silent) status.textContent = "Failed (" + res.status + ") \u2014 check the repo name and token."; });
+      }
+      const sv = loadPublishSettings();
+      sv.lastPublished = Date.now();
+      savePublishSettings(sv);
+      if (!silent){
+        status.textContent = "Published \u2713 " + new Date().toLocaleString();
+        document.getElementById("pubCopyBtn").style.display = "";
+      }
+      showToast(silent ? "Auto-published \u2713" : "Published \u2713");
+    })
+    .catch(() => {
+      if (!silent){ btn.disabled = false; btn.textContent = "Publish now"; status.textContent = "Network error \u2014 check your connection and try again."; }
+    });
+}
+
+function embedRawUrl(){
+  const s = loadPublishSettings();
+  return "https://raw.githubusercontent.com/" + s.user + "/" + s.repo + "/main/" + s.path;
+}
+
+function copyEmbedCode(){
+  const url = embedRawUrl();
+  const snippet =
+    '<div id="fixtureflow-widget">Loading fixtures\u2026</div>\n' +
+    '<script>\n' +
+    'fetch("' + url + '?t=" + Date.now())\n' +
+    '  .then(r => r.json())\n' +
+    '  .then(window.renderFixtureFlow || function(data){\n' +
+    '    document.getElementById("fixtureflow-widget").textContent = JSON.stringify(data);\n' +
+    '  });\n' +
+    '<\/script>';
+  wheelCopyText(snippet, "Embed code copied \u2713 \u2014 paste it into your site");
 }
 
 function toggleWheel(){
@@ -6406,7 +6611,7 @@ function libraryOpen(){ const p = document.getElementById("library"); return p &
 function manualOpen(){ const p = document.getElementById("manualPanel"); return p && p.style.display !== "none"; }
 
 function canGoBack(){
-  return isShown("menuDrawer") || isShown("themePanel") || isShown("sharePanel") || isShown("aboutPanel") || isShown("hallPanel") || isShown("wheelPanel")
+  return isShown("menuDrawer") || isShown("themePanel") || isShown("sharePanel") || isShown("aboutPanel") || isShown("hallPanel") || isShown("wheelPanel") || isShown("publishPanel")
       || manualOpen()
       || editingIndex >= 0 || editTourIndex >= 0
       || pickerOpen() || libraryOpen() || bulkOpen()
@@ -6419,6 +6624,7 @@ function goBack(){
   if (isShown("menuDrawer"))      { toggleMenu(); }
   else if (isShown("themePanel")) { toggleThemePanel(); }
   else if (isShown("sharePanel")) { closeShare(); }
+  else if (isShown("publishPanel")) { togglePublish(); }
   else if (isShown("wheelPanel")) { toggleWheel(); }
   else if (isShown("hallPanel"))  { toggleHall(); }
   else if (isShown("aboutPanel")) { toggleAbout(); }
@@ -6473,7 +6679,7 @@ document.addEventListener("keydown", e => {
 let ptrStartY = null, ptrPull = 0, ptrTracking = false;
 
 function ptrOverlayOpen(){
-  return isShown("menuDrawer") || isShown("themePanel") || isShown("sharePanel") || isShown("aboutPanel") || isShown("hallPanel") || isShown("wheelPanel");
+  return isShown("menuDrawer") || isShown("themePanel") || isShown("sharePanel") || isShown("aboutPanel") || isShown("hallPanel") || isShown("wheelPanel") || isShown("publishPanel");
 }
 function ptrSet(pull){
   const el = document.getElementById("ptr");
@@ -6632,6 +6838,25 @@ function confirmSaved(){
 function markSaved(label){
   const s = document.getElementById("saveStatus");
   if (s) s.textContent = label || "All changes saved";
+  scheduleAutoPublish();
+}
+
+/* fires publishNow() a few seconds after the last edit, so a burst of score
+   entries becomes one network call instead of one per keystroke */
+let autoPublishTimer = null;
+function scheduleAutoPublish(){
+  const s = loadPublishSettings();
+  if (!s.auto || !s.user || !s.repo || !s.token) return;
+  if (autoPublishTimer) clearTimeout(autoPublishTimer);
+  autoPublishTimer = setTimeout(() => {
+    // publish uses whatever the panel's tournament selector last had (defaults to "All" on first run)
+    if (!document.getElementById("pubTour").innerHTML){
+      document.getElementById("pubTour").innerHTML = '<option value="__all__">All tournaments</option>' +
+        tournaments.map((t, i) => `<option value="${i}">${escapeHtml(t.name)}</option>`).join("");
+      document.getElementById("pubTour").value = "__all__";
+    }
+    publishNow(true);
+  }, 4000);
 }
 
 function scorerDone(){
