@@ -1,5 +1,7 @@
 {
-  "renames": {},
+  "renames": {
+    "Sinam": "Sinan"
+  },
   "additions": [],
   "removals": [
     "moroco",
