@@ -3579,7 +3579,7 @@ function togglePublish(){
     const s = loadPublishSettings();
     document.getElementById("pubUser").value = s.user || "";
     document.getElementById("pubRepo").value = s.repo || "";
-    document.getElementById("pubPath").value = s.path || "narikkuni-data.json";
+    document.getElementById("pubPath").value = s.path || "data.json";
     document.getElementById("pubToken").value = s.token || "";
     document.getElementById("pubStatus").textContent = s.lastPublished
       ? "Last published " + new Date(s.lastPublished).toLocaleString()
