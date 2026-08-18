@@ -1,7 +1,7 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-08-18T06:28:58.094Z",
-  "exported": "2026-08-18T06:28:58.095Z",
+  "publishedAt": "2026-08-18T06:33:32.214Z",
+  "exported": "2026-08-18T06:33:32.214Z",
   "tournaments": [
     {
       "name": "NEFL",
@@ -458,22 +458,6 @@
         }
       },
       "date": "8/9/2026 10:05 PM"
-    },
-    {
-      "name": "Season 8",
-      "type": "knockout",
-      "legs": 1,
-      "gsize": null,
-      "ptsWin": 3,
-      "tiebreak": "gd",
-      "order": [
-        "Velez Sarsfield",
-        "New"
-      ],
-      "scores": {},
-      "scorers": {},
-      "dates": {},
-      "date": "8/18/2026 09:26 AM"
     }
   ]
 }
