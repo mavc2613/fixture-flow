@@ -1,6 +1,7 @@
 {
   "renames": {
-    "Sinam": "Sinan"
+    "Sinam": "Sinan",
+    "Aflah A.P.(Chakkara)": "Chakkara"
   },
   "additions": [],
   "removals": [
@@ -9,7 +10,8 @@
     "Faraan"
   ],
   "aliases": {
-    "sinam": "Sinan"
+    "sinam": "Sinan",
+    "aflah a.p.(chakkara)": "Chakkara"
   },
   "seasonEdits": {},
   "photos": {
