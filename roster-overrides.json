@@ -1,6 +1,7 @@
 {
   "renames": {
-    "Aflah A.P.(Chakkara)": "Chakkara"
+    "Aflah A.P.(Chakkara)": "Chakkara",
+    "Adul": "ATHUL"
   },
   "additions": [],
   "removals": [],
@@ -11,9 +12,10 @@
     "hadi": "Hadi Ismaeel",
     "afalh": "Chakkara",
     "faraan": "Javid Farhan",
-    "athul": "Adul",
+    "athul": "ATHUL",
     "aflah": "Chakkara",
-    "chakkara": "Chakkara"
+    "chakkara": "Chakkara",
+    "adul": "ATHUL"
   },
   "seasonEdits": {},
   "photos": {}
