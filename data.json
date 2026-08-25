@@ -1,10 +1,10 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-08-18T06:33:32.214Z",
-  "exported": "2026-08-18T06:33:32.214Z",
+  "publishedAt": "2026-08-25T17:44:26.799Z",
+  "exported": "2026-08-25T17:44:26.799Z",
   "tournaments": [
     {
-      "name": "NEFL",
+      "name": "NEFKOT S6",
       "type": "knockout",
       "legs": 1,
       "gsize": null,
