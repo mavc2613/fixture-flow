@@ -14,7 +14,7 @@
 <title>Fixture Flow — The Fixture Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;600;700&family=Lora:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Oswald:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   /* ============ DESIGN TOKENS ============ */
   :root{
@@ -29,6 +29,20 @@
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
+
+  /* ============ MINIMAL SCROLLBAR (page + every scrollable panel) ============ */
+  *{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(var(--accent-rgb,255,182,39), .5) transparent;
+  }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{
+    background:rgba(var(--accent-rgb,255,182,39), .45);
+    border-radius:999px;
+  }
+  ::-webkit-scrollbar-thumb:hover{ background:rgba(var(--accent-rgb,255,182,39), .7); }
+  ::-webkit-scrollbar-corner{ background:transparent; }
   button, .tab, .chip, .wh-item{ -webkit-tap-highlight-color:transparent; }
   input, textarea, .wh-item, #wheelResult, .wc-name{ -webkit-user-select:text; user-select:text; }
 
@@ -56,11 +70,11 @@
   h1{ line-height:1.05; }
   .brand-flow{
     display:block;
-    font-family:'Pacifico', 'Segoe Script', cursive;   /* the wavy line */
+    font-family:'Saira Stencil One', 'Oswald', sans-serif;   /* broadcast-graphics headline face */
     font-weight:400;
-    font-size:clamp(30px, 5.2vw, 52px);
+    font-size:clamp(38px, 7vw, 74px);
     letter-spacing:.01em;
-    text-transform:none;
+    text-transform:uppercase;
     color:var(--chalk);
     /* depth: a crisp edge, a soft drop, and a faint glow in the accent colour */
     text-shadow:
@@ -68,11 +82,18 @@
       0 6px 16px rgba(0,0,0,.38),
       0 0 34px rgba(var(--accent-rgb, 255,182,39), .30);
   }
+  /* the one loud accent word: outlined + filled in the skin's own accent */
+  .brand-flow .accent-word{
+    color:var(--floodlight);
+    -webkit-text-stroke:2px var(--chalk);
+    paint-order:stroke fill;
+  }
   .brand-sub{ text-shadow:0 1px 2px rgba(0,0,0,.28); }
   .brand-sub{
     display:block;
     margin-top:6px;
-    font-weight:900; letter-spacing:.3em;
+    font-family:var(--font-head, "Oswald"), sans-serif;
+    font-weight:600; letter-spacing:.3em;
     text-transform:uppercase;
     font-size:clamp(12px, 1.9vw, 17px);
     color:var(--chalk-dim);
@@ -109,19 +130,22 @@
     white-space:nowrap;
   }
 
-  /* ============ TOP TABS ============ */
-  .tabs{
-    max-width:960px; margin:0 auto 28px; padding:0 20px;
-    display:flex; border-bottom:none;
-  }
+  /* ============ SIDEBAR NAV LINKS (numbered 01/02/03) ============ */
   .tab{
-    background:transparent; color:var(--chalk); opacity:.72;
-    border:none; border-radius:0;
-    padding:14px 22px; font-size:15px; font-weight:700; letter-spacing:.04em;
-    border-bottom:3px solid transparent; margin-bottom:-1px; cursor:pointer;
+    display:flex; align-items:center; gap:12px;
+    width:100%; text-align:left;
+    background:transparent; color:var(--chalk); opacity:.68;
+    border:none; border-left:3px solid transparent; border-radius:0 6px 6px 0;
+    padding:12px 12px; font-family:var(--font-head, "Oswald"), sans-serif;
+    font-size:14.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    cursor:pointer; transition:background .14s ease, opacity .14s ease, border-color .14s ease;
   }
-  .tab:hover{ opacity:1; }
-  .tab.on{ opacity:1; border-bottom-color:var(--floodlight); }
+  .tab:hover{ opacity:1; background:rgba(var(--pitch-rgb,255,255,255), .5); }
+  .tab.on{ opacity:1; border-left-color:var(--floodlight); color:var(--floodlight); }
+  .tab-num{
+    font-family:var(--font-mono, "Roboto Mono"), monospace;
+    font-size:11px; font-weight:700; opacity:.7; letter-spacing:0;
+  }
 
   /* menu icon, top left corner */
   #menuIcon{
@@ -210,7 +234,7 @@
     -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
     border-right:1px solid rgba(255,255,255,.22);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 12px 0 50px rgba(0,0,0,.35);
-    padding:24px 18px;
+    padding:64px 18px 24px;   /* clears the fixed menu/back icons that float above it */
     transform:translateX(-105%);
     transition:transform .26s ease;
     z-index:103;
@@ -251,6 +275,58 @@
   .gbtn{ display:flex; align-items:center; justify-content:center; gap:10px; }
   img.acc-avatar{ border:1px solid var(--line); }
 
+  /* ============ SIDEBAR: brand, numbered nav, live stats, footer ============ */
+  #sbBrand{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--line);
+  }
+  .sb-mark{
+    width:36px; height:36px; flex:0 0 36px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--floodlight); color:var(--accent-text,#0a0a0a);
+    font-family:var(--font-head,"Oswald"), sans-serif; font-weight:700; font-size:13px;
+  }
+  .sb-name{
+    font-family:var(--font-head,"Oswald"), sans-serif;
+    font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    font-size:14px; line-height:1.2; color:var(--chalk);
+  }
+  .sb-nav{ display:flex; flex-direction:column; gap:2px; margin-bottom:20px; }
+  .sb-stats{
+    display:flex; flex-direction:column; gap:8px;
+    margin-bottom:20px; padding:14px; border-radius:8px;
+    background:rgba(var(--pitch-rgb,255,255,255), .3);
+    border:1px solid var(--line);
+  }
+  .sb-stat{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .sb-stat-label{
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--chalk-dim);
+  }
+  .sb-stat-val{
+    font-family:var(--font-mono,"Roboto Mono"), monospace; font-weight:700;
+    font-size:13px; color:var(--chalk); text-align:right; overflow-wrap:anywhere;
+  }
+  .sb-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--line); }
+
+  /* pinned sidebar at desktop widths — same markup, no drawer/overlay needed */
+  @media (min-width:980px){
+    #menuOverlay{ display:none !important; }
+    #menuIcon{ display:none !important; }
+    #backBtn{ left:280px !important; }
+    #menuDrawer{
+      transform:none !important;
+      width:260px;
+      padding-top:24px;
+      display:flex; flex-direction:column;
+      border-right:1px solid var(--line);
+      box-shadow:none;
+    }
+    header, #tickerStrip, main, footer{
+      margin-left:280px !important; margin-right:auto !important;
+      max-width:min(960px, calc(100vw - 300px)) !important;
+    }
+  }
+
   /* ============ THEME PANEL ============ */
   #themeOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
@@ -269,6 +345,34 @@
     box-shadow:0 18px 60px rgba(0,0,0,.35);
   }
   #themeOverlay.show, #themePanel.show{ display:block; }
+
+  /* ============ SKIN PICKER: lives in the sidebar, 3 parallel choices ============ */
+  .sb-theme{
+    margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--line);
+  }
+  .sb-theme-label{
+    display:block;
+    font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+    color:var(--chalk-dim); margin-bottom:10px;
+  }
+  #skinPill{
+    display:flex; gap:8px;
+  }
+  #skinPill button{
+    flex:1;
+    width:auto; height:44px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(var(--pitch-rgb,255,255,255), .3);
+    border:1px solid var(--line); border-radius:8px;
+    color:var(--chalk-dim);
+    transition:background .14s ease, color .14s ease, border-color .14s ease;
+  }
+  #skinPill button svg{ width:19px; height:19px; }
+  #skinPill button:hover{ color:var(--chalk); border-color:var(--chalk-dim); }
+  #skinPill button.active{
+    background:var(--floodlight); color:var(--accent-text, #0a0a0a); border-color:var(--floodlight);
+  }
+
   .theme-label{
     display:block;
     font-size:12px; letter-spacing:.15em; text-transform:uppercase;
@@ -283,7 +387,6 @@
   }
   .theme-swatch:hover{ border-color:var(--chalk); }
   .theme-colors{ display:flex; gap:16px; flex-wrap:wrap; }
-  #thGallery .theme-swatch.sel{ border-color:var(--floodlight); box-shadow:0 0 0 2px var(--floodlight); }
   .theme-colors label{
     display:flex; align-items:center; gap:8px;
     font-size:14px; color:var(--chalk); font-weight:600;
@@ -298,78 +401,136 @@
     position:fixed; top:50%; left:0; right:0;
     margin-left:auto; margin-right:auto;
     transform:translateY(-50%);
-    width:min(880px, calc(100vw - 32px));
+    width:min(1120px, calc(100vw - 32px));
+    height:min(760px, calc(100vh - 48px));
     max-height:calc(100vh - 48px);
-    overflow:auto;
+    display:none;
+    flex-direction:column;
     background:rgba(var(--pitch-rgb,255,255,255), var(--glass-panel-a,.8));
     backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
     -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 1.3px)) saturate(1.9);
     border:1px solid rgba(255,255,255,.22);
-    border-radius:8px;
-    padding:24px;
-    display:none; z-index:101;
+    border-radius:10px;
+    padding:22px;
+    z-index:101;
     animation:fadeUp .26s ease;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 24px 70px rgba(0,0,0,.4);
   }
-  #shareOverlay.show, #sharePanel.show{ display:block; }
-  .share-grid{ display:grid; grid-template-columns:280px 1fr; gap:22px; }
-  .share-preview-wrap{
-    background:repeating-conic-gradient(rgba(127,127,127,.12) 0 25%, transparent 0 50%) 0 0 / 18px 18px;
-    border:1px solid var(--line); border-radius:6px;
-    padding:10px; overflow:auto; max-height:70vh;
-  }
-  #sharePreview svg{ display:block; border-radius:4px; }
+  #shareOverlay.show, #sharePanel.show{ display:flex; }
+
   .theme-swatch.sel{ border-color:var(--floodlight); box-shadow:0 0 0 2px var(--floodlight); }
-  .sh-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .sh-head h2{ font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); }
+  .sh-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex:0 0 auto; }
+  .sh-head h2{
+    font-family:var(--font-head, "Oswald"), sans-serif;
+    font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight);
+  }
   .sh-x{
     background:transparent; border:1px solid var(--line); border-radius:50%;
-    width:32px; height:32px; color:var(--chalk); opacity:.8; cursor:pointer; font-size:14px;
+    width:44px; height:44px; color:var(--chalk); opacity:.8; cursor:pointer; font-size:14px;
   }
   .sh-x:hover{ opacity:1; border-color:var(--chalk-dim); }
-  .fmt-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:12px; }
-  .fmt-chip{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:8px 14px; border-radius:999px;
+
+  /* ---- the two-pane body: big preview + a settings rail that scrolls on its own ---- */
+  .share-body{
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:20px;
+    flex:1 1 auto;
+    min-height:0;   /* lets the grid children scroll instead of forcing the panel to grow */
+  }
+  .share-preview-col{ display:flex; flex-direction:column; min-height:0; }
+  .share-preview-wrap{
+    flex:1 1 auto; min-height:0;
+    display:flex; align-items:center; justify-content:center;
+    background:repeating-conic-gradient(rgba(127,127,127,.12) 0 25%, transparent 0 50%) 0 0 / 18px 18px;
+    border:1px solid var(--line); border-radius:8px;
+    padding:16px; overflow:auto;
+  }
+  #sharePreview{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:6px; overflow:hidden; box-shadow:0 14px 40px rgba(0,0,0,.32);
+  }
+  #sharePreview svg{ display:block; width:auto; height:auto; max-width:100%; max-height:100%; border-radius:4px; }
+
+  .fmt-row{ display:flex; gap:8px; margin-top:14px; flex:0 0 auto; }
+  .fmt-card{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    padding:10px 6px; min-height:56px; border-radius:8px;
     background:rgba(var(--pitch-rgb,255,255,255), .38);
     border:1px solid var(--line);
-    color:var(--chalk); opacity:.8;
-    font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer;
-  }
-  .fmt-chip .fmt-ic{ display:inline-block; border:1.5px solid currentColor; border-radius:2px; opacity:.75; }
-  .fmt-chip.on{
-    opacity:1; border-color:var(--floodlight);
-    box-shadow:0 0 0 1px var(--floodlight);
-  }
-  .sh-tabs{ display:flex; gap:6px; margin-bottom:14px; }
-  .sh-tab{
-    flex:1; padding:10px 8px; border-radius:8px;
-    background:rgba(var(--pitch-rgb,255,255,255), .3);
-    border:1px solid var(--line);
     color:var(--chalk); opacity:.72;
-    font-family:inherit; font-size:13px; font-weight:800; cursor:pointer;
+    font-family:var(--font-mono, "Roboto Mono"), monospace; font-size:11px; font-weight:700; letter-spacing:.03em;
+    cursor:pointer;
   }
-  .sh-tab.on{ opacity:1; border-color:var(--floodlight); color:var(--floodlight); }
-  .sh-pane{ animation:fadeIn .18s ease; }
+  .fmt-card:hover{ opacity:1; border-color:var(--chalk-dim); }
+  .fmt-card.on{ opacity:1; color:var(--accent-text, #0a0a0a); background:var(--floodlight); border-color:var(--floodlight); }
+  .fmt-shape{ display:block; border:1.5px solid currentColor; border-radius:2px; opacity:.8; }
+  .fmt-auto{ width:20px; height:14px; border-style:dashed; }
+  .fmt-square{ width:16px; height:16px; }
+  .fmt-story{ width:9px; height:16px; }
+  .fmt-wide{ width:20px; height:11px; }
+
+  /* ---- settings rail: one continuous scroll, grouped into clear sections (no tabs) ---- */
+  .share-settings{ overflow-y:auto; min-height:0; padding-right:4px; }
+  .sh-section{
+    padding:14px 0; border-bottom:1px solid var(--line);
+  }
+  .sh-section:first-child{ padding-top:0; }
+  .sh-section:last-child{ border-bottom:none; padding-bottom:0; }
+  #shColsRow{ margin-top:12px; }
+
   .share-actions{
-    position:sticky; bottom:0;
+    flex:0 0 auto;
     display:flex; gap:8px; flex-wrap:wrap;
-    margin-top:18px; padding-top:14px;
+    margin-top:16px; padding-top:14px;
     border-top:1px solid var(--line);
-    background:linear-gradient(180deg, transparent, rgba(var(--pitch-rgb,255,255,255), .55) 40%);
   }
   .share-actions .sh-primary{ flex:1 1 140px; }
   .share-actions .btn-ghost{ flex:1 1 90px; }
-  #sharePreview{ border-radius:10px; overflow:hidden; box-shadow:0 14px 40px rgba(0,0,0,.32); }
-  body.theme-brutal .fmt-chip, body.theme-brutal .sh-tab, body.theme-brutal #sharePreview{ border-radius:0; }
+  body.theme-mono .fmt-card, body.theme-mono #sharePreview{ border-radius:0; }
 
-  .design-seg{ flex-wrap:wrap; }
-  .design-seg button{ flex:1 1 auto; padding:9px 10px; font-size:13px; }
+  /* ---- template picker: 2 real preset looks, not a dropdown of abstract patterns ---- */
+  .template-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .template-card{
+    flex:1 1 140px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    padding:14px 10px; border-radius:10px;
+    background:rgba(var(--pitch-rgb,255,255,255), .3);
+    border:1px solid var(--line);
+    color:var(--chalk); text-align:center; cursor:pointer;
+  }
+  .template-card:hover{ border-color:var(--chalk-dim); }
+  .template-card.on{ border-color:var(--floodlight); box-shadow:0 0 0 1px var(--floodlight); }
+  .template-name{ font-family:var(--font-head,"Oswald"), sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; }
+  .template-blurb{ font-size:10.5px; color:var(--chalk-dim); line-height:1.35; }
+  .template-thumb{
+    width:100%; height:52px; border-radius:6px;
+    background:rgba(var(--pitch-rgb,0,0,0), .28);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    padding:8px;
+  }
+  .template-thumb-schedule .tt-bar{ width:80%; height:7px; border-radius:2px; background:var(--floodlight); opacity:.85; }
+  .template-thumb-schedule .tt-bar:nth-child(2){ opacity:.6; }
+  .template-thumb-schedule .tt-bar:nth-child(3){ opacity:.4; }
+  .template-thumb-planner{ flex-direction:row; }
+  .template-thumb-planner .tt-flag{ width:36%; height:26px; opacity:.85; }
+  .template-thumb-planner .tt-flag-a{ background:var(--floodlight); clip-path:polygon(15% 0,100% 0,85% 100%,0 100%); }
+  .template-thumb-planner .tt-flag-b{ background:var(--chalk-dim); clip-path:polygon(15% 0,100% 0,85% 100%,0 100%); }
   body.no-blur #sharePanel{ background:var(--pitch-2); backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
   body.no-blur #shareOverlay{ backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
-  @media (max-width:760px){
-    .share-grid{ grid-template-columns:1fr; }
-    .share-preview-wrap{ max-height:42vh; }
+
+  @media (max-width:900px){
+    #sharePanel{ width:100vw; height:100vh; max-height:100vh; top:0; left:0; transform:none; border-radius:0; }
+    /* stack preview above settings — same flex-shrink + overflow:auto mechanics
+       that already work correctly on desktop (just swapped from a row of two
+       grid columns to a column of two flex rows), rather than a new block+auto
+       -height combo that turned out not to actually let .share-settings scroll */
+    .share-body{ display:flex; flex-direction:column; }
+    .share-preview-col{ flex:0 0 auto; }
+    .share-preview-wrap{ height:34vh; margin-bottom:14px; }
+    .share-settings{ flex:1 1 auto; min-height:0; overflow-y:auto; }
   }
 
   #aboutOverlay{
@@ -424,6 +585,7 @@
     padding:26px; margin-bottom:26px;
   }
   .panel h2{
+    font-family:var(--font-head, "Oswald"), sans-serif;
     font-size:13px; letter-spacing:.25em; text-transform:uppercase;
     color:var(--floodlight); margin-bottom:16px;
   }
@@ -596,17 +758,51 @@
     .slot-row .slot-label{ flex-basis:100%; }
   }
 
-  /* ============ SAVED TEAM CARDS ============ */
-  .saved-list{ display:flex; flex-direction:column; gap:10px; }
+  /* ============ SAVED TEAM CARDS (entity card grid) ============ */
+  .saved-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+    gap:14px;
+  }
   .saved-card{
+    position:relative;
     background:var(--pitch);
     border:1px solid var(--line);
-    border-radius:6px;
-    padding:12px 14px;
+    border-radius:8px;
+    padding:16px 14px 14px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;
+    overflow:hidden;
   }
-  .saved-head{ display:flex; align-items:center; gap:12px; }
-  .saved-head .name{ flex:1; font-weight:700; font-size:16px; }
-  .saved-head .in-list-tag{ font-size:12px; color:var(--chalk); opacity:.72; font-style:italic; }
+  .saved-card.editing{ grid-column:1 / -1; align-items:stretch; text-align:left; }
+  .card-num{
+    position:absolute; top:8px; left:8px;
+    font-family:var(--font-mono, "Roboto Mono"), monospace;
+    font-size:10.5px; font-weight:700; color:var(--chalk-dim);
+    background:rgba(var(--pitch-rgb,0,0,0), .4);
+    border-radius:999px; padding:2px 7px;
+  }
+  .saved-card .logo.lg{ margin-top:6px; }
+  .saved-card .name{ font-weight:700; font-size:15px; }
+  .saved-card .in-list-tag{ font-size:11px; color:var(--chalk); opacity:.72; font-style:italic; }
+  .card-stat{
+    font-family:var(--font-mono, "Roboto Mono"), monospace;
+    font-size:11px; color:var(--chalk-dim); letter-spacing:.04em;
+  }
+  /* a static always-visible action row, not a hover-reveal overlay — this app's
+     target browser doesn't parse `@media (hover: none)` as a rule at all (it's
+     dropped from the CSSOM entirely, not just "never matches"), so a hover-only
+     reveal left Use/Edit/Delete permanently unreachable without a mouse hovering
+     the exact card. Always-visible is slower to fade in but always clickable. */
+  .card-overlay{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    margin-top:2px;
+  }
+  /* overlay icon buttons need the full 44px tap target even though the glyph is small */
+  .card-overlay .icon-btn{
+    min-width:44px; min-height:44px; padding:0 12px;
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:50%;
+  }
   .icon-btn{
     background:transparent; border:1px solid var(--line);
     color:var(--chalk); opacity:.85; padding:6px 11px; font-size:14px;
@@ -661,8 +857,16 @@
   }
   .tour-card.viewing{ border-color:var(--floodlight); }
   .tour-head{ display:flex; align-items:center; gap:14px; }
-  .tour-head .tour-name{ flex:1; font-weight:800; font-size:16px; }
+  .tour-head .tour-name{ flex:1; font-weight:800; font-size:16px; display:flex; align-items:center; gap:4px; min-width:0; }
   .tour-head .tour-meta{ font-size:13px; color:var(--chalk); opacity:.72; white-space:nowrap; }
+  .tour-rename{ gap:6px; }
+  .tour-rename input{
+    flex:1; min-width:0;
+    background:var(--pitch); border:1px solid var(--floodlight); border-radius:6px;
+    color:var(--chalk); font-family:inherit; font-size:16px; font-weight:800;
+    padding:6px 10px; outline:none;
+  }
+  .tour-rename .icon-btn{ flex:0 0 auto; min-width:36px; min-height:36px; padding:0 8px; }
   .tour-body{
     margin-top:18px;
     border-top:1px solid var(--line);
@@ -677,6 +881,7 @@
   .round{ margin-bottom:28px; }
   .round-title{ display:flex; align-items:center; gap:14px; margin-bottom:12px; }
   .round-title h3{
+    font-family:var(--font-head, "Oswald"), sans-serif;
     font-size:14px; letter-spacing:.25em; text-transform:uppercase;
     color:var(--floodlight); white-space:nowrap;
   }
@@ -744,6 +949,7 @@
     font-size:14px;
   }
   table.standings th{
+    font-family:var(--font-head, "Oswald"), sans-serif;
     font-size:11px; letter-spacing:.15em; text-transform:uppercase;
     color:var(--chalk-dim); font-weight:700;
     padding:10px 8px;
@@ -751,6 +957,7 @@
     text-align:center;
   }
   table.standings td{
+    font-family:var(--font-mono, "Roboto Mono"), monospace;
     padding:9px 8px;
     border-bottom:1px solid var(--line);
     text-align:center;
@@ -758,10 +965,20 @@
   }
   table.standings tr:last-child td{ border-bottom:none; }
   table.standings th.team-col, table.standings td.team-col{ text-align:left; }
-  table.standings td.team-col{ font-weight:700; }
+  table.standings td.team-col{ font-family:var(--font, inherit); font-weight:700; }
   table.standings .team-cell{ display:flex; align-items:center; gap:9px; }
   table.standings td.pts{ font-weight:900; }
   table.standings td.pos{ color:var(--chalk-dim); width:34px; }
+
+  /* medal tier badges — ranks 1-3, each with its OWN ink (see medalBadge()) */
+  .medal{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%;
+    font-weight:800; font-size:12px;
+  }
+  .medal-gold{ background:var(--medal-gold, var(--floodlight)); color:var(--medal-gold-ink, var(--accent-text)); }
+  .medal-silver{ background:var(--medal-silver, #c9d0d6); color:var(--medal-silver-ink, #10151a); }
+  .medal-bronze{ background:var(--medal-bronze, #e08a3c); color:var(--medal-bronze-ink, #2a1503); }
 
   .toolbar{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
   .bracket-wrap{
@@ -831,11 +1048,11 @@
     input.score{ width:36px; }
     .team-row{ flex-direction:column; }
     .panel{ padding:20px 16px; }
-    .saved-head{ flex-wrap:wrap; }
+    .saved-list{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
   }
   @media print{
     body{ background:#fff; color:#000; }
-    header .kick, .toolbar, footer, .tabs, #page-main, #page-saved, #menuIcon, #menuDrawer, #menuOverlay, #backBtn{ display:none !important; }
+    header .kick, .toolbar, footer, #page-main, #page-saved, #menuIcon, #menuDrawer, #menuOverlay, #backBtn, #tickerStrip, #skinPill{ display:none !important; }
     #page-fixtures{ display:block !important; }
     .panel{ border:none; background:#fff; padding:0; }
     .panel h2{ display:none; }
@@ -866,9 +1083,20 @@
     position:absolute;
     inset:-24px 0 0 0;                /* header is already full-width — no overhang */
     z-index:-1;
+    /* the loudest visual moment: 3 soft glow pools (accent, live, and a pitch-deep
+       pool) layered over the base gradient, not a flat colour or a photo */
     background:
-      linear-gradient(180deg, rgba(var(--accent-rgb, 255,182,39), .10), transparent 65%),
-      linear-gradient(180deg, rgba(var(--pitch-rgb, 20,20,20), .55), rgba(var(--pitch-rgb, 20,20,20), .25));
+      radial-gradient(620px 360px at 18% 0%,  rgba(var(--accent-rgb, 255,182,39), .22), transparent 60%),
+      radial-gradient(560px 340px at 86% 30%, rgba(var(--live-rgb, 46,230,166), .16), transparent 62%),
+      radial-gradient(700px 420px at 50% 100%, rgba(var(--pitch-rgb, 20,20,20), .5), transparent 70%),
+      linear-gradient(180deg, rgba(var(--pitch-rgb, 20,20,20), .6), rgba(var(--pitch-rgb, 20,20,20), .3));
+    /* each glow pool drifts a different amount as the cursor moves — set by initHeroParallax() */
+    background-position:
+      calc(var(--mx,0) * 14px) calc(var(--my,0) * 14px),
+      calc(var(--mx,0) * -18px) calc(var(--my,0) * 10px),
+      calc(var(--mx,0) * 8px) calc(var(--my,0) * -8px),
+      0 0;
+    transition:background-position .4s cubic-bezier(.2,.8,.2,1);
     backdrop-filter:blur(calc(var(--blur, 26) * 0.5px)) saturate(1.5);
     -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 0.5px)) saturate(1.5);
     border-bottom:none;
@@ -879,16 +1107,52 @@
     backdrop-filter:none;
     -webkit-backdrop-filter:none;
   }
-  body.theme-brutal header::before{
+  body.theme-mono header::before{
     border-bottom:2px solid var(--chalk);
     box-shadow:0 6px 0 rgba(0,0,0,.25);
   }
+
+  /* ============ LIVE TICKER ============ */
+  #tickerStrip{
+    max-width:960px; margin:-6px auto 26px; padding:0 20px;
+    overflow:hidden;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:rgba(var(--pitch-rgb,0,0,0), .3);
+  }
+  #tickerStrip:empty, #tickerStrip.empty{ display:none; }
+  #tickerTrack{
+    display:inline-flex; gap:0; white-space:nowrap;
+    padding:9px 0;
+    animation:tickerScroll 34s linear infinite;
+    will-change:transform;
+  }
+  #tickerStrip:hover #tickerTrack{ animation-play-state:paused; }
+  @keyframes tickerScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .ticker-item{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono, "Roboto Mono"), monospace;
+    font-size:12.5px; font-weight:600;
+    color:var(--chalk-dim);
+    padding:0 26px; border-right:1px solid var(--line);
+  }
+  .ticker-item b{ color:var(--chalk); font-weight:700; }
+  .ticker-live{
+    display:inline-flex; align-items:center; gap:6px;
+    color:var(--live-ink, #0a0a0a);
+    background:var(--live); border-radius:999px;
+    padding:2px 9px; font-size:10.5px; font-weight:800; letter-spacing:.08em;
+  }
+  .ticker-live::before{
+    content:""; width:6px; height:6px; border-radius:50%;
+    background:var(--live-ink, #0a0a0a); flex:0 0 auto;
+  }
+  @media (prefers-reduced-motion: reduce){ #tickerTrack{ animation:none; } }
 
   #quoteBar, header p{
     text-shadow:0 1px 2px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.22);
   }
   .hint, .empty-note, .opt-group label, .editor label, .theme-label,
-  .tour-head .tour-meta, .acc-sub, .saved-head .in-list-tag,
+  .tour-head .tour-meta, .acc-sub, .saved-card .in-list-tag,
   .seg button, .tab, .check, .menu-item, .next-md,
   .stat-grid span, .boot-team, .hall-meta, .draw-slot,
   .round-title h3, .champ-badge, .cb-label{
@@ -903,11 +1167,6 @@
   }
   .scorer-btn{ filter:grayscale(1) drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
   .scorer-btn:hover, .scorer-btn.has{ filter:drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
-  /* light themes need a gentler touch */
-  body.theme-print .hint, body.theme-print .opt-group label, body.theme-print .seg button,
-  body.theme-print #quoteBar, body.theme-print header p{
-    text-shadow:0 1px 1px rgba(0,0,0,.12);
-  }
 
   /* green confirmation toast */
   #toast{
@@ -923,121 +1182,59 @@
     z-index:210;
   }
   #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-  body.theme-brutal #toast{ border-radius:0; border:2px solid #fff; box-shadow:4px 4px 0 var(--pop); }
+  body.theme-mono #toast{ border-radius:0; border:2px solid #fff; box-shadow:4px 4px 0 var(--pop); }
 
-  /* ---- THEME LOOKS: every gallery theme has its own personality ---- */
-  /* Classic · paper: soft editorial lift */
-  body.theme-paper .panel, body.theme-paper .tour-card{ box-shadow:0 10px 30px rgba(0,0,0,.07); }
-  /* Dark · noir: hairlines, no ambient blobs, accent underlines */
-  body.theme-noir::before{ display:none; }
-  body.theme-noir .panel, body.theme-noir .tour-card{
-    border-color:rgba(255,255,255,.07);
-    box-shadow:0 14px 48px rgba(0,0,0,.55);
-  }
-  body.theme-noir .round-title h3{
-    border-bottom:2px solid var(--floodlight);
-    padding-bottom:6px;
-  }
-  /* Night pitch · stadium: mown-grass stripes + floodlit panels */
-  body.theme-stadium main{
+  /* ---- THREE SKIN LOOKS: each skin carries its own geometry, not just its own colors ---- */
+  /* Normal · night pitch: mown-grass stripes + floodlit panels */
+  body.theme-normal main{
     background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 70px, transparent 70px 140px);
   }
-  body.theme-stadium .panel, body.theme-stadium .tour-card{
+  body.theme-normal .panel, body.theme-normal .tour-card{
     box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 12px 34px rgba(0,0,0,.4);
   }
-  /* Royal · luxe: gold top bars, stately spacing */
-  body.theme-luxe .panel, body.theme-luxe .tour-card{
+  /* Hype · Golden Boot: gold top bars, uppercase trophy-plaque labels */
+  body.theme-hype .panel, body.theme-hype .tour-card{
     border-top:3px solid var(--floodlight);
     border-color:rgba(var(--accent-rgb), .3);
   }
-  body.theme-luxe .btn-amber{ letter-spacing:.14em; text-transform:uppercase; }
-  /* Rose · neon: glowing accents */
-  body.theme-neon .btn-amber{ box-shadow:0 0 22px rgba(var(--accent-rgb), .55); }
-  body.theme-neon .round-title h3{ text-shadow:0 0 14px rgba(var(--accent-rgb), .6); }
-  body.theme-neon input:focus, body.theme-neon .score:focus{
-    box-shadow:0 0 0 2px rgba(var(--accent-rgb), .4);
-  }
-  /* Sunset · retro: rounded, warm offset shadows */
-  body.theme-retro .panel, body.theme-retro .tour-card{
-    border-radius:14px;
-    box-shadow:8px 8px 0 rgba(var(--accent-rgb), .18);
-  }
-  body.theme-retro .btn-amber{ border-radius:12px; }
-  /* Ocean · wave: pill buttons, deep soft shadows */
-  body.theme-wave .panel, body.theme-wave .tour-card{
-    border-radius:18px;
-    box-shadow:0 20px 50px rgba(0,0,0,.35);
-  }
-  body.theme-wave .btn-amber, body.theme-wave .btn-ghost{ border-radius:999px; }
-  /* Forest · organic: rounded, ringed like tree rings */
-  body.theme-organic .panel, body.theme-organic .tour-card{
-    border-radius:18px;
-    outline:1px solid var(--line);
-    outline-offset:5px;
-  }
-  /* Midnight · cosmic: a starfield instead of ambient blobs */
-  body.theme-cosmic::before{
-    background-image:
-      radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.8) 50%, transparent 51%),
-      radial-gradient(1px 1px at 34% 64%, rgba(255,255,255,.6) 50%, transparent 51%),
-      radial-gradient(2px 2px at 58% 18%, rgba(255,255,255,.7) 50%, transparent 51%),
-      radial-gradient(1px 1px at 76% 44%, rgba(255,255,255,.5) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 88% 78%, rgba(255,255,255,.7) 50%, transparent 51%),
-      radial-gradient(1px 1px at 22% 86%, rgba(255,255,255,.5) 50%, transparent 51%);
-    background-size:420px 420px;
-    filter:none;
-    opacity:.7;
-  }
-  /* Sand · print: flat editorial, ruled headings */
-  body.theme-print .panel, body.theme-print .tour-card{
-    box-shadow:none;
-    border:1.5px solid rgba(61,47,30,.25);
-    border-radius:4px;
-  }
-  body.theme-print .round-title h3{
-    display:inline-block;
-    border-bottom:2px solid var(--chalk);
-    padding-bottom:4px;
-  }
-  body.theme-print .btn-amber{ border-radius:4px; }
-  /* Aurora · glow: teal halo around everything important */
-  body.theme-glow .panel, body.theme-glow .tour-card{
-    box-shadow:0 0 0 1px rgba(var(--accent-rgb), .22), 0 14px 44px rgba(var(--accent-rgb), .10);
-  }
-  body.theme-glow .btn-amber{ box-shadow:0 0 20px rgba(var(--accent-rgb), .45); }
+  body.theme-hype .btn-amber{ letter-spacing:.14em; text-transform:uppercase; }
+  body.theme-hype .round-title h3{ text-shadow:0 0 14px rgba(var(--accent-rgb), .45); }
 
-  /* ---- HYPER: neo-brutalist mode (sharp corners, hard offset shadows) ---- */
-  body.theme-brutal .panel, body.theme-brutal .tour-card, body.theme-brutal .match,
-  body.theme-brutal button, body.theme-brutal input, body.theme-brutal select, body.theme-brutal textarea,
-  body.theme-brutal .chip, body.theme-brutal .tabs, body.theme-brutal .menu-drawer,
-  body.theme-brutal #themePanel, body.theme-brutal #sharePanel, body.theme-brutal #aboutPanel,
-  body.theme-brutal #hallPanel, body.theme-brutal #drawPanel, body.theme-brutal .stat-grid > div,
-  body.theme-brutal .standings-wrap, body.theme-brutal #countBubble, body.theme-brutal .theme-swatch{
+  /* ---- Mono (B&W): scoreboard-hard corners + offset shadows, the one place color survives is --pop (red) ---- */
+  body.theme-mono .panel, body.theme-mono .tour-card, body.theme-mono .match,
+  body.theme-mono button, body.theme-mono input, body.theme-mono select, body.theme-mono textarea,
+  body.theme-mono .chip, body.theme-mono .tabs, body.theme-mono .menu-drawer,
+  body.theme-mono #themePanel, body.theme-mono #sharePanel, body.theme-mono #aboutPanel,
+  body.theme-mono #hallPanel, body.theme-mono #drawPanel, body.theme-mono .stat-grid > div,
+  body.theme-mono .standings-wrap, body.theme-mono #countBubble, body.theme-mono .theme-swatch{
     border-radius:0 !important;
   }
-  body.theme-brutal .panel, body.theme-brutal .tour-card{
+  body.theme-mono .panel, body.theme-mono .tour-card{
     border:2px solid var(--chalk);
     box-shadow:6px 6px 0 var(--pop);
   }
-  body.theme-brutal .btn-amber{
+  body.theme-mono .btn-amber{
     border:2px solid var(--chalk);
     box-shadow:4px 4px 0 var(--pop);
     transition:transform .12s ease, box-shadow .12s ease;
   }
-  body.theme-brutal .btn-amber:active{
+  body.theme-mono .btn-amber:active{
     transform:translate(3px,3px);
     box-shadow:1px 1px 0 var(--pop);
   }
-  body.theme-brutal .btn-ghost, body.theme-brutal .icon-btn{ border:2px solid var(--line); }
-  body.theme-brutal .brand-flow{ color:var(--floodlight); }
-  body.theme-brutal .brand-sub .accent{ color:var(--pop); }
-  body.theme-brutal #themePanel, body.theme-brutal #sharePanel, body.theme-brutal #aboutPanel,
-  body.theme-brutal #hallPanel, body.theme-brutal #drawPanel, body.theme-brutal .menu-drawer{
+  body.theme-mono .btn-ghost, body.theme-mono .icon-btn{ border:2px solid var(--line); }
+  body.theme-mono .brand-flow{ color:var(--floodlight); }
+  body.theme-mono .brand-sub .accent{ color:var(--pop); }
+  body.theme-mono #themePanel, body.theme-mono #sharePanel, body.theme-mono #aboutPanel,
+  body.theme-mono #hallPanel, body.theme-mono #drawPanel, body.theme-mono .menu-drawer{
     border:2px solid var(--chalk);
     box-shadow:8px 8px 0 var(--pop);
   }
-  body.theme-brutal .champ-banner{ border:2px solid var(--pop); border-radius:0; }
-  body.theme-brutal tr.q-adv td:first-child{ box-shadow:inset 4px 0 0 var(--pop); }
+  body.theme-mono .champ-banner{ border:2px solid var(--pop); border-radius:0; }
+  body.theme-mono tr.q-adv td:first-child{ box-shadow:inset 4px 0 0 var(--pop); }
+  #skinPill button.active{ box-shadow:none; }
+  body.theme-mono #skinPill{ border-radius:0; }
+  body.theme-mono #skinPill button.active{ border-radius:0; }
 
   /* champion celebration */
   .champ-badge{
@@ -1125,7 +1322,7 @@
   .wc-btns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
   .wc-btns button{ padding:11px 18px; font-size:15px; }
   body.no-blur .wc-card{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
-  body.theme-brutal .wc-card{ border-radius:0; border:2px solid var(--chalk); box-shadow:6px 6px 0 var(--pop); }
+  body.theme-mono .wc-card{ border-radius:0; border:2px solid var(--chalk); box-shadow:6px 6px 0 var(--pop); }
   #saveFallbackImg{
     -webkit-touch-callout:default;    /* allow the long-press menu */
     -webkit-user-select:auto; user-select:auto;
@@ -1177,8 +1374,8 @@
     font-size:12px; border-radius:999px;
     vertical-align:middle;
   }
-  body.theme-brutal .wh-copy{ border-radius:0; }
-  body.theme-brutal .wh-item{ border-radius:0; }
+  body.theme-mono .wh-copy{ border-radius:0; }
+  body.theme-mono .wh-item{ border-radius:0; }
 
   .wheel-pointer{
     position:absolute; top:-6px; left:50%;
@@ -1212,7 +1409,7 @@
   }
   #wheelOverlay.show, #wheelPanel.show{ display:block; }
   body.no-blur #wheelPanel{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
-  body.theme-brutal #wheelPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
+  body.theme-mono #wheelPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
 
   #publishOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
@@ -1236,7 +1433,7 @@
   }
   #publishOverlay.show, #publishPanel.show{ display:block; }
   body.no-blur #publishPanel{ background:var(--pitch-2); backdrop-filter:none; -webkit-backdrop-filter:none; }
-  body.theme-brutal #publishPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
+  body.theme-mono #publishPanel{ border:2px solid var(--chalk); box-shadow:8px 8px 0 var(--pop); border-radius:0; }
 
   #hallOverlay, #drawOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
@@ -1280,7 +1477,7 @@
   }
   .draw-team{ display:flex; align-items:center; gap:8px; font-size:15px; }
   /* live view mode */
-  body.live-view .tabs, body.live-view #menuIcon, body.live-view #page-main,
+  body.live-view #menuIcon, body.live-view #menuDrawer, body.live-view #page-main,
   body.live-view #page-saved, body.live-view footer, body.live-view #countBubble{ display:none !important; }
   body.live-view .tour-card .icon-btn:not(:first-child){ display:none; }
   body.live-view input.score, body.live-view .scorer-inp, body.live-view .round-when input{
@@ -1357,7 +1554,7 @@
     border:1px solid var(--line); border-radius:8px;
     padding:14px 10px; text-align:center;
   }
-  .stat-grid b{ display:block; font-size:24px; font-weight:900; }
+  .stat-grid b{ display:block; font-family:var(--font-mono, "Roboto Mono"), monospace; font-size:24px; font-weight:900; }
   .stat-grid span{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--chalk-dim); }
   @media print{ .round-when input{ border:none; padding:0; } .scorer-btn{ display:none; } }
 
@@ -1373,14 +1570,6 @@
   .panel{ animation:fadeUp .4s ease both; }
   .tour-body, #picker, #library, #manualPanel{ animation:fadeUp .26s ease; }
   #output, .round{ animation:fadeUp .3s ease; }
-
-  /* frosted-glass sticky tab bar */
-  .tabs{
-    position:sticky; top:0; z-index:60;
-    background:rgba(var(--pitch-rgb, 255,255,255), var(--glass-a, .72));
-    backdrop-filter:blur(calc(var(--blur, 26) * 1px)) saturate(1.8);
-    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 1px)) saturate(1.8);
-  }
 
   /* glass surfaces */
   #menuIcon{
@@ -1413,10 +1602,6 @@
   /* Liquid-Glass finish: a bright specular rim on top, subtle inner depth
      below, and soft elevation — the details that make Apple's glass read
      as a physical material rather than a flat blur */
-  .tabs{
-    border-bottom:none;
-    box-shadow:0 8px 24px -12px rgba(0,0,0,.18);   /* soft float only — no lines */
-  }
   #themePanel{
     border:1px solid rgba(255,255,255,.22);
     box-shadow:
@@ -1453,16 +1638,7 @@
     max-height:calc(100vh - 48px);
     -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;
-    scrollbar-width:thin;
-    scrollbar-color:rgba(var(--accent-rgb,255,182,39), .5) transparent;
   }
-  #themePanel::-webkit-scrollbar{ width:8px; }
-  #themePanel::-webkit-scrollbar-thumb{
-    background:rgba(var(--accent-rgb,255,182,39), .45);
-    border-radius:8px;
-  }
-  #themePanel::-webkit-scrollbar-thumb:hover{ background:rgba(var(--accent-rgb,255,182,39), .7); }
-  #themePanel::-webkit-scrollbar-track{ background:transparent; }
 
   body.no-blur .tabs, body.no-blur #themePanel, body.no-blur #menuIcon, body.no-blur #countBubble{
     box-shadow:none;
@@ -1475,7 +1651,6 @@
     backdrop-filter:none !important;
     -webkit-backdrop-filter:none !important;
   }
-  body.no-blur .tabs{ background:var(--pitch); }
   body.no-blur #menuIcon{ background:var(--pitch-2); }
   body.no-blur #themePanel{ background:var(--pitch-2); }
   body.no-blur #loader{ background:var(--pitch) !important; }
@@ -1486,15 +1661,49 @@
     background-image:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0) 55%);
   }
 
-  /* soft depth + smoother hovers */
-  .panel{ box-shadow:0 2px 16px rgba(0,0,0,.05); }
-  .pick-item, .chip, .saved-card, .tour-card, .match{
-    transition:border-color .16s ease, transform .14s ease, box-shadow .16s ease;
+  /* ============ DEPTH + MICRO-INTERACTIONS ============ */
+  /* layered shadows read as real depth (ambient + direct + accent rim), not a flat blur */
+  .panel{
+    box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 2px 6px rgba(0,0,0,.06), 0 14px 34px -14px rgba(0,0,0,.35);
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .pick-item, .chip, .saved-card, .tour-card, .match, table.standings tbody tr{
+    transition:border-color .16s ease, transform .16s cubic-bezier(.2,.8,.3,1.3), box-shadow .2s ease, background .16s ease;
   }
   .pick-item:hover:not(.disabled), .tour-card:hover, .saved-card:hover{
-    transform:translateY(-1px);
-    box-shadow:0 4px 14px rgba(0,0,0,.07);
+    transform:translateY(-3px);
+    box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 12px 26px -10px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--accent-rgb,255,182,39),.18);
+    border-color:rgba(var(--accent-rgb,255,182,39),.35);
   }
+  .tour-card.viewing{ box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 16px 40px -16px rgba(0,0,0,.45); }
+  table.standings tbody tr:hover{ background:rgba(var(--accent-rgb,255,182,39),.08); }
+  table.standings tbody tr:hover td.pos{ color:var(--floodlight); }
+  .medal{ transition:transform .18s cubic-bezier(.2,.8,.3,1.5), box-shadow .18s ease; }
+  tr:hover .medal{ transform:scale(1.18) rotate(-6deg); box-shadow:0 3px 10px rgba(0,0,0,.35); }
+  .stat-grid > div{ transition:transform .16s ease, box-shadow .16s ease; }
+  .stat-grid > div:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -10px rgba(0,0,0,.4); }
+
+  /* glossy button sweep: a light band that slides across on hover, like a stadium
+     scoreboard catching a floodlight */
+  .btn-amber{ position:relative; overflow:hidden; }
+  .btn-amber::after{
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(115deg, transparent, rgba(255,255,255,.4), transparent);
+    transform:skewX(-20deg);
+    transition:left .5s ease;
+    pointer-events:none;
+  }
+  .btn-amber:hover::after{ left:130%; }
+  .btn-amber, .btn-ghost, .icon-btn, #skinPill button{
+    transition:transform .08s ease, background .15s ease, box-shadow .18s ease, border-color .15s ease;
+  }
+  .btn-amber:hover, .btn-ghost:hover{ box-shadow:0 6px 16px -6px rgba(0,0,0,.35); }
+  @media (prefers-reduced-motion: reduce){
+    .btn-amber::after{ display:none; }
+  }
+
+  /* animated stat numbers (see animateCount() in JS) */
+  [data-count]{ display:inline-block; font-variant-numeric:tabular-nums; }
 
   /* ============ FULL FROSTED-GLASS SURFACES ============ */
   /* soft ambient colour blobs behind everything — this is what the glass frosts */
@@ -1580,9 +1789,7 @@
     .seg{ flex-wrap:wrap; }
     .seg button{ padding:10px 12px; font-size:13.5px; flex:1 1 auto; }
 
-    /* top tabs scroll sideways instead of squeezing */
-    .tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    .tab{ padding:12px 13px; font-size:14px; white-space:nowrap; flex:0 0 auto; }
+    .tab{ padding:13px 12px; font-size:14px; }
 
     /* inputs and dropdowns take the full row */
     .generate-bar input[type=text]{ flex:1 1 100%; }
@@ -1613,20 +1820,16 @@
 <header>
   <div class="kick" id="quoteBar"></div>
   <h1>
-    <span class="brand-flow">Fixture Flow</span>
+    <span class="brand-flow">Fixture <span class="accent-word">Flow</span></span>
     <span class="brand-sub">The Fixture <span class="accent">Maker</span></span>
   </h1>
   <p>Add your teams, pick a format, and generate a full match schedule in one click.</p>
 </header>
 
-<!-- ===== TOP TABS ===== -->
-<nav class="tabs">
-  <button id="tab-main" class="tab on" onclick="switchTab('main')">Fixture Maker</button>
-  <button id="tab-fixtures" class="tab" onclick="switchTab('fixtures')">Fixtures</button>
-  <button id="tab-saved" class="tab" onclick="switchTab('saved')">Saved Teams</button>
-</nav>
+<!-- ===== LIVE TICKER: next matches + latest champions, scrolling ===== -->
+<div id="tickerStrip" aria-hidden="true"><div id="tickerTrack"></div></div>
 
-<!-- menu icon, top left corner -->
+<!-- menu icon, top left corner (hidden at desktop widths — the sidebar is pinned open there) -->
 <button id="menuIcon" title="Menu" aria-label="Menu" onclick="toggleMenu()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
     <line x1="4" y1="7" x2="20" y2="7"/>
@@ -1650,32 +1853,60 @@
   </svg>
 </button>
 
-<!-- ===== MENU DRAWER ===== -->
+<!-- ===== SIDEBAR: brand, numbered nav, live stats, footer actions
+     (pinned open at desktop widths, a slide-in drawer below ~980px) ===== -->
 <div id="menuOverlay" onclick="toggleMenu()"></div>
 <aside id="menuDrawer">
+  <div id="sbBrand">
+    <span class="sb-mark" aria-hidden="true">FF</span>
+    <span class="sb-name">Fixture<br>Flow</span>
+  </div>
+
+  <nav class="sb-nav">
+    <button id="tab-main" class="tab on" onclick="switchTab('main')"><span class="tab-num">01</span>Fixture Maker</button>
+    <button id="tab-fixtures" class="tab" onclick="switchTab('fixtures')"><span class="tab-num">02</span>Fixtures</button>
+    <button id="tab-saved" class="tab" onclick="switchTab('saved')"><span class="tab-num">03</span>Saved Teams</button>
+  </nav>
+
+  <div class="sb-theme">
+    <span class="sb-theme-label">Theme</span>
+    <div id="skinPill" role="group" aria-label="Broadcast theme">
+      <button data-skin="normal" class="active" aria-label="Normal theme" aria-pressed="true" title="Normal" onclick="setSkin('normal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 L4 9 L12 4 L20 9 L20 20"/><path d="M9 20 V13 H15 V20"/></svg>
+      </button>
+      <button data-skin="hype" aria-label="Hype theme" aria-pressed="false" title="Hype" onclick="setSkin('hype')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5H4a3 3 0 0 0 3 5M17 5h3a3 3 0 0 1-3 5"/><path d="M12 14v3M9 20h6M10 17h4v3h-4z"/></svg>
+      </button>
+      <button data-skin="mono" aria-label="Black and white theme" aria-pressed="false" title="B&amp;W" onclick="setSkin('mono')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="sbStats" class="sb-stats"></div>
+
   <div id="menuAccount"></div>
-  <nav class="menu-list">
+  <nav class="menu-list sb-footer">
     <button class="menu-item" onclick="toggleMenu(); toggleThemePanel()">
-      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/></svg></span>
-      Theme
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM256 64l0 384a192 192 0 1 1 0-384z"/></svg></span> Display settings
     </button>
     <button class="menu-item" onclick="exportBackup()">
-      <span class="mi-ic">⬇</span> Export backup
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 448 512"><path fill="currentColor" d="M256 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 242.7 256 32zM64 320c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-46.9 0-56.6 56.6c-31.2 31.2-81.9 31.2-113.1 0L110.9 320 64 320zm304 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg></span> Export backup
     </button>
     <button class="menu-item" onclick="document.getElementById('importFile').click()">
-      <span class="mi-ic">⬆</span> Import backup
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 448 512"><path fill="currentColor" d="M256 109.3L256 320c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-210.7-41.4 41.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l96-96c12.5-12.5 32.8-12.5 45.3 0l96 96c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 109.3zM224 400c44.2 0 80-35.8 80-80l80 0c35.3 0 64 28.7 64 64l0 32c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64l0-32c0-35.3 28.7-64 64-64l80 0c0 44.2 35.8 80 80 80zm144 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg></span> Import backup
     </button>
     <button class="menu-item" onclick="toggleMenu(); togglePublish()">
-      <span class="mi-ic">🌐</span> Publish to my site
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M351.9 280l-190.9 0c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zM160.9 232l190.9 0C349 167.5 334.7 108.1 314.4 64.6 303 40.2 290.7 22.8 279.3 12.2 268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4zm-48 0C116.4 146.4 138.5 66.9 170.8 14.7 78.7 47.3 10.9 131.2 1.5 232l111.4 0zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3L1.5 280zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3l-111.4 0zm111.4-48C501.9 131.2 434.1 47.3 342 14.7 374.3 66.9 396.4 146.4 399.9 232l111.4 0z"/></svg></span> Publish to my site
     </button>
     <button class="menu-item" onclick="toggleMenu(); toggleWheel()">
-      <span class="mi-ic">🎡</span> Spin the Wheel
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M337.8 205.7l48.6-42.5c13.8 19.3 23.4 41.9 27.4 66.2l-64.4 4.3c-2.4-10.1-6.4-19.5-11.6-28zm140.1 19.5c-5.3-38.8-20.6-74.5-43.2-104.3l.8-.7C449 108.4 449.7 87.6 437 75s-33.4-12-45.2 1.5l-.7 .8c-29.8-22.6-65.5-37.9-104.3-43.2l.1-1.1c1.2-17.9-13-33-30.9-33s-32.1 15.2-30.9 33l.1 1.1c-38.8 5.3-74.5 20.6-104.3 43.2l-.7-.8C108.4 63 87.6 62.3 75 75s-12 33.4 1.5 45.2l.8 .7c-22.6 29.8-37.9 65.5-43.2 104.3l-1.1-.1c-17.9-1.2-33 13-33 30.9s15.2 32.1 33 30.9l1.1-.1c5.3 38.8 20.6 74.5 43.2 104.3l-.8 .7C63 403.6 62.3 424.4 75 437s33.4 12 45.2-1.5l.7-.8c29.8 22.6 65.5 37.9 104.3 43.2l-.1 1.1c-1.2 17.9 13 33 30.9 33s32.1-15.2 30.9-33l-.1-1.1c38.8-5.3 74.5-20.6 104.3-43.2l.7 .8c11.8 13.5 32.5 14.2 45.2 1.5s12-33.4-1.5-45.2l-.8-.7c22.6-29.8 37.9-65.5 43.2-104.3l1.1 .1c17.9 1.2 33-13 33-30.9s-15.2-32.1-33-30.9l-1.1 .1zM163.2 125.6c19.3-13.8 41.9-23.4 66.2-27.5l4.3 64.4c-10 2.4-19.5 6.4-28 11.6l-42.5-48.6zm-65 103.8c4.1-24.4 13.7-46.9 27.5-66.2l48.6 42.5c-5.3 8.5-9.2 18-11.6 28l-64.4-4.3zm27.5 119.4c-13.8-19.3-23.4-41.9-27.5-66.2l64.4-4.3c2.4 10.1 6.4 19.5 11.6 28l-48.6 42.5zm103.8 65c-24.4-4.1-46.9-13.7-66.2-27.4l42.5-48.6c8.5 5.3 18 9.2 28 11.6l-4.3 64.4zm119.4-27.4c-19.3 13.8-41.9 23.4-66.2 27.4l-4.3-64.4c10-2.4 19.5-6.4 28-11.6l42.5 48.6zm65-103.8c-4.1 24.4-13.7 46.9-27.4 66.2l-48.6-42.5c5.3-8.6 9.2-18 11.6-28l64.4 4.3zm-65-156.9l-42.5 48.6c-8.6-5.3-18-9.2-28-11.6l4.3-64.4c24.4 4.1 46.9 13.7 66.2 27.5zM256 224a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span> Spin the Wheel
     </button>
     <button class="menu-item" onclick="toggleMenu(); toggleHall()">
-      <span class="mi-ic">🏆</span> Hall of Champions
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M144.3 0l224 0c26.5 0 48.1 21.8 47.1 48.2-.2 5.3-.4 10.6-.7 15.8l49.6 0c26.1 0 49.1 21.6 47.1 49.8-7.5 103.7-60.5 160.7-118 190.5-15.8 8.2-31.9 14.3-47.2 18.8-20.2 28.6-41.2 43.7-57.9 51.8l0 73.1 64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0 0-73.1c-16-7.7-35.9-22-55.3-48.3-18.4-4.8-38.4-12.1-57.9-23.1-54.1-30.3-102.9-87.4-109.9-189.9-1.9-28.1 21-49.7 47.1-49.7l49.6 0c-.3-5.2-.5-10.4-.7-15.8-1-26.5 20.6-48.2 47.1-48.2zM101.5 112l-52.4 0c6.2 84.7 45.1 127.1 85.2 149.6-14.4-37.3-26.3-86-32.8-149.6zM380 256.8c40.5-23.8 77.1-66.1 83.3-144.8L411 112c-6.2 60.9-17.4 108.2-31 144.8z"/></svg></span> Hall of Champions
     </button>
     <button class="menu-item" onclick="toggleMenu(); toggleAbout()">
-      <span class="mi-ic">ℹ</span> About
+      <span class="mi-ic" aria-hidden="true"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM224 160a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm-8 64l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"/></svg></span> About
     </button>
   </nav>
 </aside>
@@ -1693,7 +1924,7 @@
 <!-- ===== PUBLISH (share live data to another site, e.g. eFootball Narikkuni) ===== -->
 <div id="publishOverlay" onclick="togglePublish()"></div>
 <div id="publishPanel">
-  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:6px">🌐 Publish to my site</h2>
+  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:6px"><svg viewBox="0 0 512 512" style="width:14px;height:14px;vertical-align:-1px;margin-right:6px" aria-hidden="true"><path fill="currentColor" d="M351.9 280l-190.9 0c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zM160.9 232l190.9 0C349 167.5 334.7 108.1 314.4 64.6 303 40.2 290.7 22.8 279.3 12.2 268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4zm-48 0C116.4 146.4 138.5 66.9 170.8 14.7 78.7 47.3 10.9 131.2 1.5 232l111.4 0zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3L1.5 280zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3l-111.4 0zm111.4-48C501.9 131.2 434.1 47.3 342 14.7 374.3 66.9 396.4 146.4 399.9 232l111.4 0z"/></svg>Publish to my site</h2>
   <p class="hint">Push a snapshot of your tournament to your own GitHub repo as a JSON file — free, no third-party service. Your other site (e.g. eFootball Narikkuni) can then fetch it and show the same fixtures and table.</p>
 
   <label class="theme-label" style="margin-top:6px">Which tournament</label>
@@ -1731,7 +1962,7 @@
 <!-- ===== SPIN THE WHEEL ===== -->
 <div id="wheelOverlay" onclick="toggleWheel()"></div>
 <div id="wheelPanel">
-  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:14px">🎡 Spin the Wheel</h2>
+  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:14px"><svg viewBox="0 0 512 512" style="width:14px;height:14px;vertical-align:-1px;margin-right:6px" aria-hidden="true"><path fill="currentColor" d="M337.8 205.7l48.6-42.5c13.8 19.3 23.4 41.9 27.4 66.2l-64.4 4.3c-2.4-10.1-6.4-19.5-11.6-28zm140.1 19.5c-5.3-38.8-20.6-74.5-43.2-104.3l.8-.7C449 108.4 449.7 87.6 437 75s-33.4-12-45.2 1.5l-.7 .8c-29.8-22.6-65.5-37.9-104.3-43.2l.1-1.1c1.2-17.9-13-33-30.9-33s-32.1 15.2-30.9 33l.1 1.1c-38.8 5.3-74.5 20.6-104.3 43.2l-.7-.8C108.4 63 87.6 62.3 75 75s-12 33.4 1.5 45.2l.8 .7c-22.6 29.8-37.9 65.5-43.2 104.3l-1.1-.1c-17.9-1.2-33 13-33 30.9s15.2 32.1 33 30.9l1.1-.1c5.3 38.8 20.6 74.5 43.2 104.3l-.8 .7C63 403.6 62.3 424.4 75 437s33.4 12 45.2-1.5l.7-.8c29.8 22.6 65.5 37.9 104.3 43.2l-.1 1.1c-1.2 17.9 13 33 30.9 33s32.1-15.2 30.9-33l-.1-1.1c38.8-5.3 74.5-20.6 104.3-43.2l.7 .8c11.8 13.5 32.5 14.2 45.2 1.5s12-33.4-1.5-45.2l-.8-.7c22.6-29.8 37.9-65.5 43.2-104.3l1.1 .1c17.9 1.2 33-13 33-30.9s-15.2-32.1-33-30.9l-1.1 .1zM163.2 125.6c19.3-13.8 41.9-23.4 66.2-27.5l4.3 64.4c-10 2.4-19.5 6.4-28 11.6l-42.5-48.6zm-65 103.8c4.1-24.4 13.7-46.9 27.5-66.2l48.6 42.5c-5.3 8.5-9.2 18-11.6 28l-64.4-4.3zm27.5 119.4c-13.8-19.3-23.4-41.9-27.5-66.2l64.4-4.3c2.4 10.1 6.4 19.5 11.6 28l-48.6 42.5zm103.8 65c-24.4-4.1-46.9-13.7-66.2-27.4l42.5-48.6c8.5 5.3 18 9.2 28 11.6l-4.3 64.4zm119.4-27.4c-19.3 13.8-41.9 23.4-66.2 27.4l-4.3-64.4c10-2.4 19.5-6.4 28-11.6l42.5 48.6zm65-103.8c-4.1 24.4-13.7 46.9-27.4 66.2l-48.6-42.5c5.3-8.6 9.2-18 11.6-28l64.4 4.3zm-65-156.9l-42.5 48.6c-8.6-5.3-18-9.2-28-11.6l4.3-64.4c24.4 4.1 46.9 13.7 66.2 27.5zM256 224a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>Spin the Wheel</h2>
   <div class="generate-bar" style="align-items:center; margin-bottom:12px">
     <input type="text" id="wheelName" placeholder="Type a name…" maxlength="20" style="flex:1; min-width:140px"
            onkeydown="if(event.key==='Enter') wheelAddName()">
@@ -1768,57 +1999,17 @@
 <!-- ===== HALL OF CHAMPIONS ===== -->
 <div id="hallOverlay" onclick="toggleHall()"></div>
 <div id="hallPanel">
-  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px">🏆 Hall of Champions</h2>
+  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px"><svg viewBox="0 0 512 512" style="width:14px;height:14px;vertical-align:-1px;margin-right:6px" aria-hidden="true"><path fill="currentColor" d="M144.3 0l224 0c26.5 0 48.1 21.8 47.1 48.2-.2 5.3-.4 10.6-.7 15.8l49.6 0c26.1 0 49.1 21.6 47.1 49.8-7.5 103.7-60.5 160.7-118 190.5-15.8 8.2-31.9 14.3-47.2 18.8-20.2 28.6-41.2 43.7-57.9 51.8l0 73.1 64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0 0-73.1c-16-7.7-35.9-22-55.3-48.3-18.4-4.8-38.4-12.1-57.9-23.1-54.1-30.3-102.9-87.4-109.9-189.9-1.9-28.1 21-49.7 47.1-49.7l49.6 0c-.3-5.2-.5-10.4-.7-15.8-1-26.5 20.6-48.2 47.1-48.2zM101.5 112l-52.4 0c6.2 84.7 45.1 127.1 85.2 149.6-14.4-37.3-26.3-86-32.8-149.6zM380 256.8c40.5-23.8 77.1-66.1 83.3-144.8L411 112c-6.2 60.9-17.4 108.2-31 144.8z"/></svg>Hall of Champions</h2>
   <div id="hallList"></div>
   <div class="generate-bar" style="margin-top:20px">
     <button class="btn-amber" onclick="toggleHall()">Close</button>
   </div>
 </div>
 
-<!-- ===== THEME CUSTOMIZER ===== -->
+<!-- ===== DISPLAY SETTINGS (blur + text size — the skin itself now lives in the sidebar) ===== -->
 <div id="themeOverlay" onclick="toggleThemePanel()"></div>
 <div id="themePanel">
-  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px">Customize theme</h2>
-
-  <label class="theme-label">Mode</label>
-  <div class="seg" id="thModeSeg">
-    <button data-mode="light" onclick="setThemeMode('light')">Light</button>
-    <button data-mode="dark" class="on" onclick="setThemeMode('dark')">Dark</button>
-    <button data-mode="auto" onclick="setThemeMode('auto')">Auto</button>
-  </div>
-
-  <label class="theme-label">Gallery</label>
-  <div class="preset-row" id="thGallery" style="flex-wrap:wrap"></div>
-
-  <label class="theme-label">From a colour</label>
-  <div class="theme-colors">
-    <label>Seed <input type="color" id="thSeed" value="#7a1538"
-           oninput="setSeedTheme(this.value)"></label>
-    <span class="hint" style="margin:0; align-self:center">One colour — the engine builds the rest.</span>
-  </div>
-
-  <label class="theme-label">Text</label>
-  <div class="theme-colors">
-    <label>Colour <input type="color" id="thTextColor" value="#f2f2f2"
-           oninput="setTextColor(this.value)"></label>
-    <button class="btn-ghost" id="thTextAuto" onclick="clearTextColor()">Auto</button>
-  </div>
-  <div class="blur-row" style="margin-top:10px">
-    <span class="hint" style="margin:0">Opacity</span>
-    <input type="range" id="thTextAlpha" min="60" max="100" value="100"
-           oninput="setTextAlpha(this.value)">
-    <span class="hint" id="thTextAlphaVal" style="margin:0">100%</span>
-  </div>
-
-  <label class="theme-label">Font</label>
-  <select id="thFont" class="lib-select" style="width:100%" onchange="setFont(this.value)">
-    <option value="system">System (default)</option>
-    <option value="gsans">Google Sans</option>
-    <option value="inter">Inter</option>
-    <option value="poppins">Poppins</option>
-    <option value="grotesk">Space Grotesk</option>
-    <option value="lora">Lora (serif)</option>
-  </select>
+  <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px">Display settings</h2>
 
   <label class="theme-label">Effects</label>
   <label class="check" style="margin-bottom:10px">
@@ -1840,7 +2031,7 @@
   </div>
 
   <div class="generate-bar" style="margin-top:20px">
-    <button class="btn-ghost" onclick="themeState.mode='dark'; themeState.textColor=null; themeState.textAlpha=1; setGallery('classic'); setZoomValue(1)">Reset all</button>
+    <button class="btn-ghost" onclick="setZoomValue(1); setBlurAmount(26); document.getElementById('thBlur').checked=true; setBlur(true)">Reset all</button>
     <button class="btn-amber" onclick="applyThemeAndClose()">Apply</button>
   </div>
 </div>
@@ -1987,8 +2178,8 @@
   <section class="panel">
     <h2>Your tournaments</h2>
     <div class="toolbar" style="margin:14px 0 4px">
-      <button class="btn-ghost" onclick="exportBackup()" title="Download all tournaments, teams &amp; settings as one file">⬇ Export backup</button>
-      <button class="btn-ghost" onclick="document.getElementById('importFile').click()" title="Restore from a backup file">⬆ Import backup</button>
+      <button class="btn-ghost" onclick="exportBackup()" title="Download all tournaments, teams &amp; settings as one file"><svg viewBox="0 0 448 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M256 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 242.7 256 32zM64 320c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-46.9 0-56.6 56.6c-31.2 31.2-81.9 31.2-113.1 0L110.9 320 64 320zm304 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>Export backup</button>
+      <button class="btn-ghost" onclick="document.getElementById('importFile').click()" title="Restore from a backup file"><svg viewBox="0 0 448 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M256 109.3L256 320c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-210.7-41.4 41.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l96-96c12.5-12.5 32.8-12.5 45.3 0l96 96c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 109.3zM224 400c44.2 0 80-35.8 80-80l80 0c35.3 0 64 28.7 64 64l0 32c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64l0-32c0-35.3 28.7-64 64-64l80 0c0 44.2 35.8 80 80 80zm144 24a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>Import backup</button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
     </div>
     <p class="hint" style="margin-top:2px">Results save automatically on this device. Export a backup file to keep your data safe or move it to another phone or computer.</p>
@@ -2032,8 +2223,9 @@
 <div id="aboutPanel">
   <h2 style="font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--floodlight); margin-bottom:16px">About</h2>
   <p class="about-name">Contact</p>
-  <p class="about-line">📧 <a href="mailto:minhajminhaj619@gmail.com">minhajminhaj619@gmail.com</a></p>
-  <p class="about-line">📷 <a href="https://instagram.com/minhaj_ahammed_vc" target="_blank" rel="noopener">@minhaj_ahammed_vc</a></p>
+  <p class="about-line"><svg viewBox="0 0 512 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M48 64c-26.5 0-48 21.5-48 48 0 15.1 7.1 29.3 19.2 38.4l208 156c17.1 12.8 40.5 12.8 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48L48 64zM0 196L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-188-198.4 148.8c-34.1 25.6-81.1 25.6-115.2 0L0 196z"/></svg><a href="mailto:minhajminhaj619@gmail.com">minhajminhaj619@gmail.com</a></p>
+  <p class="about-line"><svg viewBox="0 0 448 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M224.3 141a115 115 0 1 0 -.6 230 115 115 0 1 0 .6-230zm-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1 -.6-149.2zm93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1 -53.6 0zm129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg><a href="https://instagram.com/minhaj_ahammed_vc" target="_blank" rel="noopener">@minhaj_ahammed_vc</a></p>
+  <p class="hint" style="margin-top:14px; font-size:11px">Icons by <a href="https://fontawesome.com" target="_blank" rel="noopener">Font Awesome Free</a> (CC BY 4.0)</p>
   <div class="generate-bar" style="margin-top:20px">
     <button class="btn-amber" onclick="toggleAbout()">Close</button>
   </div>
@@ -2044,46 +2236,49 @@
 
 <!-- ===== SHARE IMAGE ===== -->
 <div id="shareOverlay" onclick="closeShare()"></div>
-<div id="sharePanel">
+<div id="sharePanel" role="dialog" aria-modal="true" aria-label="Share as image">
   <div class="sh-head">
     <h2>Share as image</h2>
     <button class="sh-x" onclick="closeShare()" aria-label="Close">✕</button>
   </div>
 
-  <div class="share-grid">
-    <div class="share-preview-wrap">
-      <div id="sharePreview"></div>
-      <div class="fmt-row">
-        <button class="fmt-chip on" data-sh-fmt="auto" onclick="setShare('format','auto')">
-          <span class="fmt-ic" style="width:22px;height:14px"></span>Auto</button>
-        <button class="fmt-chip" data-sh-fmt="square" onclick="setShare('format','square')">
-          <span class="fmt-ic" style="width:18px;height:18px"></span>Post 1:1</button>
-        <button class="fmt-chip" data-sh-fmt="story" onclick="setShare('format','story')">
-          <span class="fmt-ic" style="width:12px;height:21px"></span>Story 9:16</button>
-        <button class="fmt-chip" data-sh-fmt="wide" onclick="setShare('format','wide')">
-          <span class="fmt-ic" style="width:24px;height:14px"></span>Wide 16:9</button>
+  <div class="share-body">
+    <!-- PREVIEW: the dominant element — this is what you're actually sharing -->
+    <div class="share-preview-col">
+      <div class="share-preview-wrap">
+        <div id="sharePreview"></div>
+      </div>
+      <div class="fmt-row" role="group" aria-label="Image format">
+        <button class="fmt-card on" data-sh-fmt="auto" onclick="setShare('format','auto')">
+          <span class="fmt-shape fmt-auto" aria-hidden="true"></span>Auto
+        </button>
+        <button class="fmt-card" data-sh-fmt="square" onclick="setShare('format','square')">
+          <span class="fmt-shape fmt-square" aria-hidden="true"></span>1:1
+        </button>
+        <button class="fmt-card" data-sh-fmt="story" onclick="setShare('format','story')">
+          <span class="fmt-shape fmt-story" aria-hidden="true"></span>9:16
+        </button>
+        <button class="fmt-card" data-sh-fmt="wide" onclick="setShare('format','wide')">
+          <span class="fmt-shape fmt-wide" aria-hidden="true"></span>16:9
+        </button>
       </div>
     </div>
 
-    <div class="share-controls">
-      <div class="sh-tabs">
-        <button class="sh-tab on" data-pane="content" onclick="shareTab('content')">Content</button>
-        <button class="sh-tab" data-pane="style" onclick="shareTab('style')">Style</button>
-        <button class="sh-tab" data-pane="text" onclick="shareTab('text')">Text</button>
-      </div>
-
-      <!-- CONTENT -->
-      <div class="sh-pane" data-pane="content">
+    <!-- SETTINGS: one continuous scroll, grouped by section — no tabs to hunt through -->
+    <div class="share-settings">
+      <section class="sh-section">
         <label class="theme-label" style="margin-top:0">What to show</label>
         <div class="seg">
           <button class="on" data-sh-content="fixtures" onclick="setShare('content','fixtures')">Fixtures</button>
           <button data-sh-content="table" onclick="setShare('content','table')">Table</button>
           <button id="shBracketBtn" data-sh-content="bracket" onclick="setShare('content','bracket')">Bracket</button>
         </div>
-        <label class="theme-label">Columns</label>
-        <div class="seg" id="shColsRow">
-          <button class="on" data-sh-cols="1" onclick="setShare('cols',1)">1 column</button>
-          <button data-sh-cols="2" onclick="setShare('cols',2)">2 columns</button>
+        <div id="shColsRow">
+          <label class="theme-label">Columns</label>
+          <div class="seg">
+            <button class="on" data-sh-cols="1" onclick="setShare('cols',1)">1 column</button>
+            <button data-sh-cols="2" onclick="setShare('cols',2)">2 columns</button>
+          </div>
         </div>
         <label class="check" style="margin-top:12px">
           <input type="checkbox" checked onchange="setShare('scores', this.checked)"> Show scores
@@ -2091,19 +2286,19 @@
         <label class="check">
           <input type="checkbox" checked onchange="setShare('credit', this.checked)"> Credit footer
         </label>
-      </div>
+      </section>
 
-      <!-- STYLE -->
-      <div class="sh-pane" data-pane="style" style="display:none">
+      <section class="sh-section">
         <label class="theme-label" style="margin-top:0">Background</label>
         <div class="preset-row" style="flex-wrap:wrap">
-          <button class="theme-swatch sel" title="Match my theme" data-sh-bg="theme" onclick="setShare('bg','theme')"
+          <button class="theme-swatch sel" title="Match my current theme" data-sh-bg="theme" onclick="setShare('bg','theme')"
                   style="background:conic-gradient(var(--pitch) 0 50%, var(--floodlight) 50% 100%)"></button>
-          <button class="theme-swatch" title="White minimal" data-sh-bg="white" onclick="setShare('bg','white')" style="background:#ffffff"></button>
-          <button class="theme-swatch" title="Dark" data-sh-bg="dark" onclick="setShare('bg','dark')" style="background:#101114"></button>
-          <button class="theme-swatch" title="Rose wall-chart" data-sh-bg="rose" onclick="setShare('bg','rose')" style="background:#7a1538"></button>
-          <button class="theme-swatch" title="Night pitch" data-sh-bg="pitch" onclick="setShare('bg','pitch')" style="background:linear-gradient(135deg,#0d2018 55%,#ffb627 55%)"></button>
-          <button class="theme-swatch" title="Royal" data-sh-bg="royal" onclick="setShare('bg','royal')" style="background:linear-gradient(135deg,#0d1b4c 55%,#ffd400 55%)"></button>
+          <button class="theme-swatch" title="Normal" data-sh-bg="normal" onclick="setShare('bg','normal')"
+                  style="background:linear-gradient(135deg,#070d0a 55%,#f4d21c 55%)"></button>
+          <button class="theme-swatch" title="Hype" data-sh-bg="hype" onclick="setShare('bg','hype')"
+                  style="background:linear-gradient(135deg,#170b02 55%,#ffb020 55%)"></button>
+          <button class="theme-swatch" title="B&amp;W" data-sh-bg="mono" onclick="setShare('bg','mono')"
+                  style="background:linear-gradient(135deg,#050505 55%,#ffffff 55%)"></button>
           <button class="theme-swatch" title="No background (transparent PNG)" data-sh-bg="none" onclick="setShare('bg','none')"
                   style="background:repeating-conic-gradient(#cfcfcf 0 25%, #ffffff 0 50%) 0 0 / 14px 14px"></button>
           <label class="theme-swatch" title="Custom colour" data-sh-bg="custom" style="overflow:hidden; display:inline-flex">
@@ -2111,43 +2306,46 @@
                    oninput="shareOpts.customBg=this.value; setShare('bg','custom')">
           </label>
         </div>
+      </section>
 
-        <label class="theme-label">Design</label>
-        <div class="seg design-seg">
-          <button data-sh-design="none" onclick="setShare('design','none')">None</button>
-          <button class="on" data-sh-design="classic" onclick="setShare('design','classic')">Shapes</button>
-          <button data-sh-design="pitch" onclick="setShare('design','pitch')">Pitch</button>
-          <button data-sh-design="ball" onclick="setShare('design','ball')">Ball</button>
-          <button data-sh-design="net" onclick="setShare('design','net')">Net</button>
-          <button data-sh-design="beams" onclick="setShare('design','beams')">Lights</button>
-          <button data-sh-design="laurel" onclick="setShare('design','laurel')">Laurel</button>
-          <button data-sh-design="spotlight" onclick="setShare('design','spotlight')">Spotlight</button>
-          <button data-sh-design="stripes" onclick="setShare('design','stripes')">Stripes</button>
-          <button data-sh-design="halftone" onclick="setShare('design','halftone')">Halftone</button>
-          <button data-sh-design="trophy" onclick="setShare('design','trophy')">Trophy</button>
-          <button data-sh-design="arcs" onclick="setShare('design','arcs')">Arcs</button>
+      <section class="sh-section">
+        <label class="theme-label" style="margin-top:0">Template</label>
+        <div class="template-row">
+          <button class="template-card on" data-sh-template="schedule" onclick="setShare('template','schedule')">
+            <span class="template-thumb template-thumb-schedule" aria-hidden="true">
+              <span class="tt-bar"></span><span class="tt-bar"></span><span class="tt-bar"></span>
+            </span>
+            <span class="template-name">Schedule Card</span>
+            <span class="template-blurb">Bold editorial list, team bar + VS chip</span>
+          </button>
+          <button class="template-card" data-sh-template="planner" onclick="setShare('template','planner')">
+            <span class="template-thumb template-thumb-planner" aria-hidden="true">
+              <span class="tt-flag tt-flag-a"></span><span class="tt-flag tt-flag-b"></span>
+            </span>
+            <span class="template-name">Match Planner</span>
+            <span class="template-blurb">Colourful ticket-style match banners</span>
+          </button>
         </div>
-      </div>
+      </section>
 
-      <!-- TEXT -->
-      <div class="sh-pane" data-pane="text" style="display:none">
-        <label class="theme-label" style="margin-top:0">Title</label>
+      <section class="sh-section">
+        <label class="theme-label" style="margin-top:0">Title &amp; subtitle</label>
         <input type="text" id="shTitle" placeholder="Title" maxlength="40" style="width:100%; margin-bottom:8px"
                oninput="shareOpts.title=this.value; renderSharePreview()">
         <input type="text" id="shSub" placeholder="Subtitle (optional)" maxlength="60" style="width:100%"
                oninput="shareOpts.sub=this.value; renderSharePreview()">
-        <label class="theme-label">Font</label>
-        <select id="shFont" class="lib-select" style="width:100%" onchange="setShare('font', this.value)">
-          <option value="classic">Classic — Arial</option>
-          <option value="modern">Modern — Trebuchet</option>
-          <option value="condensed">Condensed — Narrow</option>
-          <option value="impact">Impact — poster bold</option>
-          <option value="elegant">Elegant — Georgia</option>
-          <option value="editorial">Editorial — Palatino</option>
-          <option value="mono">Mono — Courier</option>
-          <option value="rounded">Rounded — Segoe</option>
-        </select>
+      </section>
 
+      <section class="sh-section">
+        <label class="theme-label" style="margin-top:0">Font</label>
+        <select id="shFont" class="lib-select" style="width:100%" onchange="setShare('font', this.value)">
+          <option value="broadcast">Broadcast — Oswald</option>
+          <option value="scorer">Scoreboard Mono — Roboto Mono</option>
+          <option value="trophy">Trophy — Fraunces</option>
+          <option value="stark">Stark — Archivo</option>
+          <option value="impact">Impact — poster bold</option>
+          <option value="classic">Classic — Arial</option>
+        </select>
         <label class="theme-label">Text size</label>
         <div class="blur-row">
           <span class="hint" style="margin:0">A</span>
@@ -2155,21 +2353,23 @@
                  oninput="setShare('fontScale', this.value / 100)">
           <span class="hint" id="shFontScaleVal" style="margin:0; min-width:42px; text-align:right">100%</span>
         </div>
+      </section>
 
-        <label class="theme-label">Sponsor logo</label>
+      <section class="sh-section">
+        <label class="theme-label" style="margin-top:0">Sponsor logo</label>
         <div class="toolbar">
           <button class="btn-ghost" onclick="document.getElementById('shSponsor').click()">Upload logo…</button>
           <button class="btn-ghost" id="shSponsorClear" style="display:none" onclick="shareOpts.sponsor=null; syncShareUi(); renderSharePreview()">Remove</button>
           <input type="file" id="shSponsor" accept="image/*" style="display:none" onchange="sponsorUpload(this)">
         </div>
-      </div>
+      </section>
     </div>
   </div>
 
   <div class="share-actions">
-    <button class="btn-amber sh-primary" onclick="sharePoster()">📤 Share</button>
-    <button class="btn-ghost" onclick="downloadPoster('png')">↓ PNG</button>
-    <button class="btn-ghost" onclick="copyPosterImage()">⧉ Copy</button>
+    <button class="btn-amber sh-primary" onclick="sharePoster()"><svg viewBox="0 0 512 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M384 192c53 0 96-43 96-96s-43-96-96-96-96 43-96 96c0 5.4 .5 10.8 1.3 16L159.6 184.1c-16.9-15-39.2-24.1-63.6-24.1-53 0-96 43-96 96s43 96 96 96c24.4 0 46.6-9.1 63.6-24.1L289.3 400c-.9 5.2-1.3 10.5-1.3 16 0 53 43 96 96 96s96-43 96-96-43-96-96-96c-24.4 0-46.6 9.1-63.6 24.1L190.7 272c.9-5.2 1.3-10.5 1.3-16s-.5-10.8-1.3-16l129.7-72.1c16.9 15 39.2 24.1 63.6 24.1z"/></svg>Share</button>
+    <button class="btn-ghost" onclick="downloadPoster('png')"><svg viewBox="0 0 448 512" style="width:12px;height:12px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M256 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 242.7 256 32zM64 320c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-46.9 0-56.6 56.6c-31.2 31.2-81.9 31.2-113.1 0L110.9 320 64 320zm304 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>PNG</button>
+    <button class="btn-ghost" onclick="copyPosterImage()"><svg viewBox="0 0 448 512" style="width:12px;height:12px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/></svg>Copy</button>
     <button class="btn-ghost" onclick="sendToCanva()">Edit in Canva</button>
   </div>
 </div>
@@ -2610,10 +2810,11 @@ function renderChips(){
   } else {
     box.innerHTML = teams.map((t, i) =>
       `<span class="chip">${logoHtml(t)} ${escapeHtml(t)}
-         <button title="Remove ${escapeHtml(t)}" onclick="removeTeam(${i})">✕</button>
+         <button title="Remove ${escapeHtml(t)}" aria-label="Remove ${escapeHtml(t)}" onclick="removeTeam(${i})">✕</button>
        </span>`).join("");
   }
   renderSaved();
+  renderSidebarStats();
   // keep the custom selection picker in sync if it's open
   const picker = document.getElementById("picker");
   if (picker && picker.style.display !== "none") renderPicker();
@@ -2625,6 +2826,63 @@ function renderChips(){
 function escapeHtml(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
+
+/* ================= MICRO-INTERACTIONS ================= */
+/* counts up any freshly-rendered [data-count] number from 0 to its target —
+   used by the sidebar stats and the tournament stat cards */
+function animateCounts(container){
+  const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  (container || document).querySelectorAll("[data-count]").forEach(el => {
+    const raw = el.dataset.count;
+    const target = parseFloat(raw);
+    if (isNaN(target)){ el.textContent = raw; return; }
+    if (reduced){ el.textContent = raw; return; }
+    const decimals = (raw.split(".")[1] || "").length;
+    const dur = 600;
+    const t0 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    const now = () => (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    const step = () => {
+      const p = Math.min(1, (now() - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(decimals);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* subtle 3D tilt on saved-team cards, following the cursor — re-attached
+   every render since the cards are rebuilt via innerHTML */
+function attachCardTilt(){
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  document.querySelectorAll("#savedList .saved-card:not(.editing)").forEach(card => {
+    card.onmousemove = e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `translateY(-4px) perspective(600px) rotateX(${(-py*7).toFixed(2)}deg) rotateY(${(px*7).toFixed(2)}deg)`;
+    };
+    card.onmouseleave = () => { card.style.transform = ""; };
+  });
+}
+
+/* hero glow follows the cursor — a light parallax touch, desktop-only by nature
+   (touch devices simply never fire mousemove here, so the hero stays static) */
+(function initHeroParallax(){
+  const hdr = document.querySelector("header");
+  if (!hdr || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  hdr.addEventListener("mousemove", e => {
+    const r = hdr.getBoundingClientRect();
+    const mx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    const my = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    hdr.style.setProperty("--mx", mx.toFixed(2));
+    hdr.style.setProperty("--my", my.toFixed(2));
+  });
+  hdr.addEventListener("mouseleave", () => {
+    hdr.style.setProperty("--mx", 0);
+    hdr.style.setProperty("--my", 0);
+  });
+})();
 
 /* ================= CUSTOM TEAM SELECTION ================= */
 function togglePicker(){
@@ -2833,19 +3091,24 @@ function renderSaved(){
   }
   box.innerHTML = savedTeams.map((t, i) => {
     const inList = teams.some(x => x.toLowerCase() === t.name.toLowerCase());
-    const head = `
-      <div class="saved-head">
-        ${logoHtml(t.logo && (t.logo.startsWith("preset:") || t.logo.startsWith("data:")) ? t.logo : t.name, "lg")}
-        <span class="name">${escapeHtml(t.name)}</span>
-        ${inList ? '<span class="in-list-tag">in your list</span>' : ""}
-        <button class="icon-btn" ${inList ? "disabled" : ""} onclick="useSaved(${i})">Use</button>
-        <button class="icon-btn" onclick="startEdit(${i})">✎ Edit</button>
+    const editing = editingIndex === i;
+    const used = tournaments.filter(x => x.order.some(n => n.toLowerCase() === t.name.toLowerCase())).length;
+    const head = editing ? "" : `
+      <span class="card-num">${i + 1}</span>
+      ${logoHtml(t.logo && (t.logo.startsWith("preset:") || t.logo.startsWith("data:")) ? t.logo : t.name, "lg")}
+      <span class="name">${escapeHtml(t.name)}</span>
+      ${inList ? '<span class="in-list-tag">in your list</span>' : ""}
+      <span class="card-stat">${used ? "in " + used + " tournament" + (used === 1 ? "" : "s") : "unused"}</span>
+      <div class="card-overlay">
+        <button class="icon-btn" ${inList ? "disabled" : ""} aria-label="Use ${escapeHtml(t.name)}" onclick="useSaved(${i})">Use</button>
+        <button class="icon-btn" aria-label="Edit ${escapeHtml(t.name)}" onclick="startEdit(${i})">✎</button>
         <button class="icon-btn danger ${i === pendingDeleteSaved ? "confirming" : ""}"
-                onclick="deleteSaved(${i})">${i === pendingDeleteSaved ? "Delete?" : "✕"}</button>
+                aria-label="Delete ${escapeHtml(t.name)}" onclick="deleteSaved(${i})">${i === pendingDeleteSaved ? "Delete?" : "✕"}</button>
       </div>`;
-    const editor = (editingIndex === i) ? editorHtml(t) : "";
-    return `<div class="saved-card">${head}${editor}</div>`;
+    const editor = editing ? editorHtml(t) : "";
+    return `<div class="saved-card ${editing ? "editing" : ""}">${head}${editor}</div>`;
   }).join("");
+  attachCardTilt();
 }
 
 function editorHtml(t){
@@ -3124,6 +3387,47 @@ function persistTournaments(){
 
 const TYPE_LABELS = { league:"League", knockout:"Knockout", worldcup:"World Cup", champions:"Champions League" };
 
+/* nearest upcoming dated round for a tournament, or null — shared by the
+   tournament card's "Next" line and the ticker strip */
+function nextDatedRound(t){
+  if (!t.dates) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let best = null;
+  Object.entries(t.dates).forEach(([rt, w]) => {
+    if (!w || !w.d) return;
+    const d = new Date(w.d + "T00:00");
+    if (d >= today && (!best || d < best.date)) best = { rt, w, date: d };
+  });
+  if (!best) return null;
+  best.days = Math.round((best.date - today) / 86400000);
+  return best;
+}
+
+/* live ticker: each tournament's next dated round, plus recently crowned champions */
+function renderTicker(){
+  const strip = document.getElementById("tickerStrip");
+  const track = document.getElementById("tickerTrack");
+  if (!strip || !track) return;
+  const items = [];
+  tournaments.forEach(t => {
+    const nxt = nextDatedRound(t);
+    if (nxt){
+      const inTxt = nxt.days === 0 ? "TODAY" : (nxt.days === 1 ? "TOMORROW" : "IN " + nxt.days + "D");
+      items.push(`<span class="ticker-item"><span class="ticker-live">${inTxt}</span> <b>${escapeHtml(t.name)}</b> — ${escapeHtml(nxt.rt)} · ${escapeHtml(formatWhen(nxt.w))}</span>`);
+    }
+    const champ = championOf(t);
+    if (champ) items.push(`<span class="ticker-item">🏆 <b>${escapeHtml(champ)}</b> crowned champions — ${escapeHtml(t.name)}</span>`);
+  });
+  if (!items.length){
+    strip.classList.add("empty");
+    track.innerHTML = "";
+    return;
+  }
+  strip.classList.remove("empty");
+  // the track is duplicated once so the marquee can loop seamlessly at -50%
+  track.innerHTML = items.join("") + items.join("");
+}
+
 function renderTourList(){
   const box = document.getElementById("tourList");
   if (tournaments.length === 0){
@@ -3159,17 +3463,10 @@ function renderTourList(){
         <span class="cb-team">${logoHtml(champ, "lg")} ${escapeHtml(champ)}</span>
       </div>` : "";
     const nextLine = (() => {
-      if (!open || !t.dates) return "";
-      const today = new Date(); today.setHours(0,0,0,0);
-      let best = null;
-      Object.entries(t.dates).forEach(([rt, w]) => {
-        if (!w || !w.d) return;
-        const d = new Date(w.d + "T00:00");
-        if (d >= today && (!best || d < best.date)) best = { rt, w, date: d };
-      });
+      if (!open) return "";
+      const best = nextDatedRound(t);
       if (!best) return "";
-      const days = Math.round((best.date - today) / 86400000);
-      const inTxt = days === 0 ? "today" : (days === 1 ? "tomorrow" : "in " + days + " days");
+      const inTxt = best.days === 0 ? "today" : (best.days === 1 ? "tomorrow" : "in " + best.days + " days");
       return `<p class="hint next-md">\u23f1 Next: <b>${escapeHtml(best.rt)}</b> \u2014 ${formatWhen(best.w)} (${inTxt})</p>`;
     })();
     const body = open ? `
@@ -3185,7 +3482,7 @@ function renderTourList(){
           ${mdOptions}
           <button class="btn-ghost" onclick="window.print()">Print / Save PDF</button>
           <button class="btn-ghost" onclick="openShare()">Share image</button>
-          <button class="btn-amber save-btn" id="saveNowBtn" onclick="confirmSaved()">💾 Save</button>
+          <button class="btn-amber save-btn" id="saveNowBtn" onclick="confirmSaved()"><svg viewBox="0 0 448 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-242.7c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32L64 32zm32 96c0-17.7 14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 64c0 17.7-14.3 32-32 32l-160 0c-17.7 0-32-14.3-32-32l0-64zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>Save</button>
           <span class="save-status" id="saveStatus">All changes saved</span>
         </div>
         <div id="standings" style="display:${viewSection === "table" ? "block" : "none"}"></div>
@@ -3195,10 +3492,11 @@ function renderTourList(){
     return `
     <div class="tour-card ${open ? "viewing" : ""}">
       <div class="tour-head">
-        <span class="tour-name">${escapeHtml(t.name)}${champ ? ` <span class="champ-badge">\ud83c\udfc6 ${escapeHtml(champ)}</span>` : ""}</span>
+        ${i === renamingTourIndex ? `<span class="tour-name tour-rename"><input type="text" id="tourRenameInput" value="${escapeHtml(t.name)}" maxlength="40" onkeydown="if(event.key==='Enter') confirmRenameTour(${i}); if(event.key==='Escape') cancelRenameTour();"><button class="icon-btn" onclick="confirmRenameTour(${i})" aria-label="Save name">✓</button><button class="icon-btn" onclick="cancelRenameTour()" aria-label="Cancel rename">✕</button></span>` : `<span class="tour-name">${escapeHtml(t.name)}${champ ? ` <span class="champ-badge">🏆 ${escapeHtml(champ)}</span>` : ""}</span>`}
         <span class="tour-meta">${TYPE_LABELS[t.type]} · ${t.order.length} teams · ${escapeHtml(t.date)}</span>
         <button class="icon-btn" onclick="viewTournament(${i})">${open ? "Hide" : "View"}</button>
-        <button class="icon-btn" ${hasResults(t) ? 'disabled title="Locked — results have already been entered"' : `onclick="startTourEdit(${i})" title="Add or remove teams"`}>✎ Edit</button>
+        ${i === renamingTourIndex ? "" : `<button class="icon-btn" onclick="startRenameTour(${i})" aria-label="Rename ${escapeHtml(t.name)}" title="Rename tournament">Rename</button>`}
+        <button class="icon-btn" ${hasResults(t) ? 'disabled title="Locked — results have already been entered"' : `onclick="startTourEdit(${i})" title="Add or remove teams"`}>✎ Teams</button>
         <button class="icon-btn danger ${i === pendingDeleteTour ? "confirming" : ""}"
                 onclick="deleteTournament(${i})">${i === pendingDeleteTour ? "Delete?" : "✕"}</button>
       </div>
@@ -3220,6 +3518,8 @@ function renderTourList(){
       confettiBurst();
     }
   }
+  renderTicker();
+  renderSidebarStats();
 }
 
 /* who has won this tournament? (null while unfinished) */
@@ -3740,6 +4040,33 @@ function hasResults(t){
 let editTourIndex = -1;
 let editTourTeams = [];
 
+/* renaming a tournament's title — independent of the (locked-once-played)
+   team editor above, since a name typo/change should always be fixable */
+let renamingTourIndex = -1;
+
+function startRenameTour(i){
+  renamingTourIndex = i;
+  renderTourList();
+  const inp = document.getElementById("tourRenameInput");
+  if (inp){ inp.focus(); inp.select(); }
+}
+
+function cancelRenameTour(){
+  renamingTourIndex = -1;
+  renderTourList();
+}
+
+function confirmRenameTour(i){
+  const inp = document.getElementById("tourRenameInput");
+  const name = inp ? inp.value.trim() : "";
+  if (!name){ alert("Tournament name can't be empty."); return; }
+  tournaments[i].name = name;
+  persistTournaments();
+  renamingTourIndex = -1;
+  renderTourList();
+  showToast("Renamed ✓");
+}
+
 function startTourEdit(i){
   if (hasResults(tournaments[i])){
     alert("This tournament already has results entered, so its teams are locked.");
@@ -3755,7 +4082,7 @@ function startTourEdit(i){
 function tourEditorHtml(t){
   const chips = editTourTeams.map((n, j) =>
     `<span class="chip">${logoHtml(n)} ${escapeHtml(n)}
-       <button title="Remove" onclick="tourEditRemove(${j})">✕</button></span>`).join("");
+       <button title="Remove ${escapeHtml(n)}" aria-label="Remove ${escapeHtml(n)}" onclick="tourEditRemove(${j})">✕</button></span>`).join("");
   const savedAvail = savedTeams
     .map((s, j) => ({ s, j }))
     .filter(x => !editTourTeams.some(n => n.toLowerCase() === x.s.name.toLowerCase()));
@@ -3977,9 +4304,19 @@ function renderStandings(t){
     box.innerHTML = standingsTable("Standings", t.order, t, null);
   }
   box.innerHTML += goldenBootHtml(t) + statsCardHtml(t);
+  animateCounts(box);
 }
 
 /* Golden Boot: parses the scorer entries into a leaderboard */
+/* a small gold/silver/bronze badge for ranks 1-3, "" otherwise — each medal
+   uses its own ink color, not one shared "always dark" ink (see the theme
+   engine's SKINS comment: the B&W bronze grey needs light ink, not dark) */
+function medalBadge(i){
+  const tier = ["gold","silver","bronze"][i];
+  if (!tier) return "";
+  return `<span class="medal medal-${tier}">${i + 1}</span>`;
+}
+
 function goldenBootHtml(t){
   const tally = {};
   Object.entries(t.scorers || {}).forEach(([key, sides]) => {
@@ -3998,7 +4335,7 @@ function goldenBootHtml(t){
   if (!rows.length) return "";
   const body = rows.map((r, i) => `
     <tr class="${i === 0 ? "q-adv" : ""}">
-      <td class="pos">${i + 1}</td>
+      <td class="pos">${medalBadge(i) || (i + 1)}</td>
       <td class="team-col"><span class="team-cell">${i === 0 ? "\ud83d\udc5f " : ""}<span>${escapeHtml(r.name)}</span>
         <span class="boot-team">${escapeHtml(r.team)}</span></span></td>
       <td class="pts">${r.goals}</td>
@@ -4022,9 +4359,9 @@ function statsCardHtml(t){
   if (!played) return "";
   return `<div class="round-title" style="margin-top:26px"><h3>Tournament Stats</h3></div>
           <div class="stat-grid">
-            <div><b>${played}</b><span>Matches played</span></div>
-            <div><b>${goals}</b><span>Goals</span></div>
-            <div><b>${(goals / played).toFixed(1)}</b><span>Goals / match</span></div>
+            <div><b data-count="${played}">0</b><span>Matches played</span></div>
+            <div><b data-count="${goals}">0</b><span>Goals</span></div>
+            <div><b data-count="${(goals / played).toFixed(1)}">0</b><span>Goals / match</span></div>
             ${big ? `<div><b style="font-size:15px">${escapeHtml(big.txt)}</b><span>Biggest win</span></div>` : ""}
           </div>`;
 }
@@ -4073,7 +4410,7 @@ function standingsTable(title, names, t, keyPrefix){
 
   const body = rows.map((r, i) => `
     <tr class="${zone(i)}">
-      <td class="pos">${i + 1}</td>
+      <td class="pos">${medalBadge(i) || (i + 1)}</td>
       <td class="team-col"><span class="team-cell">${logoHtml(r.name, "sm")}<span>${escapeHtml(r.name)}</span></span></td>
       <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td>
       <td>${r.f}</td><td>${r.a}</td>
@@ -5288,11 +5625,11 @@ function renderAccount(){
       ${photo}
       <div class="acc-name">Hi, ${escapeHtml(cloudUser.displayName || "there")}</div>
       <div class="acc-sub">${escapeHtml(cloudUser.email || "")}</div>
-      <div class="acc-sub" style="margin-top:6px">☁ ${escapeHtml(cloudStatusTxt || "Cloud sync on")}</div>
+      <div class="acc-sub" style="margin-top:6px"><svg viewBox="0 0 576 512" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px" aria-hidden="true"><path fill="currentColor" d="M0 336c0 79.5 64.5 144 144 144l304 0c70.7 0 128-57.3 128-128 0-51.6-30.5-96.1-74.5-116.3 6.7-13.1 10.5-28 10.5-43.7 0-53-43-96-96-96-17.7 0-34.2 4.8-48.4 13.1-24.1-45.8-72.2-77.1-127.6-77.1-79.5 0-144 64.5-144 144 0 8 .7 15.9 1.9 23.5-56.9 19.2-97.9 73.1-97.9 136.5z"/></svg>${escapeHtml(cloudStatusTxt || "Cloud sync on")}</div>
       ${liveShareOn()
-        ? `<button class="btn-ghost" style="margin-top:12px" onclick="copyLiveLink()">🔗 Copy live link</button>
+        ? `<button class="btn-ghost" style="margin-top:12px" onclick="copyLiveLink()"><svg viewBox="0 0 576 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M419.5 96c-16.6 0-32.7 4.5-46.8 12.7-15.8-16-34.2-29.4-54.5-39.5 28.2-24 64.1-37.2 101.3-37.2 86.4 0 156.5 70 156.5 156.5 0 41.5-16.5 81.3-45.8 110.6l-71.1 71.1c-29.3 29.3-69.1 45.8-110.6 45.8-86.4 0-156.5-70-156.5-156.5 0-1.5 0-3 .1-4.5 .5-17.7 15.2-31.6 32.9-31.1s31.6 15.2 31.1 32.9c0 .9 0 1.8 0 2.6 0 51.1 41.4 92.5 92.5 92.5 24.5 0 48-9.7 65.4-27.1l71.1-71.1c17.3-17.3 27.1-40.9 27.1-65.4 0-51.1-41.4-92.5-92.5-92.5zM275.2 173.3c-1.9-.8-3.8-1.9-5.5-3.1-12.6-6.5-27-10.2-42.1-10.2-24.5 0-48 9.7-65.4 27.1L91.1 258.2c-17.3 17.3-27.1 40.9-27.1 65.4 0 51.1 41.4 92.5 92.5 92.5 16.5 0 32.6-4.4 46.7-12.6 15.8 16 34.2 29.4 54.6 39.5-28.2 23.9-64 37.2-101.3 37.2-86.4 0-156.5-70-156.5-156.5 0-41.5 16.5-81.3 45.8-110.6l71.1-71.1c29.3-29.3 69.1-45.8 110.6-45.8 86.6 0 156.5 70.6 156.5 156.9 0 1.3 0 2.6 0 3.9-.4 17.7-15.1 31.6-32.8 31.2s-31.6-15.1-31.2-32.8c0-.8 0-1.5 0-2.3 0-33.7-18-63.3-44.8-79.6z"/></svg>Copy live link</button>
            <button class="btn-ghost" style="margin-top:8px" onclick="toggleLiveShare()">Stop live sharing</button>`
-        : `<button class="btn-ghost" style="margin-top:12px" onclick="toggleLiveShare()">🔴 Enable public live link</button>`}
+        : `<button class="btn-ghost" style="margin-top:12px" onclick="toggleLiveShare()"><svg viewBox="0 0 576 512" style="width:13px;height:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"><path fill="currentColor" d="M87.9 11.5c-11.3-6.9-26.1-3.2-33 8.1-24.8 41-39 89.1-39 140.4s14.2 99.4 39 140.4c6.9 11.3 21.6 15 33 8.1s15-21.6 8.1-33C75.7 241.9 64 202.3 64 160S75.7 78.1 96.1 44.4c6.9-11.3 3.2-26.1-8.1-33zm400.1 0c-11.3 6.9-15 21.6-8.1 33 20.4 33.7 32.1 73.3 32.1 115.6s-11.7 81.9-32.1 115.6c-6.9 11.3-3.2 26.1 8.1 33s26.1 3.2 33-8.1c24.8-41 39-89.1 39-140.4S545.8 60.6 521 19.6c-6.9-11.3-21.6-15-33-8.1zM320 215.4c19.1-11.1 32-31.7 32-55.4 0-35.3-28.7-64-64-64s-64 28.7-64 64c0 23.7 12.9 44.4 32 55.4L256 480c0 17.7 14.3 32 32 32s32-14.3 32-32l0-264.6zM180.2 91c7.2-11.2 3.9-26-7.2-33.2s-26-3.9-33.2 7.2c-17.6 27.4-27.8 60-27.8 95s10.2 67.6 27.8 95c7.2 11.2 22 14.4 33.2 7.2s14.4-22 7.2-33.2c-12.8-19.9-20.2-43.6-20.2-69s7.4-49.1 20.2-69zM436.2 65c-7.2-11.2-22-14.4-33.2-7.2s-14.4 22-7.2 33.2c12.8 19.9 20.2 43.6 20.2 69s-7.4 49.1-20.2 69c-7.2 11.2-3.9 26 7.2 33.2s26 3.9 33.2-7.2c17.6-27.4 27.8-60 27.8-95s-10.2-67.6-27.8-95z"/></svg>Enable public live link</button>`}
       <button class="btn-ghost" style="margin-top:8px" onclick="signOutGoogle()">Sign out</button>`;
     return;
   }
@@ -5428,19 +5765,17 @@ function applyBackupData(data){
 }
 
 /* ================= SHARE IMAGE (POSTER) ================= */
+/* "theme" and every skin name resolve straight from SKINS (see the theme
+   engine above) so the poster palette can never drift out of sync with the
+   in-app skins — only the two backgrounds that AREN'T a skin (custom colour,
+   transparent) need their own entry here. */
 const POSTER_BGS = {
-  theme:  null,  // resolved from the active theme at render time
-  white:  { bg1:"#ffffff", bg2:"#f2f2f2", ink:"#111111", dim:"#8a8a8a", accent:"#111111" },
-  dark:   { bg1:"#101114", bg2:"#191b20", ink:"#f2f2f2", dim:"#9aa0a6", accent:"#f2f2f2" },
-  rose:   { bg1:"#7a1538", bg2:"#8d1f44", ink:"#ffffff", dim:"#e3b3c2", accent:"#ffffff" },
-  pitch:  { bg1:"#0d2018", bg2:"#143026", ink:"#f4f1e4", dim:"#a8b8a6", accent:"#ffb627" },
-  royal:  { bg1:"#0d1b4c", bg2:"#14265e", ink:"#f2f4ff", dim:"#9fb0d8", accent:"#ffd400" },
   custom: null,
   none:   { bg1:null, bg2:null, ink:"#111111", dim:"#777777", accent:"#111111" }
 };
 
 let shareOpts = { content:"fixtures", bg:"theme", customBg:"#7a1538",
-                  title:"", sub:"", credit:true, cols:1, scores:true, design:"classic", format:"auto", font:"classic", fontScale:1 };
+                  title:"", sub:"", credit:true, cols:1, scores:true, template:"schedule", format:"auto", font:"broadcast", fontScale:1 };
 
 function currentThemeVars(){
   return resolveThemeVars();
@@ -5451,13 +5786,17 @@ function posterPalette(){
     const v = currentThemeVars();
     return { bg1:v["--pitch"], bg2:v["--pitch-2"], ink:v["--chalk"], dim:v["--chalk-dim"], accent:v["--floodlight"] };
   }
+  if (SKINS[shareOpts.bg]){
+    const v = SKINS[shareOpts.bg];
+    return { bg1:v["--pitch"], bg2:v["--pitch-2"], ink:v["--chalk"], dim:v["--chalk-dim"], accent:v["--floodlight"] };
+  }
   if (shareOpts.bg === "custom"){
     const c = shareOpts.customBg;
     const light = luminance(c) > 0.55;
     const ink = light ? "#111111" : "#ffffff";
     return { bg1:c, bg2:mixHex(c, ink, .06), ink, dim:mixHex(ink, c, .45), accent:ink };
   }
-  return POSTER_BGS[shareOpts.bg] || POSTER_BGS.white;
+  return POSTER_BGS[shareOpts.bg] || POSTER_BGS.none;
 }
 
 function posterRounds(t){
@@ -5486,154 +5825,107 @@ function posterScore(m){
 }
 
 
-/* decorative poster designs — minimal, footballing, all vector */
-function posterDeco(design, pal, W, H){
+/* ================= POSTER TEMPLATES =================
+   Two full preset templates — inspired by real match-schedule poster layouts,
+   redrawn from scratch as original vector code (no traced/copied artwork).
+   Both stay fully re-themeable: every colour still comes from posterPalette(),
+   so picking a background swatch reskins either template, it isn't hard-coded
+   to one fixed palette. */
+const POSTER_TEMPLATES = {
+  schedule: { label:"Schedule Card", blurb:"Bold editorial list — team bar + VS chip" },
+  planner:  { label:"Match Planner", blurb:"Colourful ticket-style match banners" }
+};
+
+/* a saved team's own kit colour, when it has one — lets the Match Planner
+   template use real team colours instead of always falling back to the
+   theme accent */
+function posterTeamColor(name){
+  const s = findSaved(name);
+  if (s && s.logo && s.logo.startsWith("club:")) return s.logo.slice(5).split(",")[0];
+  return null;
+}
+
+/* corner flourishes behind the whole poster — kept separate from the
+   per-match row treatment below so table/bracket exports still get a
+   matching (but calmer) background even though they don't use match rows */
+function posterHeaderDeco(template, pal, W, H){
   const ink = pal.ink;
-  if (design === "pitch"){
-    // top-down pitch markings rising from the bottom
-    const cy = H - 40, r = Math.min(W * 0.32, 330);
-    return `<g stroke="${ink}" stroke-opacity=".08" stroke-width="2.5" fill="none">
-      <line x1="0" y1="${cy - r * 1.55}" x2="${W}" y2="${cy - r * 1.55}"/>
-      <circle cx="${W/2}" cy="${cy - r * 1.55}" r="${r * .55}"/>
-      <rect x="${W/2 - r * 1.1}" y="${cy - r * .55}" width="${r * 2.2}" height="${r * .9}"/>
-      <rect x="${W/2 - r * .55}" y="${cy - r * .2}" width="${r * 1.1}" height="${r * .55}"/>
-      <path d="M ${W/2 - r * .38} ${cy - r * .55} A ${r * .42} ${r * .42} 0 0 1 ${W/2 + r * .38} ${cy - r * .55}"/>
-    </g>
-    <circle cx="${W/2}" cy="${cy - r * 1.55}" r="4" fill="${ink}" fill-opacity=".12"/>`;
-  }
-  if (design === "ball"){
-    // geometric football, partly off-canvas top right
-    const cx = W - 40, cy = 90, R = 240;
-    const pent = a0 => Array.from({length:5}, (_, i) => {
-      const a = a0 + i * 72 * Math.PI / 180;
-      return (cx + Math.cos(a) * R * .34).toFixed(1) + "," + (cy + Math.sin(a) * R * .34).toFixed(1);
-    }).join(" ");
-    let spokes = "";
-    for (let i = 0; i < 5; i++){
-      const a = (-90 + i * 72) * Math.PI / 180;
-      spokes += `<line x1="${(cx + Math.cos(a) * R * .34).toFixed(1)}" y1="${(cy + Math.sin(a) * R * .34).toFixed(1)}"
-                       x2="${(cx + Math.cos(a) * R * .82).toFixed(1)}" y2="${(cy + Math.sin(a) * R * .82).toFixed(1)}"/>`;
-    }
-    return `<g stroke="${ink}" stroke-opacity=".09" stroke-width="2.5" fill="none">
-      <circle cx="${cx}" cy="${cy}" r="${R}"/>
-      <polygon points="${pent(-Math.PI/2)}" fill="${ink}" fill-opacity=".06" stroke-opacity=".12"/>
-      ${spokes}
-    </g>`;
-  }
-  if (design === "net"){
-    // goal-net mesh fading from the top
-    return `<defs>
-      <pattern id="pnet" width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <path d="M0 0 H46 M0 0 V46" stroke="${ink}" stroke-opacity=".10" stroke-width="1.6" fill="none"/>
-      </pattern>
-      <linearGradient id="pnetfade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/>
-      </linearGradient>
-      <mask id="pnetmask"><rect width="${W}" height="${H}" fill="url(#pnetfade)"/></mask>
-    </defs>
-    <rect width="${W}" height="${H}" fill="url(#pnet)" mask="url(#pnetmask)"/>`;
-  }
-  if (design === "beams"){
-    // stadium floodlight beams from the top corners
-    return `<g fill="${ink}">
-      <polygon points="0,0 ${W*.34},${H} ${W*.18},${H}" fill-opacity=".045"/>
-      <polygon points="0,0 ${W*.52},${H} ${W*.40},${H}" fill-opacity=".03"/>
-      <polygon points="${W},0 ${W*.66},${H} ${W*.82},${H}" fill-opacity=".045"/>
-      <polygon points="${W},0 ${W*.48},${H} ${W*.60},${H}" fill-opacity=".03"/>
-      <circle cx="0" cy="0" r="10" fill-opacity=".2"/>
-      <circle cx="${W}" cy="0" r="10" fill-opacity=".2"/>
-    </g>`;
-  }
-  if (design === "laurel"){
-    // champion arcs + star behind the title
-    const cx = W / 2, cy = 150;
-    let leaves = "";
-    for (let s = -1; s <= 1; s += 2){
-      for (let i = 0; i < 7; i++){
-        const a = (115 + i * 14) * Math.PI / 180;
-        const rr = 210;
-        const x = cx + s * Math.cos(a - Math.PI/2) * rr;
-        const y = cy + Math.sin(a - Math.PI/2) * rr * -1 + 160;
-        leaves += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="16" ry="6"
-                     transform="rotate(${(s * (25 + i * 12)).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"
-                     fill="${ink}" fill-opacity=".07"/>`;
+  if (template === "planner"){
+    const ribbon = (x, y, rot, len, color) => `
+      <g transform="translate(${x} ${y}) rotate(${rot})" opacity=".2">
+        <path d="M0 0 C ${(len*.3).toFixed(0)} ${(-len*.15).toFixed(0)}, ${(len*.4).toFixed(0)} ${(len*.25).toFixed(0)}, ${(len*.7).toFixed(0)} 0
+                 L ${len.toFixed(0)} ${(len*.22).toFixed(0)}
+                 C ${(len*.7).toFixed(0)} ${(len*.1).toFixed(0)}, ${(len*.6).toFixed(0)} ${(len*.42).toFixed(0)}, ${(len*.3).toFixed(0)} ${(len*.28).toFixed(0)} Z"
+              fill="${color}"/>
+      </g>`;
+    const ball = (cx, cy, r) => {
+      let spokes = "";
+      for (let i = 0; i < 5; i++){
+        const a = (-90 + i * 72) * Math.PI / 180;
+        spokes += `<line x1="${cx}" y1="${cy}" x2="${(cx + Math.cos(a)*r*.62).toFixed(1)}" y2="${(cy + Math.sin(a)*r*.62).toFixed(1)}"/>`;
       }
-    }
-    return `${leaves}
-      <g stroke="${ink}" stroke-opacity=".08" fill="none" stroke-width="2">
-        <circle cx="${cx}" cy="${cy}" r="190"/>
-        <circle cx="${cx}" cy="${cy}" r="230"/>
-      </g>
-      <path d="M ${cx} 26 l 7 14 15 2 -11 11 3 15 -14 -7 -14 7 3 -15 -11 -11 15 -2 z"
-            fill="${ink}" fill-opacity=".14"/>`;
+      return `<g opacity=".14" stroke="${ink}" stroke-width="2.5" fill="none">
+        <circle cx="${cx}" cy="${cy}" r="${r}"/>${spokes}
+      </g>`;
+    };
+    return ribbon(-30, -10, 18, 300, pal.accent)
+         + ribbon(W-40, H-30, 198, 280, pal.ink)
+         + ball(W-90, 100, 100)
+         + ball(70, H-100, 76);
   }
-  if (design === "spotlight"){
-    // one big stage light from the top, with a glowing pool on the ground
-    return `<defs>
-      <linearGradient id="pspot" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${ink}" stop-opacity=".14"/>
-        <stop offset="1" stop-color="${ink}" stop-opacity="0"/>
-      </linearGradient>
-      <radialGradient id="ppool" cx=".5" cy=".5" r=".5">
-        <stop offset="0" stop-color="${ink}" stop-opacity=".10"/>
-        <stop offset="1" stop-color="${ink}" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <polygon points="${W/2 - 40},0 ${W/2 + 40},0 ${W * .86},${H} ${W * .14},${H}" fill="url(#pspot)"/>
-    <ellipse cx="${W/2}" cy="${H - 60}" rx="${W * .38}" ry="52" fill="url(#ppool)"/>
-    <circle cx="${W/2}" cy="0" r="12" fill="${ink}" fill-opacity=".22"/>`;
-  }
-  if (design === "stripes"){
-    // broad diagonal kit stripes
-    return `<g transform="rotate(-18 ${W/2} ${H/2})" fill="${ink}">
-      <rect x="${-W*.2}" y="${H*.12}" width="${W*1.6}" height="66" fill-opacity=".055"/>
-      <rect x="${-W*.2}" y="${H*.12 + 96}" width="${W*1.6}" height="30" fill-opacity=".035"/>
-      <rect x="${-W*.2}" y="${H*.62}" width="${W*1.6}" height="66" fill-opacity=".055"/>
-      <rect x="${-W*.2}" y="${H*.62 + 96}" width="${W*1.6}" height="30" fill-opacity=".035"/>
-    </g>`;
-  }
-  if (design === "halftone"){
-    // halftone dot rain fading in from the top-right corner
-    return `<defs>
-      <pattern id="phalf" width="28" height="28" patternUnits="userSpaceOnUse">
-        <circle cx="6" cy="6" r="3.2" fill="${ink}" fill-opacity=".12"/>
-      </pattern>
-      <linearGradient id="phalffade" x1="1" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
-      </linearGradient>
-      <mask id="phalfmask"><rect width="${W}" height="${H}" fill="url(#phalffade)"/></mask>
-    </defs>
-    <rect width="${W}" height="${H}" fill="url(#phalf)" mask="url(#phalfmask)"/>`;
-  }
-  if (design === "trophy"){
-    // giant minimal trophy line-art behind everything
-    const cx = W / 2, s = 3.2, ty = H * .30;
-    return `<g transform="translate(${cx} ${ty}) scale(${s})" stroke="${ink}" stroke-opacity=".07"
-               stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M -42 -60 H 42 V -20 A 42 46 0 0 1 -42 -20 Z"/>
-      <path d="M -42 -52 H -66 A 24 26 0 0 0 -38 -8"/>
-      <path d="M 42 -52 H 66 A 24 26 0 0 1 38 -8"/>
-      <path d="M -10 24 C -10 12 -16 6 -16 6 H 16 C 16 6 10 12 10 24 Z"/>
-      <rect x="-26" y="24" width="52" height="12" rx="2"/>
-      <rect x="-34" y="36" width="68" height="10" rx="2"/>
-      <path d="M -12 -44 l 6 12 13 2 -9 9 2 13 -12 -6 -12 6 2 -13 -9 -9 13 -2 z"
-            fill="${ink}" fill-opacity=".05" stroke="none" transform="translate(12 4)"/>
-    </g>`;
-  }
-  if (design === "arcs"){
-    // broadcast-style speed arcs sweeping from the bottom-left
-    let a = "";
-    [190, 280, 380, 490, 610].forEach((r, i) => {
-      a += `<circle cx="-30" cy="${H + 30}" r="${r}" fill="none" stroke="${ink}"
-                    stroke-opacity="${(.10 - i * .016).toFixed(3)}" stroke-width="${i === 0 ? 3 : 2}"/>`;
-    });
-    return a + `<circle cx="-30" cy="${H + 30}" r="120" fill="${ink}" fill-opacity=".05"/>`;
-  }
-  // classic: the original minimal circles + line
-  return `<circle cx="${W - 60}" cy="90" r="180" fill="none" stroke="${ink}" stroke-opacity=".07" stroke-width="2"/>
-          <circle cx="${W - 60}" cy="90" r="130" fill="none" stroke="${ink}" stroke-opacity=".05" stroke-width="2"/>
-          <circle cx="40" cy="${H - 60}" r="150" fill="${ink}" fill-opacity=".04"/>
-          <line x1="0" y1="${H - 220}" x2="260" y2="${H}" stroke="${ink}" stroke-opacity=".06" stroke-width="2"/>`;
+  // schedule: a quiet editorial mark — a top accent rule + one soft corner disc
+  return `<rect x="0" y="0" width="${W}" height="12" fill="${pal.accent}"/>
+          <circle cx="${W-40}" cy="${H-40}" r="80" fill="${ink}" fill-opacity=".035"/>`;
+}
+
+/* Schedule Card: a dark bar with home | VS chip | away, then a slim detail
+   line (date · round) underneath — returns the row height it used so the
+   caller can advance its cursor by the right amount */
+function posterRowSchedule(m, x0, colW, y, pal, FONT, FS, esc, roundTitle){
+  const barH = 42;
+  const barText = luminance(pal.ink) > 0.5 ? "#0a0a0a" : "#f5f5f5";
+  const accentText = luminance(pal.accent) > 0.5 ? "#0a0a0a" : "#f5f5f5";
+  const sc = shareOpts.scores ? posterScore(m) : null;
+  const chipW = sc ? 74 : 48;
+  let out = `<rect x="${x0}" y="${y}" width="${colW}" height="${barH}" rx="4" fill="${pal.ink}"/>`;
+  out += `<text x="${x0+16}" y="${y+barH/2+5}" font-family="${FONT}" font-size="${FS(14)}" font-weight="800" fill="${barText}">${esc(pTrim(m.h,16))}</text>`;
+  out += `<text x="${x0+colW-16}" y="${y+barH/2+5}" text-anchor="end" font-family="${FONT}" font-size="${FS(14)}" font-weight="800" fill="${barText}">${esc(pTrim(m.a,16))}</text>`;
+  out += `<rect x="${x0+colW/2-chipW/2}" y="${y}" width="${chipW}" height="${barH}" fill="${pal.accent}"/>`;
+  out += `<text x="${x0+colW/2}" y="${y+barH/2+5}" text-anchor="middle" font-family="${FONT}" font-size="${FS(sc?13:12)}" font-weight="900" letter-spacing="1" fill="${accentText}">${esc(sc || "VS")}</text>`;
+  const rw = formatWhen(viewDates[roundTitle]);
+  const detailY = y + barH + 20;
+  out += `<text x="${x0}" y="${detailY}" font-family="${FONT}" font-size="${FS(11.5)}" font-weight="700" letter-spacing=".5" fill="${pal.dim}">${esc((rw ? rw.toUpperCase() + "  ·  " : "") + roundTitle.toUpperCase())}</text>`;
+  return { svg: out, height: barH + 34 };
+}
+
+/* Match Planner: a date pill above an angled two-tone ticket banner, using
+   each team's own saved kit colour when available */
+function posterRowPlanner(m, x0, colW, y, pal, FONT, FS, esc, roundTitle){
+  const pillTxt = formatWhen(viewDates[roundTitle]) || roundTitle;
+  const pillW = Math.min(colW * 0.7, 8 * pillTxt.length + 30);
+  const pillX = x0 + colW/2 - pillW/2;
+  let out = `<rect x="${pillX}" y="${y}" width="${pillW}" height="22" rx="11" fill="${pal.bg2 || "#ffffff"}" opacity=".92"/>
+             <text x="${x0+colW/2}" y="${y+15}" text-anchor="middle" font-family="${FONT}" font-size="${FS(10.5)}" font-weight="800" letter-spacing=".5" fill="${pal.ink}">${esc(pillTxt.toUpperCase())}</text>`;
+
+  const bannerY = y + 32, bannerH = 46, skew = 14, gap = 22;
+  const halfW = (colW - gap) / 2;
+  const homeColor = posterTeamColor(m.h) || pal.accent;
+  const awayColor = posterTeamColor(m.a) || mixHex(pal.accent, pal.ink, 0.45);
+  const homeText = luminance(homeColor) > 0.5 ? "#0a0a0a" : "#f5f5f5";
+  const awayText = luminance(awayColor) > 0.5 ? "#0a0a0a" : "#f5f5f5";
+
+  const hx = x0, ax = x0 + halfW + gap;
+  out += `<polygon points="${hx+skew},${bannerY} ${hx+halfW},${bannerY} ${hx+halfW-skew},${bannerY+bannerH} ${hx},${bannerY+bannerH}" fill="${homeColor}"/>`;
+  out += `<text x="${hx+halfW/2+2}" y="${bannerY+bannerH/2+5}" text-anchor="middle" font-family="${FONT}" font-size="${FS(14)}" font-weight="800" fill="${homeText}">${esc(pTrim(m.h,14))}</text>`;
+  out += `<polygon points="${ax+skew},${bannerY} ${ax+halfW},${bannerY} ${ax+halfW-skew},${bannerY+bannerH} ${ax},${bannerY+bannerH}" fill="${awayColor}"/>`;
+  out += `<text x="${ax+halfW/2+2}" y="${bannerY+bannerH/2+5}" text-anchor="middle" font-family="${FONT}" font-size="${FS(14)}" font-weight="800" fill="${awayText}">${esc(pTrim(m.a,14))}</text>`;
+
+  const sc = shareOpts.scores ? posterScore(m) : null;
+  const vsCx = x0 + halfW + gap/2;
+  out += `<circle cx="${vsCx}" cy="${bannerY+bannerH/2}" r="${sc ? 20 : 15}" fill="${pal.bg1 || "#ffffff"}"/>`;
+  out += `<text x="${vsCx}" y="${bannerY+bannerH/2+4}" text-anchor="middle" font-family="${FONT}" font-size="${FS(sc?11:12)}" font-weight="900" fill="${pal.ink}">${esc(sc || "VS")}</text>`;
+
+  return { svg: out, height: 32 + bannerH + 24 };
 }
 
 /* build the full standalone poster SVG (concrete colours, system fonts only) */
@@ -5643,20 +5935,32 @@ function posterSvg(t){
   const FONT = (POSTER_FONTS[shareOpts.font] || POSTER_FONTS.classic).stack;
   const FS = (n) => Math.round(n * (shareOpts.fontScale || 1));   // one dial for every text size
   const esc = escapeHtml;
+  const template = shareOpts.template || "schedule";
   let body = "", y = 0;
 
   // ---- header ----
-  y = 118;
   const title = shareOpts.title.trim() || t.name;
-  body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(52)}" font-weight="900" fill="${pal.ink}" letter-spacing="1">${esc(pTrim(title, 34))}</text>`;
-  y += 22;
-  body += `<rect x="${W/2 - 44}" y="${y}" width="88" height="5" rx="2.5" fill="${pal.accent}"/>`;
-  y += 40;
-  if (shareOpts.sub.trim()){
-    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(22)}" font-weight="600" fill="${pal.dim}" letter-spacing="3">${esc(pTrim(shareOpts.sub, 60).toUpperCase())}</text>`;
-    y += 34;
+  if (template === "planner"){
+    y = 108;
+    body += `<text x="${W/2+4}" y="${y+4}" text-anchor="middle" font-family="${FONT}" font-size="${FS(58)}" font-weight="900" fill="${pal.ink}" opacity=".18" letter-spacing="1">${esc(pTrim(title, 28))}</text>`;
+    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(58)}" font-weight="900" fill="${pal.ink}" letter-spacing="1">${esc(pTrim(title, 28))}</text>`;
+    y += 44;
+    const subTxt = (shareOpts.sub.trim() || "MATCH PLANNER").toUpperCase();
+    const pillW = Math.min(420, 14 * subTxt.length + 50);
+    body += `<rect x="${W/2-pillW/2}" y="${y}" width="${pillW}" height="40" rx="20" fill="${pal.accent}"/>`;
+    body += `<text x="${W/2}" y="${y+26}" text-anchor="middle" font-family="${FONT}" font-size="${FS(18)}" font-weight="900" letter-spacing="2" fill="${luminance(pal.accent) > 0.5 ? "#0a0a0a" : "#f5f5f5"}">${esc(pTrim(subTxt, 30))}</text>`;
+    y += 70;
+  } else {
+    y = 78;
+    if (shareOpts.sub.trim()){
+      body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(20)}" font-weight="700" fill="${pal.ink}" letter-spacing="2">${esc(pTrim(shareOpts.sub, 60).toUpperCase())}</text>`;
+      y += 46;
+    } else { y += 10; }
+    body += `<text x="${W/2}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${FS(64)}" font-weight="900" fill="${pal.accent}" letter-spacing="0">${esc(pTrim(title, 26).toUpperCase())}</text>`;
+    y += 26;
+    body += `<rect x="${W/2 - 60}" y="${y}" width="120" height="5" rx="2.5" fill="${pal.ink}"/>`;
+    y += 40;
   }
-  y += 18;
 
   // ---- content ----
   if (shareOpts.content === "bracket"){
@@ -5699,21 +6003,27 @@ function posterSvg(t){
       tb.rows.forEach((r, i) => {
         y += 34;
         if (i % 2 === 0 && pal.bg2) body += `<rect x="${PAD - 8}" y="${y - 23}" width="${W - PAD * 2 + 16}" height="32" rx="6" fill="${pal.bg2}"/>`;
-        body += `<text x="${PAD + 4}" y="${y}" font-family="${FONT}" font-size="${FS(17)}" font-weight="800" fill="${pal.dim}">${i + 1}</text>
-                 <text x="${PAD + 40}" y="${y}" font-family="${FONT}" font-size="${FS(18)}" font-weight="${i < 2 ? 900 : 600}" fill="${pal.ink}">${esc(pTrim(r.name, 24))}</text>`;
+        const medal = [["#f4d21c","#0c1a10"],["#c9d0d6","#10151a"],["#e08a3c","#2a1503"]][i];
+        body += medal
+          ? `<circle cx="${PAD + 12}" cy="${y - 6}" r="12" fill="${medal[0]}"/>
+             <text x="${PAD + 12}" y="${y - 1}" text-anchor="middle" font-family="${FONT}" font-size="${FS(13)}" font-weight="900" fill="${medal[1]}">${i + 1}</text>`
+          : `<text x="${PAD + 8}" y="${y}" font-family="${FONT}" font-size="${FS(17)}" font-weight="800" fill="${pal.dim}">${i + 1}</text>`;
+        body += `<text x="${PAD + 40}" y="${y}" font-family="${FONT}" font-size="${FS(18)}" font-weight="${i < 2 ? 900 : 600}" fill="${pal.ink}">${esc(pTrim(r.name, 24))}</text>`;
         const vals = [r.p, r.w, r.d, r.l, (r.f - r.a > 0 ? "+" : "") + (r.f - r.a), r.pts];
         vals.forEach((v, ci) => body += `<text x="${cols[ci]}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="${FS(17)}" font-weight="${ci === 5 ? 900 : 600}" fill="${ci === 5 ? pal.accent : pal.ink}">${v}</text>`);
       });
       y += 46;
     });
   } else {
-    // fixtures list, 1 or 2 columns
+    // fixtures list, 1 or 2 columns — each match drawn as a Schedule Card bar
+    // or a Match Planner banner, per the chosen template
     const rounds = posterRounds(t);
     const colN = shareOpts.cols;
     const colW = (W - PAD * 2 - (colN - 1) * 40) / colN;
-    const lines = r => 2 + r.matches.length;
+    const rowH = template === "planner" ? 92 : 76;
+    const lines = r => 26 + r.matches.length * rowH;
     const total = rounds.reduce((s, r) => s + lines(r), 0);
-    const perCol = Math.ceil(total / colN);
+    const perCol = total / colN;
     let colRounds = [[]], acc = 0;
     rounds.forEach(r => {
       if (acc + lines(r) > perCol && colRounds.length < colN && colRounds[colRounds.length-1].length){
@@ -5725,34 +6035,27 @@ function posterSvg(t){
     let maxY = y;
     colRounds.forEach((list, ci) => {
       let cy = yStart;
-      const x0 = PAD + ci * (colW + 40), cx = x0 + colW / 2;
+      const x0 = PAD + ci * (colW + 40);
       list.forEach(r => {
-        body += `<rect x="${x0}" y="${cy - 15}" width="6" height="22" rx="3" fill="${pal.accent}"/>
-                 <text x="${x0 + 16}" y="${cy + 3}" font-family="${FONT}" font-size="${FS(colN === 2 ? 19 : 22)}" font-weight="900" fill="${pal.ink}">${esc(r.title)}</text>`;
-        const rw = formatWhen(viewDates[r.title]);
-        if (rw) body += `<text x="${x0 + colW}" y="${cy + 2}" text-anchor="end" font-family="${FONT}" font-size="${FS(13)}" font-weight="700" fill="${pal.dim}">${esc(rw)}</text>`;
-        cy += 16;
+        body += `<text x="${x0}" y="${cy}" font-family="${FONT}" font-size="${FS(15)}" font-weight="800" letter-spacing="1.5" fill="${pal.dim}">${esc(r.title.toUpperCase())}</text>`;
+        cy += 22;
         r.matches.forEach(m => {
-          cy += colN === 2 ? 30 : 34;
           if (m.a === "__BYE__"){
-            body += `<text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="${FS(16)}" fill="${pal.dim}">${esc(pTrim(m.h, 20))} — bye</text>`;
+            body += `<text x="${x0+colW/2}" y="${cy+16}" text-anchor="middle" font-family="${FONT}" font-size="${FS(15)}" fill="${pal.dim}">${esc(pTrim(m.h, 20))} — bye</text>`;
+            cy += 40;
             return;
           }
-          const fs = FS(colN === 2 ? 16 : 18);
-          const sc = shareOpts.scores ? posterScore(m) : null;
-          const mid = sc || "vs";
-          const hDim = pReal(m.h) ? pal.ink : pal.dim;
-          const aDim = pReal(m.a) ? pal.ink : pal.dim;
-          body += `<text x="${cx - 52}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="${fs}" font-weight="700" fill="${hDim}">${esc(pTrim(m.h, colN === 2 ? 15 : 20))}</text>
-                   <text x="${cx}" y="${cy}" text-anchor="middle" font-family="${FONT}" font-size="${fs - 2}" font-weight="${sc ? 900 : 600}" fill="${sc ? pal.accent : pal.dim}">${esc(mid)}</text>
-                   <text x="${cx + 52}" y="${cy}" text-anchor="start" font-family="${FONT}" font-size="${fs}" font-weight="700" fill="${aDim}">${esc(pTrim(m.a, colN === 2 ? 15 : 20))}</text>`;
-          if (m.leg) body += `<text x="${x0 + colW}" y="${cy}" text-anchor="end" font-family="${FONT}" font-size="${FS(11)}" font-weight="800" fill="${pal.dim}" letter-spacing="1">${m.leg.toUpperCase()}</text>`;
+          const row = template === "planner"
+            ? posterRowPlanner(m, x0, colW, cy, pal, FONT, FS, esc, r.title)
+            : posterRowSchedule(m, x0, colW, cy, pal, FONT, FS, esc, r.title);
+          body += row.svg;
+          cy += row.height;
         });
-        cy += 30;
+        cy += 14;
       });
       maxY = Math.max(maxY, cy);
     });
-    y = maxY;
+    y = maxY - 14;
   }
 
   // ---- sponsor logo (top-right) ----
@@ -5770,7 +6073,7 @@ function posterSvg(t){
   }
   const H = y + 50;
 
-  // ---- background + design layer (drawn first) ----
+  // ---- background + template flourish (drawn first) ----
   let bg = "";
   if (pal.bg1){
     bg += `<defs><linearGradient id="pbg" x1="0" y1="0" x2="0" y2="1">
@@ -5778,9 +6081,7 @@ function posterSvg(t){
            </linearGradient></defs>
            <rect width="${W}" height="${H}" fill="url(#pbg)"/>`;
   }
-  if (shareOpts.design !== "none"){
-    bg += posterDeco(shareOpts.design, pal, W, H);
-  }
+  bg += posterHeaderDeco(template, pal, W, H);
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${bg}${body}</svg>`;
 }
@@ -5858,7 +6159,7 @@ function syncShareUi(){
   document.querySelectorAll("[data-sh-content]").forEach(b => b.classList.toggle("on", b.dataset.shContent === shareOpts.content));
   document.querySelectorAll("[data-sh-bg]").forEach(b => b.classList.toggle("sel", b.dataset.shBg === shareOpts.bg));
   document.querySelectorAll("[data-sh-cols]").forEach(b => b.classList.toggle("on", +b.dataset.shCols === shareOpts.cols));
-  document.querySelectorAll("[data-sh-design]").forEach(b => b.classList.toggle("on", b.dataset.shDesign === shareOpts.design));
+  document.querySelectorAll("[data-sh-template]").forEach(b => b.classList.toggle("on", b.dataset.shTemplate === shareOpts.template));
   document.querySelectorAll("[data-sh-fmt]").forEach(b => b.classList.toggle("on", b.dataset.shFmt === shareOpts.format));
   const fsel = document.getElementById("shFont");
   if (fsel) fsel.value = shareOpts.font;
@@ -5872,16 +6173,17 @@ function syncShareUi(){
 /* social formats: fit the poster inside a fixed canvas, centred */
 const POSTER_FORMATS = { square:[1080,1080], story:[1080,1920], wide:[1280,720] };
 
-/* poster fonts \u2014 device-safe stacks, so a downloaded PNG looks the same everywhere */
+/* poster fonts \u2014 the broadcast/hype/mono trio match the app's own webfonts
+   (already loaded via the Google Fonts <link>, so the live preview and the
+   rasterized PNG both pick them up); the rest are device-safe fallbacks for
+   a look that still holds up if a font somehow fails to load in time. */
 const POSTER_FONTS = {
-  classic:  { label:"Classic",  stack:"Arial, Helvetica, sans-serif" },
-  modern:   { label:"Modern",   stack:"'Trebuchet MS', 'Segoe UI', Verdana, sans-serif" },
-  condensed:{ label:"Condensed",stack:"'Arial Narrow', 'Haettenschweiler', 'Impact', sans-serif" },
-  impact:   { label:"Impact",   stack:"Impact, 'Anton', 'Arial Black', sans-serif" },
-  elegant:  { label:"Elegant",  stack:"Georgia, 'Times New Roman', serif" },
-  editorial:{ label:"Editorial",stack:"'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif" },
-  mono:     { label:"Mono",     stack:"'Courier New', Consolas, monospace" },
-  rounded:  { label:"Rounded",  stack:"'Segoe UI', 'Verdana', 'Geneva', sans-serif" }
+  broadcast:{ label:"Broadcast",      stack:"'Oswald','Arial Narrow',sans-serif" },
+  scorer:   { label:"Scoreboard Mono",stack:"'Roboto Mono','Courier New',monospace" },
+  trophy:   { label:"Trophy",         stack:"'Fraunces',Georgia,serif" },
+  stark:    { label:"Stark",          stack:"'Archivo','Segoe UI',sans-serif" },
+  impact:   { label:"Impact",         stack:"Impact, 'Anton', 'Arial Black', sans-serif" },
+  classic:  { label:"Classic",        stack:"Arial, Helvetica, sans-serif" }
 };
 
 function posterOut(t){
@@ -5900,11 +6202,6 @@ function posterOut(t){
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${TW} ${TH}" width="${TW}" height="${TH}">`
        + back
        + `<g transform="translate(${dx.toFixed(1)} ${dy.toFixed(1)}) scale(${sc.toFixed(4)})">${inner}</g></svg>`;
-}
-
-function shareTab(name){
-  document.querySelectorAll(".sh-tab").forEach(b => b.classList.toggle("on", b.dataset.pane === name));
-  document.querySelectorAll(".sh-pane").forEach(p => p.style.display = p.dataset.pane === name ? "" : "none");
 }
 
 /* The share sheet must open in the same beat as the tap. Rendering the PNG
@@ -6222,81 +6519,52 @@ function dataUrlToBlob(dataUrl){
   return new Blob([arr], { type:"image/png" });
 }
 
-/* ================= THEME CUSTOMIZER ================= */
-const PRESET_THEMES = {
-  classic:{ "--pitch":"#ffffff","--pitch-2":"#fafafa","--chalk":"#111111","--chalk-dim":"#6b6b6b",
-            "--floodlight":"#111111","--floodlight-2":"#333333","--line":"rgba(0,0,0,.14)","--accent-text":"#ffffff",
-            "--pitch-rgb":"255,255,255","--accent-rgb":"17,17,17" },
-  dark:   { "--pitch":"#000000","--pitch-2":"#0e0e0e","--chalk":"#f5f5f5","--chalk-dim":"#b0b0b0",
-            "--floodlight":"#f5f5f5","--floodlight-2":"#dcdcdc","--line":"rgba(255,255,255,.14)","--accent-text":"#111111",
-            "--pitch-rgb":"0,0,0","--accent-rgb":"245,245,245" },
-  pitch:  { "--pitch":"#0d2018","--pitch-2":"#143026","--chalk":"#f4f1e4","--chalk-dim":"#a8b8a6",
-            "--floodlight":"#ffb627","--floodlight-2":"#e09a10","--line":"rgba(244,241,228,.14)","--accent-text":"#231a02",
-            "--pitch-rgb":"13,32,24","--accent-rgb":"255,182,39" },
-  royal:  { "--pitch":"#0d1b4c","--pitch-2":"#14265e","--chalk":"#f2f4ff","--chalk-dim":"#9fb0d8",
-            "--floodlight":"#ffd400","--floodlight-2":"#e0bb00","--line":"rgba(255,255,255,.15)","--accent-text":"#1a1a1a",
-            "--pitch-rgb":"13,27,76","--accent-rgb":"255,212,0" },
-  rose:   { "--pitch":"#7a1538","--pitch-2":"#8d1f44","--chalk":"#ffffff","--chalk-dim":"#e3b3c2",
-            "--floodlight":"#ffffff","--floodlight-2":"#f0d5dd","--line":"rgba(255,255,255,.22)","--accent-text":"#7a1538",
-            "--pitch-rgb":"122,21,56","--accent-rgb":"255,255,255" }
+/* ================= THEME CUSTOMIZER: 3-SKIN BROADCAST ENGINE ================= */
+/* Three hand-authored skins rather than one runtime-derived engine — there's no user
+   seed color anymore, so every accent/medal pairing is chosen and contrast-checked
+   up front instead of computed on the fly. Each medal has ITS OWN ink color rather
+   than one shared "always dark" ink: a color safe with dark text in one skin isn't
+   guaranteed safe in another (the B&W bronze grey needs light ink at 4.89:1 where
+   dark ink only reaches 3.94:1 — the other two skins' bronze is the other way round). */
+const SKINS = {
+  normal: {
+    "--pitch":"#070d0a","--pitch-2":"#0e1712","--chalk":"#f2f5f0","--chalk-dim":"#8fa398",
+    "--floodlight":"#f4d21c","--floodlight-2":"#d9ba0f","--line":"rgba(242,245,240,.14)","--accent-text":"#0c1a10",
+    "--pitch-rgb":"7,13,10","--accent-rgb":"244,210,28",
+    "--live":"#2ee6a6","--live-rgb":"46,230,166","--live-ink":"#05130d",
+    "--medal-gold":"#f4d21c","--medal-gold-ink":"#0c1a10",
+    "--medal-silver":"#c9d0d6","--medal-silver-ink":"#10151a",
+    "--medal-bronze":"#e08a3c","--medal-bronze-ink":"#2a1503",
+    "--bg-grad":"linear-gradient(165deg,#070d0a,#0e1712 55%,#122019)",
+    "--font-body":'"Roboto",sans-serif', "--style":"normal"
+  },
+  hype: {
+    "--pitch":"#170b02","--pitch-2":"#241206","--chalk":"#fff3e0","--chalk-dim":"#c9a582",
+    "--floodlight":"#ffb020","--floodlight-2":"#e08e00","--line":"rgba(255,243,224,.16)","--accent-text":"#241000",
+    "--pitch-rgb":"23,11,2","--accent-rgb":"255,176,32",
+    "--live":"#ff5a36","--live-rgb":"255,90,54","--live-ink":"#2a0800",
+    "--medal-gold":"#ffd76a","--medal-gold-ink":"#241000",
+    "--medal-silver":"#d8cfc2","--medal-silver-ink":"#1a1206",
+    "--medal-bronze":"#ff8b4d","--medal-bronze-ink":"#2a0e00",
+    "--bg-grad":"linear-gradient(165deg,#170b02,#2a1608 55%,#3a1c02)",
+    "--font-body":'"Fraunces",serif', "--style":"hype"
+  },
+  mono: {
+    "--pitch":"#050505","--pitch-2":"#121212","--chalk":"#f5f5f5","--chalk-dim":"#9a9a9a",
+    "--floodlight":"#ffffff","--floodlight-2":"#d0d0d0","--line":"rgba(245,245,245,.16)","--accent-text":"#0a0a0a",
+    "--pitch-rgb":"5,5,5","--accent-rgb":"255,255,255",
+    "--live":"#ff3b30","--live-rgb":"255,59,48","--live-ink":"#1a0100",
+    "--medal-gold":"#e8e8e8","--medal-gold-ink":"#0a0a0a",
+    "--medal-silver":"#b5b5b5","--medal-silver-ink":"#0a0a0a",
+    "--medal-bronze":"#6b6b6b","--medal-bronze-ink":"#f5f5f5",
+    "--bg-grad":"linear-gradient(165deg,#050505,#121212 55%,#050505)",
+    "--pop":"#ff3b30",
+    "--font-body":'"Archivo",sans-serif', "--style":"mono"
+  }
 };
-/* gallery = old presets (with depth gradients) + rich gradient themes */
-const GALLERY_EXTRA = {
-  sunset: { "--style":"retro","--pitch":"#241338","--pitch-2":"#33204e","--chalk":"#fff4ec","--chalk-dim":"#dcc3cf",
-            "--floodlight":"#ffb37b","--floodlight-2":"#e8955a","--line":"rgba(255,244,236,.16)","--accent-text":"#3a1c0a",
-            "--pitch-rgb":"36,19,56","--accent-rgb":"255,179,123",
-            "--bg-grad":"linear-gradient(165deg,#241338,#5b2160 52%,#a4373f)" },
-  ocean:  { "--style":"wave","--pitch":"#0f2027","--pitch-2":"#1b3540","--chalk":"#eafcff","--chalk-dim":"#b3d2d9",
-            "--floodlight":"#4dd0e1","--floodlight-2":"#2fb3c4","--line":"rgba(234,252,255,.15)","--accent-text":"#062227",
-            "--pitch-rgb":"15,32,39","--accent-rgb":"77,208,225",
-            "--bg-grad":"linear-gradient(160deg,#0f2027,#203a43 55%,#2c5364)" },
-  forest: { "--style":"organic","--pitch":"#0b2e1f","--pitch-2":"#154531","--chalk":"#effaf1","--chalk-dim":"#bedac7",
-            "--floodlight":"#7ee787","--floodlight-2":"#5ecb6a","--line":"rgba(239,250,241,.15)","--accent-text":"#08210f",
-            "--pitch-rgb":"11,46,31","--accent-rgb":"126,231,135",
-            "--bg-grad":"linear-gradient(160deg,#0b2e1f,#14532d 55%,#1f7a4d)" },
-  midnight:{ "--style":"cosmic","--pitch":"#0f0c29","--pitch-2":"#1c1840","--chalk":"#f1efff","--chalk-dim":"#c2bde3",
-            "--floodlight":"#b39dff","--floodlight-2":"#9a80f0","--line":"rgba(241,239,255,.15)","--accent-text":"#160f33",
-            "--pitch-rgb":"15,12,41","--accent-rgb":"179,157,255",
-            "--bg-grad":"linear-gradient(160deg,#0f0c29,#302b63 55%,#24243e)" },
-  sand:   { "--style":"print","--pitch":"#f5efe6","--pitch-2":"#efe5d4","--chalk":"#3d2f1e","--chalk-dim":"#5c4c34",
-            "--floodlight":"#9c5f1b","--floodlight-2":"#834e12","--line":"rgba(61,47,30,.18)","--accent-text":"#ffffff",
-            "--pitch-rgb":"245,239,230","--accent-rgb":"156,95,27",
-            "--bg-grad":"linear-gradient(165deg,#f7f2ea,#eadfc9 60%,#dfcdae)" },
-  hyper:  { "--pitch":"#0b0b0b","--pitch-2":"#161616","--chalk":"#f3efe3","--chalk-dim":"#b8b4a6",
-            "--floodlight":"#ff5826","--floodlight-2":"#ff4a00","--line":"rgba(243,239,227,.2)","--accent-text":"#0b0b0b",
-            "--pitch-rgb":"11,11,11","--accent-rgb":"255,88,38","--pop":"#d4ff00","--style":"brutal",
-            "--bg-grad":"linear-gradient(120deg,#1c0e06,#0b0b0b 45%,#10120a)" },
-  aurora: { "--style":"glow","--pitch":"#003344","--pitch-2":"#0b4a58","--chalk":"#ecfffa","--chalk-dim":"#b3dbd5",
-            "--floodlight":"#7cffcb","--floodlight-2":"#54e0ac","--line":"rgba(236,255,250,.15)","--accent-text":"#00291c",
-            "--pitch-rgb":"0,51,68","--accent-rgb":"124,255,203",
-            "--bg-grad":"linear-gradient(150deg,#003973,#0b8793)" }
-};
-const GALLERY_STYLE = { classic:"paper", dark:"noir", pitch:"stadium", royal:"luxe", rose:"neon" };
-function GALLERY(){
-  const g = {};
-  Object.keys(PRESET_THEMES).forEach(k => {
-    g[k] = Object.assign({}, PRESET_THEMES[k],
-      { "--bg-grad": "linear-gradient(170deg," + PRESET_THEMES[k]["--pitch"] + "," + PRESET_THEMES[k]["--pitch-2"] + ")",
-        "--style": GALLERY_STYLE[k] });
-  });
-  Object.assign(g, GALLERY_EXTRA);
-  return g;
-}
-const GALLERY_LABELS = { classic:"Classic", dark:"Dark", pitch:"Night pitch", royal:"Royal", rose:"Rose",
-  sunset:"Sunset", ocean:"Ocean", forest:"Forest", midnight:"Midnight", sand:"Sand", aurora:"Aurora", hyper:"Hyper" };
+const SKIN_LABELS = { normal:"Normal", hype:"Hype", mono:"B&W" };
 
-let themeState = { engine:"gallery", gallery:"classic", seed:"#7a1538", club:null,
-                   mode:"dark", zoom:1, blur:true, blurAmt:26, font:"system",
-                   textColor:null, textAlpha:1 };
-
-const FONTS = {
-  system:  '"Segoe UI"',
-  gsans:   '"Google Sans", "Product Sans", "Outfit"',
-  inter:   '"Inter"',
-  poppins: '"Poppins"',
-  grotesk: '"Space Grotesk"',
-  lora:    '"Lora", Georgia'
-};
+let themeState = { skin:"normal", zoom:1, blur:true, blurAmt:26 };
 
 function hexToRgb(h){ const n = parseInt(h.slice(1), 16); return [n>>16&255, n>>8&255, n&255]; }
 function mixHex(a, b, t){
@@ -6305,135 +6573,43 @@ function mixHex(a, b, t){
 }
 function luminance(h){ const [r,g,b] = hexToRgb(h); return (0.299*r + 0.587*g + 0.114*b) / 255; }
 
-/* WCAG contrast machinery: every derived theme guarantees readable text */
+/* still used at runtime below to pick the danger-red shade for this skin's background */
 function wcagL(hex){
   const s = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
   const [r, g, b] = hexToRgb(hex);
   return 0.2126 * s(r) + 0.7152 * s(g) + 0.0722 * s(b);
-}
-function contrastRatio(a, b){
-  const x = wcagL(a), y = wcagL(b);
-  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
-}
-/* nudge fg toward `towards` until it reads clearly against bg */
-function ensureContrast(fg, bg, min, towards){
-  let c = fg;
-  for (let i = 0; i < 22 && contrastRatio(c, bg) < min; i++) c = mixHex(c, towards, 0.08);
-  return c;
-}
-
-function deriveTheme(bg, text, accent){
-  const p2 = mixHex(bg, text, 0.05);
-  // secondary text must stay readable even on the lighter panel surface
-  const dim = ensureContrast(mixHex(text, bg, 0.30), p2, 5.0, text);
-  // the accent doubles as coloured text, so it must stand off the background
-  let acc = ensureContrast(accent, bg, 3.0, wcagL(bg) > 0.5 ? "#000000" : "#ffffff");
-  // mid-luminance accents can't host a readable label — push them off the middle
-  for (let i = 0; i < 22 && Math.max(contrastRatio("#111111", acc), contrastRatio("#ffffff", acc)) < 4.5; i++){
-    acc = mixHex(acc, wcagL(bg) > 0.5 ? "#000000" : "#ffffff", 0.06);   // away from the background pole: label AND background contrast both improve
-  }
-  // button labels: whichever of black/white truly reads better on the accent
-  const accText = contrastRatio("#111111", acc) >= contrastRatio("#ffffff", acc) ? "#111111" : "#ffffff";
-  return {
-    "--pitch": bg,
-    "--pitch-2": p2,
-    "--chalk": text,
-    "--chalk-dim": dim,
-    "--floodlight": acc,
-    "--floodlight-2": mixHex(acc, accText === "#111111" ? "#ffffff" : "#000000", 0.14),
-    "--line": "rgba(" + hexToRgb(text).join(",") + ",.16)",
-    "--accent-text": accText,
-    "--pitch-rgb": hexToRgb(bg).join(","),
-    "--accent-rgb": hexToRgb(acc).join(",")
-  };
 }
 
 function applyThemeVars(vars){
   for (const k in vars) document.documentElement.style.setProperty(k, vars[k]);
 }
 
-function resolvedMode(){
-  if (themeState.mode === "auto"){
-    try{ return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
-    catch(e){ return "dark"; }
-  }
-  return themeState.mode === "light" ? "light" : "dark";
-}
-
-/* one-colour engine: a full palette from a single seed */
-function themeFromSeed(seed, mode){
-  const dark = mode !== "light";
-  const nearBlack = wcagL(seed) < 0.02;
-  const bg = dark ? (nearBlack ? "#000000" : mixHex(seed, "#000000", 0.82))
-                  : mixHex(seed, "#ffffff", 0.90);
-  const text = dark ? "#f4f2f0" : "#191410";
-  let accent = seed;
-  if (dark && luminance(accent) < 0.22)  accent = mixHex(seed, "#ffffff", 0.35);
-  if (!dark && luminance(accent) > 0.72) accent = mixHex(seed, "#000000", 0.35);
-  const v = deriveTheme(bg, text, accent);
-  v["--bg-grad"] = nearBlack && dark
-    ? "linear-gradient(165deg,#000000,#0b0b0b)"
-    : "linear-gradient(165deg," + bg + "," + mixHex(bg, seed, dark ? 0.28 : 0.18) + ")";
-  return v;
-}
-
-/* re-derive any gallery theme for the opposite mode, keeping its accent + style */
-function galleryVariant(g, mode){
-  const isLightTheme = luminance(g["--pitch"]) > 0.5;
-  const wantLight = mode === "light";
-  if (wantLight === isLightTheme) return g;
-  const bg = wantLight ? mixHex(g["--pitch"], "#ffffff", 0.90) : mixHex(g["--pitch"], "#000000", 0.82);
-  const text = wantLight ? "#191410" : "#f4f2f0";
-  let acc = g["--floodlight"];
-  if (!wantLight && luminance(acc) < 0.22) acc = mixHex(acc, "#ffffff", 0.35);
-  if (wantLight && luminance(acc) > 0.72) acc = mixHex(acc, "#000000", 0.35);
-  const v = deriveTheme(bg, text, acc);
-  v["--bg-grad"] = "linear-gradient(165deg," + bg + "," + mixHex(bg, acc, wantLight ? 0.14 : 0.26) + ")";
-  if (g["--style"]) v["--style"] = g["--style"];
-  if (g["--pop"]) v["--pop"] = g["--pop"];
-  return v;
-}
-
 function resolveThemeVars(){
-  const mode = resolvedMode();
-  if (themeState.engine === "color") return themeFromSeed(themeState.seed || "#7a1538", mode);
-  return galleryVariant(GALLERY()[themeState.gallery] || GALLERY().classic, mode);
-}
-
-function withAlpha(hex, a){
-  return a >= 1 ? hex : "rgba(" + hexToRgb(hex).join(",") + "," + a + ")";
+  return SKINS[themeState.skin] || SKINS.normal;
 }
 
 function applyThemeState(){
   const vars = Object.assign({}, resolveThemeVars());
-  // user text overrides: custom colour and/or global text opacity
-  const ta = themeState.textAlpha == null ? 1 : themeState.textAlpha;
-  if (themeState.textColor){
-    const c = themeState.textColor;
-    vars["--chalk-dim"] = ensureContrast(mixHex(c, vars["--pitch"], 0.36), vars["--pitch-2"], 4.5, c);
-    vars["--line"] = "rgba(" + hexToRgb(c).join(",") + ",.16)";
-    vars["--chalk"] = c;
-  }
-  if (ta < 1){
-    vars["--chalk"] = withAlpha(vars["--chalk"], ta);
-    vars["--chalk-dim"] = withAlpha(vars["--chalk-dim"], Math.max(0.55, ta * 0.9));
-  }
   applyThemeVars(vars);
   applyThemeVars({ "--bg-grad": vars["--bg-grad"] || vars["--pitch"],
-                   "--pop": vars["--pop"] || vars["--floodlight"] });
+                   "--pop": vars["--pop"] || vars["--floodlight"],
+                   "--live": vars["--live"] || vars["--floodlight"],
+                   "--live-rgb": vars["--live-rgb"] || vars["--accent-rgb"],
+                   "--live-ink": vars["--live-ink"] || vars["--accent-text"] });
   // destructive red must read on this theme's surfaces
   const darkBgNow = wcagL(vars["--pitch"]) < 0.5;
   applyThemeVars(darkBgNow
     ? { "--danger": "#ff6f5c", "--danger-text": "#111111" }
     : { "--danger": "#b30000", "--danger-text": "#ffffff" });
-  // each theme can carry its own look: geometry, shadows, texture
-  ["paper","noir","stadium","luxe","neon","retro","wave","organic","cosmic","print","glow","brutal"]
-    .forEach(s => document.body.classList.remove("theme-" + s));
+  // each skin carries its own look: geometry, shadows, texture
+  ["normal","hype","mono"].forEach(s => document.body.classList.remove("theme-" + s));
   if (vars["--style"]) document.body.classList.add("theme-" + vars["--style"]);
   // iOS-style glass: fairly opaque, with the heavy blur doing the work
   applyThemeVars({ "--glass-a":".72", "--glass-panel-a":".8",
                    "--blur": String(themeState.blurAmt || 26),
-                   "--font": FONTS[themeState.font] || FONTS.system });
+                   "--font": vars["--font-body"] || '"Roboto",sans-serif',
+                   "--font-head": '"Oswald",sans-serif',
+                   "--font-mono": '"Roboto Mono",monospace' });
   // blur on/off toggle
   document.body.classList.toggle("no-blur", themeState.blur === false);
   const meta = document.getElementById("metaTheme");
@@ -6447,81 +6623,32 @@ function setBlur(on){
   applyThemeState();
 }
 
-function setFont(key){
-  themeState.font = key;
-  applyThemeState();
-}
-
 function setBlurAmount(v){
   themeState.blurAmt = parseInt(v, 10) || 26;
   document.getElementById("blurVal").textContent = themeState.blurAmt + " px";
   applyThemeState();
 }
 
-function setGallery(name){
-  themeState.engine = "gallery";
-  themeState.gallery = name;
+/* the 3-button pill switcher calls this directly — no panel needs to be open */
+function setSkin(name){
+  if (!SKINS[name]) return;
+  themeState.skin = name;
   applyThemeState();
   syncThemeUi();
+  syncSkinPill();
 }
-function setSeedTheme(hex){
-  themeState.engine = "color";
-  themeState.seed = hex;
-  applyThemeState();
-  syncThemeUi();
-}
-function setTextColor(hex){
-  themeState.textColor = hex;
-  applyThemeState();
-  syncThemeUi();
-}
-function clearTextColor(){
-  themeState.textColor = null;
-  applyThemeState();
-  syncThemeUi();
-}
-function setTextAlpha(v){
-  themeState.textAlpha = Math.min(100, Math.max(60, parseInt(v, 10) || 100)) / 100;
-  applyThemeState();
-  syncThemeUi();
-}
-function setThemeMode(m){
-  themeState.mode = m;
-  applyThemeState();
-  syncThemeUi();
-}
-let _autoThemeHooked = false;
-function hookAutoTheme(){
-  if (_autoThemeHooked) return;
-  _autoThemeHooked = true;
-  try{
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (mq && mq.addEventListener) mq.addEventListener("change", () => { if (themeState.mode === "auto") applyThemeState(); });
-  }catch(e){}
+
+function syncSkinPill(){
+  document.querySelectorAll("#skinPill button").forEach(b => {
+    const on = b.dataset.skin === themeState.skin;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
 }
 
 function syncThemeUi(){
-  const gal = document.getElementById("thGallery");
-  if (gal){
-    const G = GALLERY();
-    gal.innerHTML = Object.keys(G).map(k => `
-      <button class="theme-swatch ${themeState.engine === "gallery" && themeState.gallery === k ? "sel" : ""}"
-              title="${escapeHtml(GALLERY_LABELS[k] || k)}" onclick="setGallery('${k}')"
-              style="background:${G[k]["--bg-grad"].replace(/"/g, "")}"></button>`).join("");
-  }
-  document.querySelectorAll("#thModeSeg button").forEach(b =>
-    b.classList.toggle("on", b.dataset.mode === themeState.mode));
-  const seed = document.getElementById("thSeed");
-  if (seed && themeState.seed) seed.value = themeState.seed;
-  const tc = document.getElementById("thTextColor");
-  if (tc) tc.value = themeState.textColor || (resolveThemeVars()["--chalk"] || "#f2f2f2");
-  const ta = document.getElementById("thTextAuto");
-  if (ta) ta.textContent = themeState.textColor ? "Auto ↺" : "Auto ✓";
-  const al = document.getElementById("thTextAlpha");
-  const av = document.getElementById("thTextAlphaVal");
-  const pct = Math.round((themeState.textAlpha == null ? 1 : themeState.textAlpha) * 100);
-  if (al) al.value = pct;
-  if (av) av.textContent = pct + "%";
+  document.querySelectorAll("#zoomSeg button").forEach((b, i) =>
+    b.classList.toggle("on", [0.9,1,1.15,1.3][i] === themeState.zoom));
 }
 
 function setZoom(z, btn){
@@ -6571,26 +6698,18 @@ function toggleThemePanel(){
 function loadTheme(){
   try{
     const saved = JSON.parse(localStorage.getItem("fixtureMaker.theme"));
-    if (saved){
-      // migrate the old theme format into the engine
-      if (saved.mode === "preset"){ saved.engine = "gallery"; saved.gallery = saved.preset || "classic"; saved.mode = "dark"; }
-      else if (saved.mode === "custom" && saved.custom){
-        saved.engine = "color"; saved.seed = saved.custom.accent || "#7a1538";
-        saved.mode = luminance(saved.custom.bg || "#111") > 0.5 ? "light" : "dark";
-      }
-      if (!saved.engine || saved.engine === "club") saved.engine = "gallery";
-      if (!saved.mode || !["light","dark","auto"].includes(saved.mode)) saved.mode = "dark";
-      themeState = Object.assign({}, themeState, saved);
-    }
+    // migrate anything saved by the old 12-gallery/seed engine onto the closest new skin
+    // so existing users' localStorage never throws or renders with missing tokens
+    if (saved && !SKINS[saved.skin]) saved.skin = "normal";
+    if (saved) themeState = Object.assign({}, themeState, saved);
   }catch(e){}
-  hookAutoTheme();
   applyThemeState();
   syncThemeUi();
+  syncSkinPill();
   setZoomValue(themeState.zoom || 1);
   document.getElementById("thBlur").checked = themeState.blur !== false;
   document.getElementById("thBlurAmt").value = themeState.blurAmt || 26;
   document.getElementById("blurVal").textContent = (themeState.blurAmt || 26) + " px";
-  document.getElementById("thFont").value = themeState.font || "system";
 }
 
 
@@ -6639,14 +6758,30 @@ function goBack(){
   updateBackBtn();
 }
 
+/* the sidebar's small live-stats block — saved teams, tournaments, latest champion */
+function renderSidebarStats(){
+  const box = document.getElementById("sbStats");
+  if (!box) return;
+  let latest = "—";
+  for (let i = tournaments.length - 1; i >= 0; i--){
+    const c = championOf(tournaments[i]);
+    if (c){ latest = c; break; }
+  }
+  box.innerHTML = `
+    <div class="sb-stat"><span class="sb-stat-label">Saved teams</span><span class="sb-stat-val" data-count="${savedTeams.length}">0</span></div>
+    <div class="sb-stat"><span class="sb-stat-label">Tournaments</span><span class="sb-stat-val" data-count="${tournaments.length}">0</span></div>
+    <div class="sb-stat"><span class="sb-stat-label">Latest champion</span><span class="sb-stat-val">${escapeHtml(latest)}</span></div>`;
+  animateCounts(box);
+}
+
 function updateBackBtn(){
   const b = document.getElementById("backBtn");
   if (b) b.classList.toggle("show", canGoBack());
-  // the menu lives on the main page only
-  const m = document.getElementById("menuIcon");
-  if (m) m.style.display = currentTab === "main" ? "" : "none";
+  // the hamburger now opens the whole sidebar (nav + actions), so it stays
+  // available on every tab — it's the only way to switch tabs on mobile
   if (b) b.classList.toggle("solo", currentTab !== "main");
   showCountBubble();   // the team-count bubble also only lives on the main page
+  renderSidebarStats();
 }
 
 /* every navigation action refreshes the back button */
