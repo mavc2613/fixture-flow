@@ -897,9 +897,10 @@
     margin-bottom:9px;
     font-size:16px;
   }
-  .match .home, .match .away{ display:flex; align-items:center; gap:10px; font-weight:700; }
+  .match .home, .match .away{ display:flex; align-items:center; gap:10px; font-weight:700; min-width:0; }
   .match .home{ justify-content:flex-end; text-align:right; }
   .match .away{ justify-content:flex-start; text-align:left; }
+  .match .home span, .match .away span{ min-width:0; overflow-wrap:break-word; word-break:break-word; hyphens:auto; }
   .match .vs{ text-align:center; color:var(--floodlight); font-weight:900; font-size:13px; letter-spacing:.2em; }
   .match .bye-tag{ color:var(--chalk-dim); font-weight:500; font-style:italic; }
 
