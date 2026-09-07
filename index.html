@@ -1046,9 +1046,24 @@
   @media (max-width:560px){
     .match{ grid-template-columns:1fr 104px 1fr; font-size:14px; padding:10px 8px; }
     input.score{ width:36px; }
-    .team-row{ flex-direction:column; }
     .panel{ padding:20px 16px; }
     .saved-list{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
+
+    /* teams toolbar: stop stacking every button full-width — group the
+       secondary actions into one row so the format panel isn't buried
+       under a wall of buttons on small screens */
+    .team-row{ display:flex; flex-wrap:wrap; gap:8px; }
+    .team-row > input[type=text]{ flex:1 1 100%; }
+    .team-row > .btn-amber{ flex:1 1 100%; }
+    .team-row > .btn-ghost:not(.danger-ghost){ flex:1 1 30%; font-size:12.5px; padding:11px 4px; }
+    .team-row > .danger-ghost{ flex:1 1 100%; }
+
+    /* matchweek date/time: was overflowing off-screen next to the round
+       title — wrap it onto its own full-width row instead */
+    .round-title{ flex-wrap:wrap; row-gap:6px; }
+    .round-title::after{ display:none; }
+    .round-when{ flex:1 1 100%; margin-left:0; }
+    .round-when input{ flex:1 1 0; min-width:0; }
   }
   @media print{
     body{ background:#fff; color:#000; }
