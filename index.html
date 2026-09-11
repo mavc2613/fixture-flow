@@ -1252,6 +1252,66 @@
   body.theme-mono #skinPill{ border-radius:0; }
   body.theme-mono #skinPill button.active{ border-radius:0; }
 
+  /* ---- Glass (Liquid Glass): every surface becomes a frosted, refractive pane —
+       big continuous-curve corners, a bright top-edge specular highlight, and the
+       colour of the wallpaper behind it bleeding through the blur ---- */
+  body.theme-glass .panel, body.theme-glass .tour-card, body.theme-glass .champ-banner,
+  body.theme-glass #menuDrawer, body.theme-glass #themePanel, body.theme-glass #sharePanel,
+  body.theme-glass #aboutPanel, body.theme-glass #hallPanel, body.theme-glass #drawPanel,
+  body.theme-glass #wheelPanel, body.theme-glass #publishPanel,
+  body.theme-glass .match, body.theme-glass .saved-card, body.theme-glass .pick-item,
+  body.theme-glass .wh-item, body.theme-glass .stat-grid > div{
+    background:rgba(var(--pitch-rgb), var(--glass-panel-a, .55)) !important;
+    backdrop-filter:blur(calc(var(--blur, 26) * 1.1px)) saturate(2.1) !important;
+    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 1.1px)) saturate(2.1) !important;
+    border:1px solid rgba(255,255,255,.16) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 12px 40px rgba(0,0,0,.4) !important;
+  }
+  body.theme-glass .panel, body.theme-glass .tour-card, body.theme-glass .champ-banner,
+  body.theme-glass #themePanel, body.theme-glass #sharePanel,
+  body.theme-glass #aboutPanel, body.theme-glass #hallPanel, body.theme-glass #drawPanel,
+  body.theme-glass #wheelPanel, body.theme-glass #publishPanel{
+    border-radius:24px !important;
+  }
+  /* the drawer is pinned flush to the screen's left edge — only round the free corners */
+  body.theme-glass #menuDrawer{ border-radius:0 24px 24px 0 !important; }
+  body.theme-glass .match, body.theme-glass .saved-card, body.theme-glass .pick-item,
+  body.theme-glass .wh-item, body.theme-glass .stat-grid > div{
+    border-radius:16px !important;
+  }
+
+  /* pill-shaped chrome: buttons, the search-style team input, the skin switcher */
+  body.theme-glass button, body.theme-glass #countBubble, body.theme-glass .seg,
+  body.theme-glass #skinPill button, body.theme-glass input[type=text], body.theme-glass .lib-select{
+    border-radius:999px !important;
+  }
+  body.theme-glass input.score, body.theme-glass .round-when input,
+  body.theme-glass input[type=date], body.theme-glass input[type=time]{
+    border-radius:10px !important;
+  }
+  body.theme-glass .btn-ghost, body.theme-glass .icon-btn, body.theme-glass input[type=text],
+  body.theme-glass .lib-select, body.theme-glass select, body.theme-glass input.score,
+  body.theme-glass .round-when input, body.theme-glass .seg{
+    background:rgba(var(--pitch-rgb), .38) !important;
+    backdrop-filter:blur(calc(var(--blur, 26) * 0.6px)) saturate(1.8);
+    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 0.6px)) saturate(1.8);
+    border:1px solid rgba(255,255,255,.18) !important;
+  }
+  body.theme-glass .chip{
+    background:rgba(var(--pitch-rgb), .42) !important;
+    backdrop-filter:blur(calc(var(--blur, 26) * 0.6px)) saturate(1.8);
+    -webkit-backdrop-filter:blur(calc(var(--blur, 26) * 0.6px)) saturate(1.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  body.theme-glass .btn-amber, body.theme-glass .seg button.on, body.theme-glass #skinPill button.active{
+    background:linear-gradient(155deg, var(--floodlight-2), var(--floodlight)) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 8px 24px rgba(var(--accent-rgb),.4) !important;
+    border:none !important;
+  }
+  body.theme-glass .seg{ padding:3px; }
+  body.theme-glass ::selection{ background:rgba(var(--accent-rgb),.35); }
+  body.no-blur.theme-glass #skinPill button.active{ box-shadow:none !important; }
+
   /* champion celebration */
   .champ-badge{
     font-size:12px; font-weight:800;
@@ -1896,6 +1956,9 @@
       <button data-skin="mono" aria-label="Black and white theme" aria-pressed="false" title="B&amp;W" onclick="setSkin('mono')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/></svg>
       </button>
+      <button data-skin="glass" aria-label="Liquid Glass theme" aria-pressed="false" title="Liquid Glass" onclick="setSkin('glass')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c3 4 5.5 7.6 5.5 10.6a5.5 5.5 0 1 1-11 0C6.5 11.1 9 7.5 12 3.5z"/><path d="M9.3 14.2c0 1.6 1 2.6 2.4 2.9" opacity=".6"/></svg>
+      </button>
     </div>
   </div>
 
@@ -2315,6 +2378,8 @@
                   style="background:linear-gradient(135deg,#170b02 55%,#ffb020 55%)"></button>
           <button class="theme-swatch" title="B&amp;W" data-sh-bg="mono" onclick="setShare('bg','mono')"
                   style="background:linear-gradient(135deg,#050505 55%,#ffffff 55%)"></button>
+          <button class="theme-swatch" title="Liquid Glass" data-sh-bg="glass" onclick="setShare('bg','glass')"
+                  style="background:linear-gradient(135deg,#5e5ce6,#0a84ff 55%,#ff375f)"></button>
           <button class="theme-swatch" title="No background (transparent PNG)" data-sh-bg="none" onclick="setShare('bg','none')"
                   style="background:repeating-conic-gradient(#cfcfcf 0 25%, #ffffff 0 50%) 0 0 / 14px 14px"></button>
           <label class="theme-swatch" title="Custom colour" data-sh-bg="custom" style="overflow:hidden; display:inline-flex">
@@ -6576,9 +6641,21 @@ const SKINS = {
     "--bg-grad":"linear-gradient(165deg,#050505,#121212 55%,#050505)",
     "--pop":"#ff3b30",
     "--font-body":'"Archivo",sans-serif', "--style":"mono"
+  },
+  glass: {
+    "--pitch":"#0b0f1a","--pitch-2":"#11172a","--chalk":"#f2f5fb","--chalk-dim":"#a9b3c9",
+    "--floodlight":"#0a84ff","--floodlight-2":"#409cff","--line":"rgba(255,255,255,.22)","--accent-text":"#ffffff",
+    "--pitch-rgb":"14,18,34","--accent-rgb":"10,132,255",
+    "--live":"#ff375f","--live-rgb":"255,55,95","--live-ink":"#2a000c",
+    "--medal-gold":"#ffd60a","--medal-gold-ink":"#241a00",
+    "--medal-silver":"#d8dde6","--medal-silver-ink":"#12151c",
+    "--medal-bronze":"#ff9f0a","--medal-bronze-ink":"#2a1400",
+    "--bg-grad":"radial-gradient(ellipse 90% 60% at 12% -8%, rgba(94,92,230,.55) 0%, transparent 60%), radial-gradient(ellipse 80% 55% at 105% 5%, rgba(10,132,255,.5) 0%, transparent 55%), radial-gradient(ellipse 90% 70% at 50% 115%, rgba(255,55,95,.4) 0%, transparent 60%), linear-gradient(165deg,#05070f,#0b0f1a 55%,#05070f)",
+    "--pop":"#ff375f",
+    "--font-body":'"Roboto",sans-serif', "--style":"glass"
   }
 };
-const SKIN_LABELS = { normal:"Normal", hype:"Hype", mono:"B&W" };
+const SKIN_LABELS = { normal:"Normal", hype:"Hype", mono:"B&W", glass:"Liquid Glass" };
 
 let themeState = { skin:"normal", zoom:1, blur:true, blurAmt:26 };
 
@@ -6618,7 +6695,7 @@ function applyThemeState(){
     ? { "--danger": "#ff6f5c", "--danger-text": "#111111" }
     : { "--danger": "#b30000", "--danger-text": "#ffffff" });
   // each skin carries its own look: geometry, shadows, texture
-  ["normal","hype","mono"].forEach(s => document.body.classList.remove("theme-" + s));
+  ["normal","hype","mono","glass"].forEach(s => document.body.classList.remove("theme-" + s));
   if (vars["--style"]) document.body.classList.add("theme-" + vars["--style"]);
   // iOS-style glass: fairly opaque, with the heavy blur doing the work
   applyThemeVars({ "--glass-a":".72", "--glass-panel-a":".8",
