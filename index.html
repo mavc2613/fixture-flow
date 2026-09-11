@@ -55,6 +55,7 @@
     color:var(--chalk);
     font-family:var(--font, "Segoe UI"), system-ui, -apple-system, Arial, sans-serif;
     min-height:100vh;
+    transition:background-color .4s ease, color .3s ease;
   }
 
   /* ============ HEADER ============ */
@@ -138,7 +139,7 @@
     border:none; border-left:3px solid transparent; border-radius:0 6px 6px 0;
     padding:12px 12px; font-family:var(--font-head, "Oswald"), sans-serif;
     font-size:14.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
-    cursor:pointer; transition:background .14s ease, opacity .14s ease, border-color .14s ease;
+    cursor:pointer; transition:background .14s ease, opacity .14s ease, border-color .14s ease, color .14s ease;
   }
   .tab:hover{ opacity:1; background:rgba(var(--pitch-rgb,255,255,255), .5); }
   .tab.on{ opacity:1; border-left-color:var(--floodlight); color:var(--floodlight); }
@@ -384,7 +385,9 @@
     border-radius:50%;
     border:2px solid var(--line);
     cursor:pointer;
+    transition:border-color .15s ease, transform .12s ease;
   }
+  .theme-swatch:active{ transform:scale(.93); }
   .theme-swatch:hover{ border-color:var(--chalk); }
   .theme-colors{ display:flex; gap:16px; flex-wrap:wrap; }
   .theme-colors label{
@@ -621,11 +624,13 @@
     padding:13px 16px; font-size:16px; outline:none;
   }
   input[type=text]:focus{ border-color:var(--floodlight); }
+  /* every editable field eases its focus ring/border instead of snapping */
+  input, select, textarea{ transition:border-color .15s ease, background-color .2s ease, box-shadow .15s ease; }
   button{
     font-family:inherit; font-size:15px; font-weight:700;
     border:none; border-radius:6px; cursor:pointer;
     padding:13px 22px;
-    transition:transform .08s ease, background .15s ease;
+    transition:transform .08s ease, background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
   }
   button:active{ transform:scale(.97); }
   button:focus-visible{ outline:2px solid var(--floodlight); outline-offset:2px; }
@@ -839,7 +844,7 @@
   .opt-group{ display:flex; flex-direction:column; gap:8px; }
   .opt-group label{ font-size:12px; letter-spacing:.15em; text-transform:uppercase; color:var(--chalk); opacity:.75; }
   .seg{ display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
-  .seg button{ border-radius:0; background:transparent; color:var(--chalk); opacity:.75; padding:11px 18px; font-weight:600; }
+  .seg button{ border-radius:0; background:transparent; color:var(--chalk); opacity:.75; padding:11px 18px; font-weight:600; transition:background .16s ease, color .16s ease, opacity .16s ease; }
   .seg button.on{
     opacity:1; background:var(--floodlight); color:var(--accent-text, #ffffff); }
   .check{ display:flex; align-items:center; gap:9px; color:var(--chalk); font-size:15px; cursor:pointer; user-select:none; }
@@ -1644,7 +1649,7 @@
   /* content fades in whenever a tab, panel, or editor appears */
   #page-main, #page-fixtures, #page-saved{ animation:fadeUp .3s ease; }
   .panel{ animation:fadeUp .4s ease both; }
-  .tour-body, #picker, #library, #manualPanel{ animation:fadeUp .26s ease; }
+  .tour-body, #picker, #library, #manualPanel, #bulkPanel{ animation:fadeUp .26s ease; }
   #output, .round{ animation:fadeUp .3s ease; }
 
   /* glass surfaces */
