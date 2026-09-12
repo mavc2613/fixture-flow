@@ -612,6 +612,7 @@
     transform:translateX(-50%) translateY(0) scale(1);
   }
   .hint{ color:var(--chalk); opacity:.78; font-size:14px; margin-bottom:14px; }
+  .bracket-scroll-hint{ text-align:center; font-size:12.5px; opacity:.65; animation:fadeUp .3s ease; }
 
   /* ============ INPUTS & BUTTONS ============ */
   .team-row{ display:flex; gap:10px; }
@@ -3573,6 +3574,7 @@ function renderTourList(){
         </div>
         <div id="standings" style="display:${viewSection === "table" ? "block" : "none"}"></div>
         <div id="rounds" style="display:${viewSection === "fixtures" ? "block" : "none"}"></div>
+        <p class="hint bracket-scroll-hint" id="bracketHint" style="display:none">↔ Swipe sideways to see the later rounds</p>
         <div id="bracket" class="bracket-wrap" style="display:${viewSection === "bracket" ? "block" : "none"}"></div>
       </div>` : "";
     return `
@@ -5061,9 +5063,11 @@ function bracketScore(m, round, side){
 function renderBracket(t){
   const box = document.getElementById("bracket");
   if (!box) return;
+  const hint = document.getElementById("bracketHint");
   const data = bracketData(t);
   if (!data || !data.rounds.length){
     box.innerHTML = '<p class="hint">This format has no knockout bracket.</p>';
+    if (hint) hint.style.display = "none";
     return;
   }
   // fold a champions play-off round in as the outermost bracket column
@@ -5072,12 +5076,14 @@ function renderBracket(t){
     : data.rounds;
 
   const first = rounds[0].matches.length;
-  if (first < 2){
-    // just a final — draw it alone
-    box.innerHTML = svgBracket(rounds, data.champion, 1);
-    return;
-  }
-  box.innerHTML = svgBracket(rounds, data.champion, first / 2);
+  box.innerHTML = first < 2
+    ? svgBracket(rounds, data.champion, 1)      // just a final — draw it alone
+    : svgBracket(rounds, data.champion, first / 2);
+
+  // the bracket has a minimum width so team names stay readable — when that
+  // pushes it wider than the card, .bracket-wrap scrolls sideways, but on a
+  // touch screen there's no visible scrollbar to hint that. Show a nudge.
+  if (hint) hint.style.display = box.scrollWidth > box.clientWidth + 2 ? "block" : "none";
 }
 
 function svgBracket(rounds, champion, perSide){
