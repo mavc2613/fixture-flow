@@ -1,10 +1,10 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-08-25T17:44:26.799Z",
-  "exported": "2026-08-25T17:44:26.799Z",
+  "publishedAt": "2026-09-16T05:22:06.149Z",
+  "exported": "2026-09-16T05:22:06.149Z",
   "tournaments": [
     {
-      "name": "NEFKOT S6",
+      "name": "NEFL",
       "type": "knockout",
       "legs": 1,
       "gsize": null,
@@ -458,6 +458,29 @@
         }
       },
       "date": "8/9/2026 10:05 PM"
+    },
+    {
+      "name": "S9",
+      "type": "knockout",
+      "legs": 1,
+      "gsize": null,
+      "ptsWin": 3,
+      "tiebreak": "gd",
+      "order": [
+        "MINHAJ",
+        "ATHUL",
+        "SINAN PK",
+        "JAVI",
+        "SHANID",
+        "AFLAH",
+        "NIYAS",
+        "HUBAIL",
+        "MUBASHIR"
+      ],
+      "scores": {},
+      "scorers": {},
+      "dates": {},
+      "date": "9/16/2026 08:16 AM"
     }
   ]
 }
