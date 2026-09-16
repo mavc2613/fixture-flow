@@ -3,7 +3,9 @@
     "Sinam": "Sinan"
   },
   "additions": [],
-  "removals": [],
+  "removals": [
+    "JAVI"
+  ],
   "aliases": {
     "sinam": "Sinan",
     "aflah a.p.(chakkara)": "Chakkara",
@@ -15,7 +17,8 @@
     "aflah": "Chakkara",
     "chakkara": "Chakkara",
     "adul": "ATHUL",
-    "shanid": "SHANID"
+    "shanid": "SHANID",
+    "javi": "Javid Farhan"
   },
   "seasonEdits": {},
   "photos": {
