@@ -1,7 +1,7 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-09-17T19:53:21.083Z",
-  "exported": "2026-09-17T19:53:21.093Z",
+  "publishedAt": "2026-09-17T20:23:26.372Z",
+  "exported": "2026-09-17T20:23:26.384Z",
   "tournaments": [
     {
       "name": "NEFL",
@@ -484,6 +484,12 @@
           "a": "NIYAS",
           "gh": 3,
           "ga": 2
+        },
+        "Quarter-finals|SHANID|MINHAJ": {
+          "h": "SHANID",
+          "a": "MINHAJ",
+          "gh": 0,
+          "ga": 1
         }
       },
       "scorers": {},
