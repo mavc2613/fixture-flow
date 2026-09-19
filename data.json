@@ -1,7 +1,7 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-09-19T04:51:39.038Z",
-  "exported": "2026-09-19T04:51:39.038Z",
+  "publishedAt": "2026-09-19T07:48:55.315Z",
+  "exported": "2026-09-19T07:48:55.329Z",
   "tournaments": [
     {
       "name": "NEFL",
@@ -496,6 +496,12 @@
           "a": "ATHUL",
           "gh": 0,
           "ga": 3
+        },
+        "Quarter-finals|HADI ROSHAN|SINAN PK": {
+          "h": "HADI ROSHAN",
+          "a": "SINAN PK",
+          "gh": 4,
+          "ga": 1
         }
       },
       "scorers": {},
