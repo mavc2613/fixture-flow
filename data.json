@@ -1,7 +1,7 @@
 {
   "source": "Fixture Flow",
-  "publishedAt": "2026-09-19T04:51:34.945Z",
-  "exported": "2026-09-19T04:51:34.952Z",
+  "publishedAt": "2026-09-19T04:51:39.038Z",
+  "exported": "2026-09-19T04:51:39.038Z",
   "tournaments": [
     {
       "name": "NEFL",
@@ -494,7 +494,7 @@
         "Round of 16|JAVI|ATHUL": {
           "h": "JAVI",
           "a": "ATHUL",
-          "gh": null,
+          "gh": 0,
           "ga": 3
         }
       },
