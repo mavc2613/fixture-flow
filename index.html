@@ -7151,6 +7151,14 @@ document.getElementById("tourList").addEventListener("change", e => {
     }
   }
 });
+
+/* register the service worker so the app shell is cached — this is what
+   makes Chrome offer "Install app" / "Add to Home Screen" on Android */
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
